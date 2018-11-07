@@ -61,7 +61,7 @@ namespace PersonalProduct_2nd
             #region　シーンの追加、設定
             sceneManager = new SceneManager();
             sceneManager.AddScene(EScene.LoadScene, new LoadScene());
-            sceneManager.AddScene(EScene.RogoScene, new RogoScene());
+            sceneManager.AddScene(EScene.LogoScene, new LogoScene());
             sceneManager.AddScene(EScene.Title,     new Title());
             sceneManager.AddScene(EScene.Tutorial,  new Tutorial());
             sceneManager.AddScene(EScene.GameScene, new GameScene());
@@ -84,6 +84,17 @@ namespace PersonalProduct_2nd
 
             // この下にロジックを記述
             renderer.LoadContent("christmas_dance_tonakai"); //シーン遷移確認用画像
+            renderer.LoadContent("black");
+
+            #region テトリミノの色データ(後で用意)
+            Texture2D tetriMino = new Texture2D(GraphicsDevice, 4, 4); //4×4のピクセルデータを生成(中身はまだ何もなし)
+            Color[] test_Mino = new Color[tetriMino.Height * tetriMino.Width];
+            for (int i = 0; i < test_Mino.Length; i++)
+                test_Mino[i] = Color.Blue;
+
+            tetriMino.SetData(test_Mino);
+            renderer.LoadContent("tetriMino", tetriMino);
+            #endregion テトリミノの色データ
 
             // この上にロジックを記述
         }

@@ -41,10 +41,12 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Actor\Character.cs" />
-    <Compile Include="Actor\CharacterGenerater.cs" />
-    <Compile Include="Actor\Enemy.cs" />
-    <Compile Include="Actor\Player.cs" />
+    <Compile Include="Tetris_Block\Cell.cs" />
+    <Compile Include="Tetris_Block\LineField.cs" />
+    <Compile Include="Tetris_Block\Tetrimino.cs" />
+    <Compile Include="Tetris_Block\TetriminoFactory.cs" />
+    <Compile Include="Tetris_Block\Space.cs" />
+    <Compile Include="Tetris_Block\Block.cs" />
     <Compile Include="Define\Screen.cs" />
     <Compile Include="Device\DeviceManager.cs" />
     <Compile Include="Device\IGameMediator.cs" />
@@ -59,10 +61,13 @@
     <Compile Include="Scene\IScene.cs" />
     <Compile Include="Scene\LoadScene.cs" />
     <Compile Include="Scene\Result.cs" />
-    <Compile Include="Scene\RogoScene.cs" />
+    <Compile Include="Scene\LogoScene.cs" />
     <Compile Include="Scene\SceneManager.cs" />
     <Compile Include="Scene\Title.cs" />
     <Compile Include="Scene\Tutorial.cs" />
+    <Compile Include="Utility\CountDown_Timer.cs" />
+    <Compile Include="Utility\CountUp_Timer.cs" />
+    <Compile Include="Utility\Timer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="MonoGame.Framework">

@@ -14,7 +14,7 @@ namespace PersonalProduct_2nd.Scene
     enum EScene
     {
         LoadScene, //ロードシーン
-        RogoScene, //ロゴシーン
+        LogoScene, //ロゴシーン
         Title,　　 //タイトルシーン
         Tutorial,　//チュートリアル
         GameScene, //ゲームプレイシーン

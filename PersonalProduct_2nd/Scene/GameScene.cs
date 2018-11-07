@@ -1,6 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
-using PersonalProduct_2nd.Actor;
+using PersonalProduct_2nd.Tetris_Block;
 using PersonalProduct_2nd.Device;
 using System;
 using System.Collections.Generic;
@@ -17,7 +17,7 @@ namespace PersonalProduct_2nd.Scene
     class GameScene : IScene
     {
         private bool isEndFlag;//終了フラグ
-        private CharacterGenerater characterGenerater;//キャラクター管理者
+        private TetriminoFactory characterGenerater;//キャラクター管理者
 
         private DeviceManager device;//デバイス管理者
         private SoundManager sound; //サウンド管理者      
@@ -28,7 +28,7 @@ namespace PersonalProduct_2nd.Scene
         public GameScene()
         {
             isEndFlag = false;
-            characterGenerater = new CharacterGenerater();
+            characterGenerater = new TetriminoFactory();
 
             device = DeviceManager.CreateInstance();
             sound = device.GetSound();

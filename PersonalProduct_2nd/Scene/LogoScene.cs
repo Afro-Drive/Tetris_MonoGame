@@ -1,20 +1,19 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using PersonalProduct_2nd.Device;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
-using PersonalProduct_2nd.Device;
 
 namespace PersonalProduct_2nd.Scene
 {
     /// <summary>
-    /// ロードシーンクラス
+    /// タイトル前のロゴ表示シーン
     /// 作成者:谷永吾
-    /// 作成開始日:2018年10月18日
     /// </summary>
-    class LoadScene : IScene
+    class LogoScene : IScene
     {
         private bool isEndFlag;//終了フラグ
 
@@ -24,7 +23,7 @@ namespace PersonalProduct_2nd.Scene
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public LoadScene()
+        public LogoScene()
         {
             isEndFlag = false;
 
@@ -38,7 +37,7 @@ namespace PersonalProduct_2nd.Scene
         /// <param name="renderer"></param>
         public void Draw(Renderer renderer)
         {
-            renderer.DrawTexture("christmas_dance_tonakai", Vector2.Zero);
+            renderer.DrawTexture("christmas_dance_tonakai", new Vector2(200, 500));
         }
 
         /// <summary>
@@ -52,7 +51,7 @@ namespace PersonalProduct_2nd.Scene
         /// <summary>
         /// 終了か？
         /// </summary>
-        /// <returns>LoadSceneのフィールドisEndFlag</returns>
+        /// <returns></returns>
         public bool IsEnd()
         {
             return isEndFlag;
@@ -61,10 +60,10 @@ namespace PersonalProduct_2nd.Scene
         /// <summary>
         /// 次のシーンへ
         /// </summary>
-        /// <returns>ロゴシーン</returns>
+        /// <returns>タイトルシーンの列挙型</returns>
         public EScene Next()
         {
-            return EScene.LogoScene;
+            return EScene.Title;
         }
 
         /// <summary>
@@ -81,9 +80,7 @@ namespace PersonalProduct_2nd.Scene
         public void Update(GameTime gameTime)
         {
             if (Input.IskeyDown(Keys.Enter))
-            {
                 isEndFlag = true;
-            }
         }
     }
 }
