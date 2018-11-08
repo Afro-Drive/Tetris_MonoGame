@@ -20,11 +20,29 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <summary>
         /// コンストラクタ
         /// </summary>
+        /// <param name="name"></param>
         /// <param name="mediator">ゲーム仲介者</param>
-        public Block(IGameMediator mediator)
-            : base("black", mediator)
+        public Block()
+            : base("black")
         {
             onFieldFlag = true ;
+        }
+
+        /// <summary>
+        /// コピーコンストラクタ
+        /// </summary>
+        /// <param name="other">コピー元のオブジェクトインスタンス</param>
+        public Block(Block other)
+            : this()
+        {   }
+
+        /// <summary>
+        /// コピー
+        /// </summary>
+        /// <returns>コピーコンストラクタ</returns>
+        public override object Clone()
+        {
+            return new Block(this); //コピーコンストラクタを生成・返却
         }
 
         /// <summary>

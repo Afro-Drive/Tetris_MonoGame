@@ -21,9 +21,22 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// コンストラクタ
         /// </summary>
         /// <param name="mediator">ゲーム仲介者</param>
-        public Space(IGameMediator mediator)
-            : base("", mediator)
+        public Space()
+            : base("")
         { }
+
+        public Space(Space other)
+            :this()
+        { }
+
+        /// <summary>
+        /// コピー
+        /// </summary>
+        /// <returns>コピーコンストラクタ</returns>
+        public override object Clone()
+        {
+            return new Space(this); //コピーコンストラクタを生成・取得
+        }
 
         /// <summary>
         /// 初期化
@@ -46,5 +59,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         public override void Draw(Renderer renderer)
         {            
         }
+
     }
 }

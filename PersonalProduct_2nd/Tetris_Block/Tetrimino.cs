@@ -30,18 +30,20 @@ namespace PersonalProduct_2nd.Tetris_Block
         private float GRAVITY = 0.2f; //重力
         private Timer landTimer; //着地後の操作猶予時間
         private SoundManager Sound; //動作音用
+        private IGameMediator mediator; //ゲーム仲介者
         #endregion フィールド
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        /// <param name="mediator"></param>
+        /// <param name="mediator">スコア加算用ゲーム仲介者</param>
         public Tetrimino(IGameMediator mediator) 
-            : base(mediator)
+            : base()
         {
             Sound = DeviceManager.CreateInstance().GetSound();
             form = Form_mino.Test;
             landTimer = new CountDown_Timer(2f);
+            this.mediator = mediator;
         }
 
         /// <summary>

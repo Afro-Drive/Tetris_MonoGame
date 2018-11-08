@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using PersonalProduct_2nd.Device;
+using PersonalProduct_2nd.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,11 +23,11 @@ namespace PersonalProduct_2nd.Tetris_Block
         public LineField(DeviceManager device)
         {
             mapList = new List<List<Cell>>();//マップの実態生成
-            this.deviceManager = device;
+            deviceManager = device;
         }
 
         /// <summary>
-        /// ブロックの追加
+        /// CSVファイルに合わせてブロックの追加
         /// </summary>
         /// <param name="lineCnt"></param>
         /// <param name="line"></param>
@@ -35,11 +36,11 @@ namespace PersonalProduct_2nd.Tetris_Block
         //privateメソッドより先頭を小文字とする
         {
             //コピー元オブジェクト登録用ディクショナリ
-            Dictionary<string, Cell> objectDict = new Dictionary<string, Cell>();
+            Dictionary<string, Cell> cellDict = new Dictionary<string, Cell>();
             //スペースは0
-            objectDict.Add("0", new Space(Vector2.Zero, deviceManager));
+            cellDict.Add("0", new Space());
             //ブロックは1
-            objectDict.Add("1", new Block(Vector2.Zero, deviceManager));
+            cellDict.Add("1", new Block());
 
             //作業用リスト
             List<Cell> workList = new List<Cell>();
@@ -50,15 +51,16 @@ namespace PersonalProduct_2nd.Tetris_Block
                 try
                 {
                     //ディクショナリから元データを取り出し、クローン機能で複製
-                    Cell work = (Cell)objectDict[s].Clone();
-                    work.Position = (new Vector2(colCnt * work.GetWidth(), lineCnt * work.GetHeight()));
+                    Cell work = (Cell)cellDict[s].Clone();
+                    //1列の要素を１ブロックずつ配置する
+                    work.Position = (new Vector2(colCnt * work.Width, lineCnt * work.Height));
                     workList.Add(work);
                 }
                 catch (Exception e)
                 {
                     Console.WriteLine(e);
                 }
-                //列カウンタを増やす
+                //列カウンタを増やす。次の列へ移動
                 colCnt += 1;
             }
             return workList;
@@ -91,24 +93,32 @@ namespace PersonalProduct_2nd.Tetris_Block
             mapList.Clear();
         }
 
+        /// <summary>
+        /// フィールド内の空白要素以外を更新
+        /// </summary>
+        /// <param name="gameTime"></param>
         public void Update(GameTime gameTime)
         {
             foreach (var list in mapList)//listはList<Cell>型
             {
-                //objがSpaceクラスのオブジェクトなら次へ
-                foreach (var obj in list) //objはCell型
+                foreach (var cell in list) //cellはCell型
                 {
-                    if (obj is Space)
+                    //objがSpaceクラスのオブジェクトなら次へ
+                    if (cell is Space)
                         continue;
 
-                    obj.Update(gameTime);
+                    cell.Update(gameTime);
                 }
             }
         }
 
-        public void Hit(Cell Cell)
+        /// <summary>
+        /// 衝突判定・衝突後処理
+        /// </summary>
+        /// <param name="cell">基準となるセルオブジェクト</param>
+        public void Hit(Cell cell)
         {
-            Point work = Cell.HitArea.Location;//左上の座標を取得
+            Point work = cell.CellRect.Location;//左上の座標を取得
             //配列の何行何列目にいるか計算
             int x = work.X / 32;
             int y = work.Y / 32;
@@ -119,28 +129,29 @@ namespace PersonalProduct_2nd.Tetris_Block
             if (y < 1)
                 y = 1;
 
-            Range yRange = new Range(0, mapList.Count() - 1); //行の範囲
-            Range xRange = new Range(0, mapList[0].Count() - 1); //列の範囲
+            Range yRange = new Range(0, mapList.Count() - 1); //行の範囲(配列番号に対応)
+            Range xRange = new Range(0, mapList[0].Count() - 1); //列の範囲(配列番号に対応)
 
-            for (int row = y - 1; row <= (y + 1); row++)
+            //引数cellの周りの8つのセルに衝突対象がないかどうか確認(テトリミノのブロックごとに改良する必要ありか？)
+            for (int row = y - 1; row <= (y + 1); row++)　//自分の上と下のセル
             {
-                for (int col = x - 1; col <= (x + 1); col++)
+                for (int col = x - 1; col <= (x + 1); col++)　//自分の右と左のセル
                 {
                     //配列外なら何もしない
                     //
                     if (xRange.IsOutOfRange(col) || yRange.IsOutOfRange(row))
                         continue;
 
-                    //その場所のオブジェクトを取得
-                    Cell obj = mapList[row][col];
+                    //その場所のオブジェクトを取得(調べる相手)
+                    Cell cll = mapList[row][col];
 
                     //objがSpaceクラスのオブジェクトなら次へ
-                    if (obj is Space)
+                    if (cll is Space)
                         continue;
 
                     //衝突判定(CellがBlockの場合)
-                    if (obj.IsCollision(Cell))
-                        Cell.Hit(obj);
+                    if (cll.IsCollision(cell))
+                        cell.Hit(cll);
                 }
             }
         }

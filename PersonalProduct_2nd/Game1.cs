@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Input;
 using PersonalProduct_2nd.Define;
 using PersonalProduct_2nd.Device;
 using PersonalProduct_2nd.Scene;
+using PersonalProduct_2nd.Tetris_Block;
 
 /// <summary>
 /// プロジェクト名がnamespaceとなります

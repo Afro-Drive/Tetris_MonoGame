@@ -41,6 +41,11 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Device\BGM_Loader.cs" />
+    <Compile Include="Device\CSVReader.cs" />
+    <Compile Include="Device\Loader.cs" />
+    <Compile Include="Device\SE_Loader.cs" />
+    <Compile Include="Device\Texture_Loader.cs" />
     <Compile Include="Tetris_Block\Cell.cs" />
     <Compile Include="Tetris_Block\LineField.cs" />
     <Compile Include="Tetris_Block\Tetrimino.cs" />
@@ -67,6 +72,7 @@
     <Compile Include="Scene\Tutorial.cs" />
     <Compile Include="Utility\CountDown_Timer.cs" />
     <Compile Include="Utility\CountUp_Timer.cs" />
+    <Compile Include="Utility\Range.cs" />
     <Compile Include="Utility\Timer.cs" />
   </ItemGroup>
   <ItemGroup>
