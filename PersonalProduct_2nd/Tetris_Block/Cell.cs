@@ -32,7 +32,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             //各種メンバの初期化
             this.assetName = name;
-            position = Vector2.Zero; //とりあえず(0, 0)で
+            position = new Vector2(50, 200);
             //マス目を生成
             CellArea = new Rectangle(
                 new Point((int)position.X, (int)position.Y),

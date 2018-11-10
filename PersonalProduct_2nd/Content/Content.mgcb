@@ -25,6 +25,9 @@
 /processorParam:TextureFormat=Color
 /build:christmas_dance_tonakai.png
 
+#begin csv/LineField.csv
+/copy:csv/LineField.csv
+
 #begin black.png
 /importer:TextureImporter
 /processor:TextureProcessor

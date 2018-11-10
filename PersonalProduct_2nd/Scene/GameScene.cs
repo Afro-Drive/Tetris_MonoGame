@@ -17,7 +17,8 @@ namespace PersonalProduct_2nd.Scene
     class GameScene : IScene
     {
         private bool isEndFlag;//終了フラグ
-        private TetriminoFactory characterGenerater;//キャラクター管理者
+        private TetrminoFactory tetriminoFactory;//キャラクター管理者
+        private LineField field; //プレイエリアのフィールド
 
         private DeviceManager device;//デバイス管理者
         private SoundManager sound; //サウンド管理者      
@@ -27,11 +28,11 @@ namespace PersonalProduct_2nd.Scene
         /// </summary>
         public GameScene()
         {
-            isEndFlag = false;
-            characterGenerater = new TetriminoFactory();
-
             device = DeviceManager.CreateInstance();
             sound = device.GetSound();
+
+            isEndFlag = false;
+            tetriminoFactory = new TetrminoFactory();
         }
 
         /// <summary>
@@ -40,7 +41,8 @@ namespace PersonalProduct_2nd.Scene
         public void Draw(Renderer renderer)
         {
             renderer.DrawTexture("christmas_dance_tonakai", new Vector2(750, 0));
-            characterGenerater.Draw(renderer);
+            field.Draw(renderer);
+            tetriminoFactory.Draw(renderer);
         }
 
         /// <summary>
@@ -49,7 +51,9 @@ namespace PersonalProduct_2nd.Scene
         public void Initialize()
         {
             isEndFlag = false;
-            characterGenerater.Initialize();
+            field = new LineField(device);
+            field.Load("LineField.csv", "./csv/"); //フィールド元のファイルの読み込み
+            tetriminoFactory.Initialize();
         }
 
         /// <summary>
@@ -84,7 +88,7 @@ namespace PersonalProduct_2nd.Scene
         {
             if (Input.IskeyDown(Keys.Enter))
                 isEndFlag = true;
-            characterGenerater.Update(gameTime);
+            tetriminoFactory.Update(gameTime);
         }
     }
 }

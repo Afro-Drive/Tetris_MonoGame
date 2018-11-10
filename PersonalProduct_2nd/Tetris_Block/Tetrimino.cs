@@ -20,7 +20,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <summary>
         /// テトリミノの種類列挙型
         /// </summary>
-        private enum Form_mino
+        internal enum Form_mino
         {
             I, T, J, L, S, Z, Test
         }
@@ -44,6 +44,28 @@ namespace PersonalProduct_2nd.Tetris_Block
             form = Form_mino.Test;
             landTimer = new CountDown_Timer(2f);
             this.mediator = mediator;
+        }
+
+        /// <summary>
+        /// TetriminoFactoryクラス内で使用するコンストラクタ
+        /// (Minoの方を指定する)
+        /// </summary>
+        /// <param name="setForm">Minoの形の指定</param>
+        public Tetrimino(Form_mino setForm, IGameMediator mediator)
+            :base()
+        {
+            form = setForm; //ここで引数に基づいて型を決定する
+            Sound = DeviceManager.CreateInstance().GetSound();
+            landTimer = new CountDown_Timer(2f);
+            this.mediator = mediator;
+        }
+
+        /// <summary>
+        /// テトリミノの形の取得プロパティ
+        /// </summary>
+        public Form_mino Form
+        {
+            get { return Form; }
         }
 
         /// <summary>
