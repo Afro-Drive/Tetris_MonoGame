@@ -16,22 +16,26 @@ namespace PersonalProduct_2nd.Tetris_Block
     /// </summary>
     class TetrminoFactory
     {
-        //形に対応したTetrimino管理用ディクショナリ
-        private Dictionary<Form_mino, Tetrimino> minoManage_Dict;
-        private Tetrimino fallMino = null; //排出されたテトリミノ
-        
+        //形に対応したTetrimino管理用リスト
+        private List<Tetrimino> mino_List;
+        private Tetrimino currentMino = null; //排出されたテトリミノ
+        private Random rand;//排出するMinoの決定用
+        private IGameMediator mediator;//リストの再設定のために所有
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public TetrminoFactory()
+        /// <param name="mediator"></param>
+        public TetrminoFactory(IGameMediator mediator)
         {
-            //ディクショナリの初期化
-            minoManage_Dict = new Dictionary<Form_mino, Tetrimino>();
+            //リストの初期化
+            mino_List = new List<Tetrimino>();
+            rand = DeviceManager.CreateInstance().GetRandom();
+            this.mediator = mediator;
         }
 
         /// <summary>
-        /// キャラクターオブジェクトの管理リストへの追加
+        /// キャラクターオブジェクトの管理ディクショナリへの追加
         /// </summary>
         /// <param name="additionMino">追加するTetriminoオブジェクト(管理用コンストラクタを使用)</param>
         public void AddMino(Tetrimino additionMino)
@@ -39,19 +43,24 @@ namespace PersonalProduct_2nd.Tetris_Block
             if (additionMino is null)//追加オブジェクトが空なら
                 return;　//何もせず終了
 
-            //テトリミノ管理ディクショナリに格納
-            minoManage_Dict.Add(additionMino.Form, additionMino);
+            //テトリミノ管理Listに格納(Minoの形も指定されている状態)
+            mino_List.Add(additionMino);
         }
 
         /// <summary>
-        /// テトリミノリストの一括更新処理
+        /// 排出中のテトリミノの更新処理
         /// </summary>
         public void Update(GameTime gameTime)
         {
-            foreach (var minoPair in minoManage_Dict)
-            {
-                minoPair.Value.Update(gameTime);
-            }
+            #region フィールドに排出されていないため不要
+            //foreach (var minoPair in minoManage_Dict) 
+            //{
+            //    minoPair.Value.Update(gameTime);
+            //}
+            #endregion フィールドに排出されていないため不要
+
+            Emission(); //落下させるMinoを決定
+            currentMino.Update(gameTime);　//落下中のMinoの動作処理
         }
 
         /// <summary>
@@ -59,10 +68,15 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public void Draw(Renderer renderer)
         {
-            foreach (var minoPair in minoManage_Dict)
-            {
-                minoPair.Value.Draw(renderer);
-            }
+            #region フィールドに排出されていないため不要
+            //foreach (var minoPair in minoManage_Dict)　
+            //{
+            //    minoPair.Value.Draw(renderer);
+            //}
+            #endregion フィールドに排出されていないため不要
+            if (currentMino == null) return;
+
+            currentMino.Draw(renderer);
         }
 
         /// <summary>
@@ -70,10 +84,39 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public void Initialize()
         {
-            foreach (var minoPair in minoManage_Dict)
-            {
-                minoPair.Value.Initialize();
-            }
+            #region フィールドに排出されていないため不要
+            //foreach (var minoPair in minoManage_Dict)　
+            //{
+            //    minoPair.Value.Initialize();
+            //}
+            #endregion フィールドに排出されていないため不要
+            if (currentMino == null) return;
+
+            currentMino.Initialize();
+        }
+
+        /// <summary>
+        /// テトリミノの排出
+        /// </summary>
+        public void Emission()
+        {
+            //すでにテトリミノが落下中の場合は何もしない
+            if (currentMino != null)
+                return;
+            //ランダムで管理ListからMinoを選択
+            //リストの要素数内で乱数を生成
+            int index = rand.Next(0, mino_List.Count);
+            currentMino = mino_List[index]; //落下状態のミノに代入
+            mino_List.RemoveAt(index); //一度排出したミノはリストから削除する
+        }
+
+        public void ResetList()
+        {
+            //まだ管理リストに要素が残っていれば何もしない
+            if (mino_List.Count > 0) return;
+            //管理リストを元通りにする
+            //Minoの形を指定できる管理用コンストラクタで初期化
+            mino_List.Add(new Tetrimino(Form_mino.Test, mediator));
         }
 
         /// <summary>

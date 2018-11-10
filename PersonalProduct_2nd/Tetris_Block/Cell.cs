@@ -20,8 +20,8 @@ namespace PersonalProduct_2nd.Tetris_Block
         protected Vector2 position;
         //マス目関連
         protected Rectangle CellArea; //マス目の矩形
-        protected readonly int WIDTH = 32;　//縦
-        protected readonly int HEIGHT = 32;　//横
+        public static readonly int WIDTH = 32;　//縦(静的メンバ)
+        public static readonly int HEIGHT = 32;　//横（静的メンバ）
         #endregion フィールド
 
         /// <summary>

@@ -19,11 +19,15 @@ namespace PersonalProduct_2nd.Tetris_Block
         //ListのListで縦横の２次元配列的構造
         private List<List<Cell>> mapList;
         private DeviceManager deviceManager; //ゲームデバイス
+        private TetrminoFactory factory; //Tetriminoオブジェクト生産者
+        private IGameMediator mediator; //ゲーム仲介者
 
-        public LineField(DeviceManager device)
+        public LineField(DeviceManager device, IGameMediator mediator)
         {
             mapList = new List<List<Cell>>();//マップの実態生成
+            this.mediator = mediator;
             deviceManager = device;
+            factory = new TetrminoFactory(mediator);
         }
 
         /// <summary>

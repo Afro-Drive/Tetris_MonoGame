@@ -14,7 +14,7 @@ namespace PersonalProduct_2nd.Scene
     /// ゲームプレイ関連シーン
     /// 作成者:谷永吾
     /// </summary>
-    class GameScene : IScene
+    class GameScene : IScene, IGameMediator
     {
         private bool isEndFlag;//終了フラグ
         private TetrminoFactory tetriminoFactory;//キャラクター管理者
@@ -32,7 +32,7 @@ namespace PersonalProduct_2nd.Scene
             sound = device.GetSound();
 
             isEndFlag = false;
-            tetriminoFactory = new TetrminoFactory();
+            //tetriminoFactory = new TetrminoFactory(this);
         }
 
         /// <summary>
@@ -42,7 +42,7 @@ namespace PersonalProduct_2nd.Scene
         {
             renderer.DrawTexture("christmas_dance_tonakai", new Vector2(750, 0));
             field.Draw(renderer);
-            tetriminoFactory.Draw(renderer);
+            //tetriminoFactory.Draw(renderer);
         }
 
         /// <summary>
@@ -51,9 +51,9 @@ namespace PersonalProduct_2nd.Scene
         public void Initialize()
         {
             isEndFlag = false;
-            field = new LineField(device);
+            field = new LineField(device, this);
             field.Load("LineField.csv", "./csv/"); //フィールド元のファイルの読み込み
-            tetriminoFactory.Initialize();
+            //tetriminoFactory.Initialize();
         }
 
         /// <summary>
@@ -88,7 +88,7 @@ namespace PersonalProduct_2nd.Scene
         {
             if (Input.IskeyDown(Keys.Enter))
                 isEndFlag = true;
-            tetriminoFactory.Update(gameTime);
+            //tetriminoFactory.Update(gameTime);
         }
     }
 }

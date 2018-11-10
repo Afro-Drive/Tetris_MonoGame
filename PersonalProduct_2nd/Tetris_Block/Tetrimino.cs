@@ -27,9 +27,10 @@ namespace PersonalProduct_2nd.Tetris_Block
         private Form_mino form;
         private Cell[,] realRotate_Array = new Cell[4,4]; //回転処理用配列
         private Cell[,] imageRotate_Array; //回転可能か検証する用の配列
+
         private float GRAVITY = 0.2f; //重力
         private Timer landTimer; //着地後の操作猶予時間
-        private SoundManager Sound; //動作音用
+        private SoundManager sound; //動作音用
         private IGameMediator mediator; //ゲーム仲介者
         #endregion フィールド
 
@@ -40,7 +41,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         public Tetrimino(IGameMediator mediator) 
             : base()
         {
-            Sound = DeviceManager.CreateInstance().GetSound();
+            sound = DeviceManager.CreateInstance().GetSound();
             form = Form_mino.Test;
             landTimer = new CountDown_Timer(2f);
             this.mediator = mediator;
@@ -55,7 +56,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             :base()
         {
             form = setForm; //ここで引数に基づいて型を決定する
-            Sound = DeviceManager.CreateInstance().GetSound();
+            sound = DeviceManager.CreateInstance().GetSound();
             landTimer = new CountDown_Timer(2f);
             this.mediator = mediator;
         }
