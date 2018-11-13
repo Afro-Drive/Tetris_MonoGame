@@ -47,13 +47,14 @@ namespace PersonalProduct_2nd.Device
         }
 
         /// <summary>
-        /// キーが押しっぱなしか？
+        /// キーが押してあるか？
+        /// (押した瞬間かは問わない)
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public static bool BeingKeyDown(Keys key)
+        public static bool IsKeyDown(Keys key)
         {
-            return currentKey.IsKeyDown(key) && previousKey.IsKeyDown(key);
+            return Keyboard.GetState().IsKeyDown(key);
         }
 
         /// <summary>

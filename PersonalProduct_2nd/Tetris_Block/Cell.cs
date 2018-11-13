@@ -16,6 +16,10 @@ namespace PersonalProduct_2nd.Tetris_Block
     abstract class Cell : ICloneable
     {
         #region フィールド
+        /// <summary>
+        /// 衝突した矩形(マス)の面の列挙型
+        /// </summary>
+        public enum  Direction { Top, Bottom, Right, Left }
         protected string assetName;　//使用画像のアセット名
         protected Vector2 position;
         //マス目関連
@@ -32,7 +36,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             //各種メンバの初期化
             this.assetName = name;
-            position = new Vector2(50, 200);
+            position = Vector2.Zero;
             //マス目を生成
             CellArea = new Rectangle(
                 new Point((int)position.X, (int)position.Y),
@@ -74,6 +78,37 @@ namespace PersonalProduct_2nd.Tetris_Block
             get { return CellArea; }
         }
 
+        public Direction CheckDirection(Cell otherCell)
+        {
+            Point thisCenter = this.CellArea.Center;//自分の中心位置を代入
+            Point otherCenter = otherCell.CellArea.Center;//相手の中心位置を代入
+
+            //向きのベクトルを取得
+            Vector2 dir =
+                new Vector2(thisCenter.X, thisCenter.Y) -
+                new Vector2(otherCenter.X, otherCenter.Y);
+
+            //当たっている側面をリターン
+            //X成分とY成分でどちらのほうが量が多いか
+            if (Math.Abs(dir.X) > Math.Abs(dir.Y))
+            {
+                //Xの向きが正の時
+                if (dir.X > 0)
+                {
+                    return Direction.Right;
+                }
+                return Direction.Left; //Xの向きが負の時
+            }
+
+            //Y成分が大きく、正の値か？
+            if (dir.Y > 0)
+            {
+                return Direction.Bottom;
+            }
+            //ブロックに乗った
+            return Direction.Top;
+        }
+
         /// <summary>
         /// 自分と相手の当たり判定
         /// </summary>
@@ -89,9 +124,9 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// (なんか音でも鳴らす予定)
         /// </summary>
         /// <param name="other"></param>
-        public void Hit(Cell other)
+        public virtual void Hit(Cell other)
         {
-
+            
         }
 
         /// <summary>

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using PersonalProduct_2nd.Device;
 
@@ -16,20 +17,65 @@ namespace PersonalProduct_2nd.Scene
     /// </summary>
     class LoadScene : IScene
     {
+        #region フィールド
         private bool isEndFlag;//終了フラグ
 
+        //各種デバイス
         private DeviceManager device;//デバイス管理者
-        private SoundManager sound; //サウンド管理者      
+        private SoundManager sound; //サウンド管理者   
+        private Renderer renderer; //レンダー管理者
+        private GraphicsDevice graphicsDevice; //グラフィックスデバイスオブジェクト
+
+        //各種Loader
+        private Texture_Loader textureLoader;
+        private Texture_Loader pixcelLoader;
+        private BGM_Loader bgmLoader;
+        private SE_Loader seLoader;
+        #endregion フィールド
+
+        private string[,] TextureMatrix()
+        {
+            string[,] textures = new string[,]
+            {
+            };
+
+            return textures;
+        }
+
+        private string[,] BGMMatrix()
+        {
+            string[,] bgms = new string[,]
+            {
+
+            };
+
+            return bgms;
+        }
+
+
+        private string[,] SEMatrix()
+        {
+            string[,] seMatrix = new string[,]
+            {
+
+            };
+
+            return seMatrix;
+        }
+
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public LoadScene()
+        /// <param name="Graphics">グラフィック管理者(Game1の所有フィールドを利用)</param>
+        public LoadScene(GraphicsDevice Graphics)
         {
             isEndFlag = false;
 
             device = DeviceManager.CreateInstance();
             sound = device.GetSound();
+            renderer = device.GetRenderer();
+            graphicsDevice = Graphics;
         }
 
         /// <summary>

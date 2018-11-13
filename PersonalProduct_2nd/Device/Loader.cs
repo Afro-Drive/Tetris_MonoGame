@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -15,6 +16,7 @@ namespace PersonalProduct_2nd.Device
     abstract class Loader
     {
         protected string[,] resources;//リソースのアセット名を管理する二次元配列
+        protected List<KeyValuePair<string, Texture2D>> pixcels; //内部生成したピクセル用ディクショナリ
         protected int counter;//現在登録しているアセット数
         protected int maxNum;//最大アセット登録数
         protected bool isEndFlag;//終了フラグ
@@ -28,6 +30,15 @@ namespace PersonalProduct_2nd.Device
             resources = setResouces;//外部からの配列の引数で初期化
         }
 
+        /// <summary>
+        /// 内部生成ピクセル用コンストラクタ
+        /// </summary>
+        /// <param name="pixcelPairs"></param>
+        public Loader(List<KeyValuePair<string, Texture2D>> pixcelPairs)
+        {
+            pixcels = pixcelPairs;
+        }
+
         public void Initialze()
         {
             counter = 0;
@@ -39,7 +50,7 @@ namespace PersonalProduct_2nd.Device
                 "リソースデータの登録情報がすでに登録されていますです。");
 
             //配列から登録上限数を割り当てる
-            maxNum = resources.GetLength(0);
+            maxNum = resources.GetLength(0) + pixcels.Capacity;
         }
 
         /// <summary>

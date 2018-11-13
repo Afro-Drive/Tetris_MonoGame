@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,12 +16,24 @@ namespace PersonalProduct_2nd.Device
     class Texture_Loader : Loader
     {
         private Renderer renderer;//描画オブジェクト
+
         /// <summary>
-        /// コンストラクタ
+        /// コンストラクタ(外部から読み込んだ画像)
         /// </summary>
         /// <param name="setResources"></param>
         public Texture_Loader(string[,] setResources)
             : base(setResources)
+        {
+            renderer = DeviceManager.CreateInstance().GetRenderer();
+            base.Initialze();//親クラスの初期化メソッドで初期化
+        }
+
+        /// <summary>
+        /// コンストラクタ(内部生成ピクセル用)
+        /// </summary>
+        /// <param name="pixcelPairs"></param>
+        public Texture_Loader(List<KeyValuePair<string, Texture2D>> pixcelPairs)
+            :base(pixcelPairs)
         {
             renderer = DeviceManager.CreateInstance().GetRenderer();
             base.Initialze();//親クラスの初期化メソッドで初期化
@@ -44,6 +57,15 @@ namespace PersonalProduct_2nd.Device
                 //読み込むアセットがあったので、終了フラグを継続にセット
                 isEndFlag = false;
             }
+        }
+
+        /// <summary>
+        /// 更新（ピクセル画像の読み込み）
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public void UpdatePix(GameTime gameTime)
+        {
+
         }
     }
 }

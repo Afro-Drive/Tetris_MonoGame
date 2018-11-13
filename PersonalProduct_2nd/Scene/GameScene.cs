@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PersonalProduct_2nd.Tetris_Block.Tetrimino;
 
 namespace PersonalProduct_2nd.Scene
 {
@@ -17,7 +18,6 @@ namespace PersonalProduct_2nd.Scene
     class GameScene : IScene, IGameMediator
     {
         private bool isEndFlag;//終了フラグ
-        private TetrminoFactory tetriminoFactory;//キャラクター管理者
         private LineField field; //プレイエリアのフィールド
 
         private DeviceManager device;//デバイス管理者
@@ -32,7 +32,7 @@ namespace PersonalProduct_2nd.Scene
             sound = device.GetSound();
 
             isEndFlag = false;
-            //tetriminoFactory = new TetrminoFactory(this);
+            //tetriminoFactory = new TetrminoFactory(this); //LineFieldオブジェクトに委託
         }
 
         /// <summary>
@@ -42,7 +42,8 @@ namespace PersonalProduct_2nd.Scene
         {
             renderer.DrawTexture("christmas_dance_tonakai", new Vector2(750, 0));
             field.Draw(renderer);
-            //tetriminoFactory.Draw(renderer);
+
+            //tetriminoFactory.Draw(renderer);　//LineFieldに委託
         }
 
         /// <summary>
@@ -53,6 +54,9 @@ namespace PersonalProduct_2nd.Scene
             isEndFlag = false;
             field = new LineField(device, this);
             field.Load("LineField.csv", "./csv/"); //フィールド元のファイルの読み込み
+            
+            //LineFieldに委託
+            //tetriminoFactory.AddMino(new Tetrimino(Form_mino.Test, this));
             //tetriminoFactory.Initialize();
         }
 
@@ -88,7 +92,10 @@ namespace PersonalProduct_2nd.Scene
         {
             if (Input.IskeyDown(Keys.Enter))
                 isEndFlag = true;
+            field.Update(gameTime);
+            //LineFieldに委託
             //tetriminoFactory.Update(gameTime);
+            field.Hit(field.ActiveMino);
         }
     }
 }

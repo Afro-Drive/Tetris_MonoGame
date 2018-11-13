@@ -1,10 +1,10 @@
 ﻿using Microsoft.Xna.Framework;
 using PersonalProduct_2nd.Device;
+using PersonalProduct_2nd.Utility;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace PersonalProduct_2nd.Tetris_Block
 {
@@ -16,6 +16,9 @@ namespace PersonalProduct_2nd.Tetris_Block
     class Block : Cell
     {
         protected bool onFieldFlag; //画面内表示フラグ
+        protected bool LandFlag;//着地確定フラグ
+        protected Timer fallTimer; //自動落下タイマー
+        protected Timer landTimer; //着地後の操作猶予時間
 
         /// <summary>
         /// コンストラクタ
@@ -26,6 +29,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             : base("black")
         {
             onFieldFlag = true ;
+            LandFlag = true;
         }
 
         /// <summary>
@@ -51,6 +55,36 @@ namespace PersonalProduct_2nd.Tetris_Block
         public override void Initialize()
         {
             onFieldFlag = true;
+            LandFlag = true;
+            landTimer = new CountDown_Timer(2f);
+            fallTimer = new CountDown_Timer(1.2f);
+        }
+
+        /// <summary>
+        /// 着地確定フラグのプロパティ
+        /// (取得・設定両方)
+        /// </summary>
+        public bool IsOnLand
+        {
+            get { return LandFlag; }
+            set { LandFlag = value; }
+        }
+
+        /// <summary>
+        /// ピクセル画像の描画
+        /// (Tetriminoオブジェクト用)
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <param name="position"></param>
+        /// <param name="scale"></param>
+        public void DrawMino(Renderer renderer, string minoCol, Vector2 position, float scale)
+        {
+            renderer.DrawTexture(
+                minoCol,
+                position,
+                null, 
+                scale,
+                Vector2.Zero);
         }
 
         /// <summary>

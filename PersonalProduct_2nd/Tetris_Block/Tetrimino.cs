@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
 using PersonalProduct_2nd.Device;
 using PersonalProduct_2nd.Utility;
 
@@ -22,14 +23,13 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         internal enum Form_mino
         {
-            I, T, J, L, S, Z, Test
+            I = 0, T, J, L, S, Z, Test
         }
         private Form_mino form;
-        private Cell[,] realRotate_Array = new Cell[4,4]; //回転処理用配列
+        private Cell[,] realRotate_Array; //回転処理用配列
         private Cell[,] imageRotate_Array; //回転可能か検証する用の配列
 
-        private float GRAVITY = 0.2f; //重力
-        private Timer landTimer; //着地後の操作猶予時間
+        private float GRAVITY = 5f; //重力
         private SoundManager sound; //動作音用
         private IGameMediator mediator; //ゲーム仲介者
         #endregion フィールド
@@ -38,13 +38,15 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// コンストラクタ
         /// </summary>
         /// <param name="mediator">スコア加算用ゲーム仲介者</param>
-        public Tetrimino(IGameMediator mediator) 
+        public Tetrimino(IGameMediator mediator)
             : base()
         {
             sound = DeviceManager.CreateInstance().GetSound();
-            form = Form_mino.Test;
-            landTimer = new CountDown_Timer(2f);
             this.mediator = mediator;
+
+            form = Form_mino.Test; //テトリミノの形の設定
+
+            Initialize(); //各種変数の初期化
         }
 
         /// <summary>
@@ -53,12 +55,13 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         /// <param name="setForm">Minoの形の指定</param>
         public Tetrimino(Form_mino setForm, IGameMediator mediator)
-            :base()
+            : base()
         {
-            form = setForm; //ここで引数に基づいて型を決定する
             sound = DeviceManager.CreateInstance().GetSound();
-            landTimer = new CountDown_Timer(2f);
             this.mediator = mediator;
+
+            form = setForm; //ここで引数に基づいて型を決定する
+            Initialize();　//各種変数の初期化
         }
 
         /// <summary>
@@ -70,7 +73,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
-        /// 排出するテトリミノに合わせた描画
+        /// テトリミノのFormの値に合わせた描画
         /// </summary>
         /// <param name="renderer"></param>
         public override void Draw(Renderer renderer)
@@ -102,7 +105,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                     break;
 
                 default: //テスト用テトリミノ描画
-                    renderer.DrawTexture("tetriMino", Vector2.Zero);
+                    DrawO(renderer);
                     break;
             }
         }
@@ -136,16 +139,63 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
 
         }
+
+        public void DrawO(Renderer renderer)
+        {
+            //Mino_Arrayのリストのうち、2の要素の時のみピクセルを表示
+            int[,] data = Mino_Array.mino_Data[(int)form]; //List内で使用する二次元配列を取得
+            for (int y = 0; y < data.GetLength(0); y++)
+            {
+                for (int x = 0; x < data.GetLength(1); x++)
+                {
+                    if (data[y, x] == 2)
+                    {
+                        realRotate_Array[y, x] = new Block();
+                        ((Block)realRotate_Array[y, x]).DrawMino(
+                            renderer,
+                            "Omino",
+                            position + new Vector2(HEIGHT * y, WIDTH * x),
+                            (float)WIDTH);
+                        #region renderer.DrawTexture(→Blockクラスの描画処理に委託
+                        //    "Omino",
+                        //    position + new Vector2(HEIGHT * y, WIDTH * x),
+                        //    null,
+                        //    (float)WIDTH,
+                        //    Vector2.Zero);
+                        #endregion
+                    }
+                    else
+                    {
+                        realRotate_Array[y, x] = new Space();
+                        ((Space)realRotate_Array[y, x]).Draw(renderer);
+                    }
+                }
+            }
+        }
         #endregion テトリミノごとの描画
 
+        /// <summary>
+        ///  初期化
+        /// </summary>
         public override void Initialize()
         {
             base.Initialize();
+
+            //各種回転用の配列を初期化
+            realRotate_Array = new Cell[4, 4]; //4×4を基本単位とする
+            imageRotate_Array =　　　　　　　　//回転検証用は実際に描画等で扱う配列を複製する
+                new Cell[
+                    realRotate_Array.GetLength(0),
+                    realRotate_Array.GetLength(1)];
+
+            position = new Vector2(WIDTH * 10, 0); //X座標が大体フィールドの真ん中らへんに来るように設定
+            IsOnLand = false; //Blockと異なりTetriminoでは偽にする
         }
 
         public override void Update(GameTime gameTime)
         {
-            base.Update(gameTime);
+            MoveX();
+            MoveY(gameTime);
         }
 
         /// <summary>
@@ -159,9 +209,9 @@ namespace PersonalProduct_2nd.Tetris_Block
             int cols = basedArray.GetLength(1); //行(縦)
             imageRotate_Array = new Cell[cols, rows]; //回転前とは行と列を逆にした配列を生成
 
-            for(int y = 0; y < rows; y++)　//回転後の配列の列に回転前の配列の行分要素を用意
+            for (int y = 0; y < rows; y++) //回転後の配列の列に回転前の配列の行分要素を用意
             {
-                for(int x = 0; x < cols; x++)　//回転後の配列の行に回転前の配列の列分要素を用意
+                for (int x = 0; x < cols; x++) //回転後の配列の行に回転前の配列の列分要素を用意
                 {
                     //回転後の配列の列は、回転前の配列の行からy(新規配列の列の生成回数)と1を引いたものに一致する
                     //知るかこの野郎
@@ -182,7 +232,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             int cols = basedArray.GetLength(1); //列(縦)
             imageRotate_Array = new Cell[cols, rows];
 
-            for(int y = 0; y < rows; y++)　//回転後の配列の列に回転前の配列の行分だけ要素を用意
+            for (int y = 0; y < rows; y++) //回転後の配列の列に回転前の配列の行分だけ要素を用意
             {
                 for (int x = 0; x < cols; x++) //回転後の配列の行に回転前の配列の列分だけ要素を用意
                 {
@@ -193,6 +243,78 @@ namespace PersonalProduct_2nd.Tetris_Block
             }
 
             return imageRotate_Array;
+        }
+
+        /// <summary>
+        /// 横移動
+        /// </summary>
+        public void MoveX()
+        {
+            if (Input.IsKeyDown(Keys.Left))
+            {
+                position.X -= WIDTH;
+            }
+            if (Input.IsKeyDown(Keys.Right))
+            {
+                position.X += WIDTH;
+            }
+        }
+
+        /// <summary>
+        /// 縦(下方向のみ)移動
+        /// </summary>
+        /// <param name="gameTime"></param>
+        public void MoveY(GameTime gameTime)
+        {
+            fallTimer.Update(gameTime);
+            if (fallTimer.TimeUP()) //専用タイマーが時間切れになったら1マス分落下
+            {
+                position.Y += Height;
+                fallTimer.Initialize();
+            }
+
+            if (Input.IsKeyDown(Keys.Down))
+            {
+                position.Y += GRAVITY;
+            }
+        }
+
+        public override void Hit(Cell other)
+        {
+            if(other is Block) //衝突対象がブロック
+            {
+                //TetriminoとBlockの衝突処理
+                hitBlock(other);
+            }
+        }
+
+        private void hitBlock(Cell cell)
+        {
+            //衝突対象の衝突面を取得
+            Direction dir = this.CheckDirection(cell);
+
+            //上面
+            if(dir == Direction.Top)
+            {
+                //衝突対象の矩形の上面の上に接する座標に
+                position.Y = cell.CellRect.Top - this.Height;
+                LandFlag = true;
+            }
+            //右面
+            else if(dir == Direction.Right)
+            {
+                position.X = cell.CellRect.Right;
+            }
+            //左面
+            else if(dir == Direction.Left)
+            {
+                position.X = cell.CellRect.Left - this.Width;
+            }
+            //下面
+            else if(dir == Direction.Bottom)
+            {
+                position.Y = cell.CellRect.Bottom;
+            }
         }
     }
 }

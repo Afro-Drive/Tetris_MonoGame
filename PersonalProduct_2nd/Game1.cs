@@ -61,7 +61,7 @@ namespace PersonalProduct_2nd
 
             #region　シーンの追加、設定
             sceneManager = new SceneManager();
-            sceneManager.AddScene(EScene.LoadScene, new LoadScene());
+            sceneManager.AddScene(EScene.LoadScene, new LoadScene(GraphicsDevice));
             sceneManager.AddScene(EScene.LogoScene, new LogoScene());
             sceneManager.AddScene(EScene.Title,     new Title());
             sceneManager.AddScene(EScene.Tutorial,  new Tutorial());
@@ -87,14 +87,43 @@ namespace PersonalProduct_2nd
             renderer.LoadContent("christmas_dance_tonakai"); //シーン遷移確認用画像
             renderer.LoadContent("black");
 
-            #region テトリミノの色データ(後で用意)
-            Texture2D tetriMino = new Texture2D(GraphicsDevice, 4, 4); //4×4のピクセルデータを生成(中身はまだ何もなし)
-            Color[] test_Mino = new Color[tetriMino.Height * tetriMino.Width];
-            for (int i = 0; i < test_Mino.Length; i++)
-                test_Mino[i] = Color.Blue;
+            #region テトリミノの色データ
+            //O(Test)
+            Texture2D mino_O = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
+            Color[] minoCol_O = new Color[1 * 1] { Color.Yellow };
+            mino_O.SetData(minoCol_O);
+            renderer.LoadContent("Omino", mino_O);
+            //T
+            Texture2D mino_T = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
+            Color[] minoCol_T = new Color[1 * 1] { Color.Purple };
+            mino_O.SetData(minoCol_T);
+            renderer.LoadContent("TMino", mino_O);
+            //I
+            Texture2D mino_I = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
+            Color[] minoCol_I = new Color[1 * 1] { Color.SkyBlue };
+            mino_I.SetData(minoCol_I);
+            renderer.LoadContent("IMino", mino_I);
+            //S
+            Texture2D mino_S = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
+            Color[] minoCol_S = new Color[1 * 1] { Color.Green };
+            mino_S.SetData(minoCol_S);
+            renderer.LoadContent("SMino", mino_S);
+            //Z
+            Texture2D mino_Z = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
+            Color[] minoCol_Z = new Color[1 * 1] { Color.Red };
+            mino_Z.SetData(minoCol_Z);
+            renderer.LoadContent("ZMino", mino_Z);
+            //J
+            Texture2D mino_J = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
+            Color[] minoCol_J = new Color[1 * 1] { Color.Blue };
+            mino_J.SetData(minoCol_J);
+            renderer.LoadContent("JMino", mino_J);
+            //L          
+            Texture2D mino_L = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
+            Color[] minoCol_L = new Color[1 * 1] { Color.Blue };
+            mino_L.SetData(minoCol_L);
+            renderer.LoadContent("JMino", mino_L);
 
-            tetriMino.SetData(test_Mino);
-            renderer.LoadContent("tetriMino", tetriMino);
             #endregion テトリミノの色データ
 
             // この上にロジックを記述

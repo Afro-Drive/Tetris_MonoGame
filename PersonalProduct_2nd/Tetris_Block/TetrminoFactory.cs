@@ -60,7 +60,8 @@ namespace PersonalProduct_2nd.Tetris_Block
             #endregion フィールドに排出されていないため不要
 
             Emission(); //落下させるMinoを決定
-            currentMino.Update(gameTime);　//落下中のMinoの動作処理
+            if (currentMino == null) return;
+            else currentMino.Update(gameTime);　//落下中のMinoの動作処理
         }
 
         /// <summary>
@@ -106,7 +107,11 @@ namespace PersonalProduct_2nd.Tetris_Block
             //ランダムで管理ListからMinoを選択
             //リストの要素数内で乱数を生成
             int index = rand.Next(0, mino_List.Count);
-            currentMino = mino_List[index]; //落下状態のミノに代入
+            //リストの要素が0以下になったら何もしない
+            if (mino_List.Count <= 0)
+                return;
+            else
+                currentMino = mino_List[index]; //落下状態のミノに代入
             mino_List.RemoveAt(index); //一度排出したミノはリストから削除する
         }
 
@@ -127,6 +132,14 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             //blocks.RemoveAll(player => player.IsDead());
             //spaces.RemoveAll(enemy => enemy.IsDead());
+        }
+
+        /// <summary>
+        /// 現在落下中のテトリミノ取得のプロパティ
+        /// </summary>
+        public Tetrimino FallingMino
+        {
+            get { return currentMino; }
         }
     }
 }

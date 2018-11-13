@@ -6,32 +6,49 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using static PersonalProduct_2nd.Tetris_Block.Tetrimino;
 
 namespace PersonalProduct_2nd.Tetris_Block
 {
     /// <summary>
     /// Blockクラスに囲まれ、TetriMinoを積み重ねるプレイエリアクラス
+    /// (Actionソリューションをお手本に作成)
     /// 作成者:谷永吾
     /// 作成開始日:2018年11月7日
     /// </summary>
     class LineField
     {
+        #region フィールド
         //ListのListで縦横の２次元配列的構造
         private List<List<Cell>> mapList;
         private DeviceManager deviceManager; //ゲームデバイス
         private TetrminoFactory factory; //Tetriminoオブジェクト生産者
         private IGameMediator mediator; //ゲーム仲介者
+        #endregion フィールド
 
+        /// <summary>
+        ///　コンストラクタ
+        /// </summary>
+        /// <param name="device"></param>
+        /// <param name="mediator"></param>
         public LineField(DeviceManager device, IGameMediator mediator)
         {
             mapList = new List<List<Cell>>();//マップの実態生成
             this.mediator = mediator;
             deviceManager = device;
+
+            Initialize();
+        }
+
+        public void Initialize()
+        {
             factory = new TetrminoFactory(mediator);
+            factory.AddMino(new Tetrimino(Form_mino.Test, mediator));
         }
 
         /// <summary>
         /// CSVファイルに合わせてブロックの追加
+        /// (フィールドmapListの要素内の文字列型配列をここで更に分析)
         /// </summary>
         /// <param name="lineCnt"></param>
         /// <param name="line"></param>
@@ -56,11 +73,12 @@ namespace PersonalProduct_2nd.Tetris_Block
                 {
                     //ディクショナリから元データを取り出し、クローン機能で複製
                     Cell work = (Cell)cellDict[s].Clone();
+                    if (cellDict[s] is Block) ((Block)cellDict[s]).IsOnLand = true;
                     //1列の要素を１ブロックずつ配置する
-                    work.Position = (new Vector2(colCnt * work.Width, lineCnt * work.Height));
+                    work.Position = new Vector2(colCnt * work.Width, lineCnt * work.Height);
                     workList.Add(work);
                 }
-                catch (Exception e)
+                catch (Exception e)　//例外処理
                 {
                     Console.WriteLine(e);
                 }
@@ -72,6 +90,7 @@ namespace PersonalProduct_2nd.Tetris_Block
 
         /// <summary>
         /// CSVReaderを使ってMapの読み込み
+        /// (フィールドのmapListの要素を分析)
         /// </summary>
         /// <param name="filename"></param>
         /// <param name="path"></param>
@@ -85,6 +104,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             //1行ごとにmapListに追加していく
             for (int lineCnt = 0; lineCnt < data.Count(); lineCnt++)
             {
+                //ここで更にListの要素の配列をひとつずつ処理する
                 mapList.Add(addBlock(lineCnt, data[lineCnt]));
             }
         }
@@ -114,6 +134,8 @@ namespace PersonalProduct_2nd.Tetris_Block
                     cell.Update(gameTime);
                 }
             }
+
+            factory.Update(gameTime);
         }
 
         /// <summary>
@@ -124,8 +146,8 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             Point work = cell.CellRect.Location;//左上の座標を取得
             //配列の何行何列目にいるか計算
-            int x = work.X / 32;
-            int y = work.Y / 32;
+            int x = work.X / cell.Width;
+            int y = work.Y / cell.Height;
 
             //移動で食い込んでいる時の修正
             if (x < 1)
@@ -154,7 +176,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                         continue;
 
                     //衝突判定(CellがBlockの場合)
-                    if (cll.IsCollision(cell))
+                    if (cll.IsCollision(cell) || ((Block)cll).IsOnLand)
                         cell.Hit(cll);
                 }
             }
@@ -166,13 +188,28 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <param name="renderer"></param>
         public void Draw(Renderer renderer)
         {
+            //Vector2 basePos = new Vector2(100, 250);  //枠を移動させる時にまたどうぞ          
             //すべてのオブジェクト(Block, Space)を要素一つずつ描画していく
             //maplistは二重配列的構造よりループは2重となる
             foreach (var line in mapList) //line is List<Cell>型
             {
-                foreach (var cell in line) //cell is Cell型
+                foreach (var cell in line) //cell is Cell型{
+                {
                     cell.Draw(renderer);
+                }
             }
+
+            //Tetriminoの描画(Factoryを経由)
+            factory.Draw(renderer);
+        }
+
+        /// <summary>
+        /// フィールド内の落下中のテトリミノ取得のプロパティ
+        /// (所有するTetriminoFactoryから取得)
+        /// </summary>
+        public Tetrimino ActiveMino
+        {
+            get { return factory.FallingMino; }
         }
     }
 }
