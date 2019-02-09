@@ -22,7 +22,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         /// <param name="mediator">ゲーム仲介者</param>
         public Space()
-            : base("")
+            : base()
         { }
 
         public Space(Space other)
@@ -60,5 +60,8 @@ namespace PersonalProduct_2nd.Tetris_Block
         {            
         }
 
+        public override void Hit(Cell other)
+        {
+        }
     }
 }

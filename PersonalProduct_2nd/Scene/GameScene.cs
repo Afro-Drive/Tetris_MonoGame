@@ -21,7 +21,9 @@ namespace PersonalProduct_2nd.Scene
         private LineField field; //プレイエリアのフィールド
 
         private DeviceManager device;//デバイス管理者
-        private SoundManager sound; //サウンド管理者      
+        private SoundManager sound; //サウンド管理者  
+
+        private Tetrimino tetrimino; //テトリミノ
 
         /// <summary>
         /// コンストラクタ
@@ -40,10 +42,8 @@ namespace PersonalProduct_2nd.Scene
         /// </summary>
         public void Draw(Renderer renderer)
         {
-            renderer.DrawTexture("christmas_dance_tonakai", new Vector2(750, 0));
             field.Draw(renderer);
-
-            //tetriminoFactory.Draw(renderer);　//LineFieldに委託
+            tetrimino.Draw(renderer);
         }
 
         /// <summary>
@@ -52,12 +52,10 @@ namespace PersonalProduct_2nd.Scene
         public void Initialize()
         {
             isEndFlag = false;
-            field = new LineField(device, this);
+            field = new LineField(device);
             field.Load("LineField.csv", "./csv/"); //フィールド元のファイルの読み込み
-            
-            //LineFieldに委託
-            //tetriminoFactory.AddMino(new Tetrimino(Form_mino.Test, this));
-            //tetriminoFactory.Initialize();
+
+            tetrimino = new Tetrimino();
         }
 
         /// <summary>
@@ -75,7 +73,7 @@ namespace PersonalProduct_2nd.Scene
         /// <returns>シーンオブジェクトに対応する列挙型</returns>
         public EScene Next()
         {
-            return EScene.Result;
+            return EScene.LoadScene;
         }
 
         /// <summary>
@@ -90,12 +88,13 @@ namespace PersonalProduct_2nd.Scene
         /// </summary>
         public void Update(GameTime gameTime)
         {
-            if (Input.IskeyDown(Keys.Enter))
-                isEndFlag = true;
+            //if (Input.IskeyDown(Keys.Enter))
+            //    isEndFlag = true;
+
+            tetrimino.Update(gameTime);
+            field.Hit(tetrimino); //表示したテトリミノが接触してないか確認
+
             field.Update(gameTime);
-            //LineFieldに委託
-            //tetriminoFactory.Update(gameTime);
-            field.Hit(field.ActiveMino);
         }
     }
 }

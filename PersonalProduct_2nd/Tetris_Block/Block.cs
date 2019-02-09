@@ -15,11 +15,6 @@ namespace PersonalProduct_2nd.Tetris_Block
     /// </summary>
     class Block : Cell
     {
-        protected bool onFieldFlag; //画面内表示フラグ
-        protected bool LandFlag;//着地確定フラグ
-        protected Timer fallTimer; //自動落下タイマー
-        protected Timer landTimer; //着地後の操作猶予時間
-
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -28,8 +23,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         public Block()
             : base("black")
         {
-            onFieldFlag = true ;
-            LandFlag = true;
         }
 
         /// <summary>
@@ -54,20 +47,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public override void Initialize()
         {
-            onFieldFlag = true;
-            LandFlag = true;
-            landTimer = new CountDown_Timer(2f);
-            fallTimer = new CountDown_Timer(1.2f);
-        }
-
-        /// <summary>
-        /// 着地確定フラグのプロパティ
-        /// (取得・設定両方)
-        /// </summary>
-        public bool IsOnLand
-        {
-            get { return LandFlag; }
-            set { LandFlag = value; }
         }
 
         /// <summary>
@@ -92,6 +71,10 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime)
+        {
+        }
+
+        public override void Hit(Cell other)
         {
         }
     }

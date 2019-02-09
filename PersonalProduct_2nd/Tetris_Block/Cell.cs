@@ -19,28 +19,38 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <summary>
         /// 衝突した矩形(マス)の面の列挙型
         /// </summary>
-        public enum  Direction { Top, Bottom, Right, Left }
+        public enum Direction { Top, Bottom, Right, Left }
         protected string assetName;　//使用画像のアセット名
         protected Vector2 position;
         //マス目関連
-        protected Rectangle CellArea; //マス目の矩形
-        public static readonly int WIDTH = 32;　//縦(静的メンバ)
-        public static readonly int HEIGHT = 32;　//横（静的メンバ）
+        //protected Rectangle CellArea; //マス目の矩形
+        public static readonly int WIDTH = 64;　//縦(静的メンバ)
+        public static readonly int HEIGHT = 64;　//横（静的メンバ）
         #endregion フィールド
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="name">使用画像のアセット名</param>
-        public Cell(string name)
+        public Cell()
         {
             //各種メンバの初期化
-            this.assetName = name;
+            //this.assetName = name;
             position = Vector2.Zero;
-            //マス目を生成
-            CellArea = new Rectangle(
-                new Point((int)position.X, (int)position.Y),
-                new Point(WIDTH, HEIGHT));
+            //マス目を生成→これだと値型で現在座標に即した位置に矩形を作らないため削除
+            //代わりに改めて現在位置に矩形を生成して取得するメソッドを追加
+            //CellArea = new Rectangle(
+            //    new Point((int)position.X, (int)position.Y),
+            //    new Point(WIDTH, HEIGHT));
+        }
+
+        /// <summary>
+        /// 引数アリのコンストラクタ
+        /// </summary>
+        /// <param name="assetName"></param>
+        public Cell(string assetName)
+        {
+            this.assetName = assetName;
         }
 
         /// <summary>
@@ -57,10 +67,10 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <summary>
         /// 当たり判定の横幅の取得プロパティ
         /// </summary>
-    　　public int Width
+        public int Width
         {
             get { return WIDTH; }
-        } 
+        }
 
         /// <summary>
         /// 当たり判定の縦の大きさの取得プロパティ
@@ -70,18 +80,10 @@ namespace PersonalProduct_2nd.Tetris_Block
             get { return HEIGHT; }
         }
 
-        /// <summary>
-        /// 矩形当たり判定の取得プロパティ
-        /// </summary>
-        public Rectangle CellRect
-        {
-            get { return CellArea; }
-        }
-
         public Direction CheckDirection(Cell otherCell)
         {
-            Point thisCenter = this.CellArea.Center;//自分の中心位置を代入
-            Point otherCenter = otherCell.CellArea.Center;//相手の中心位置を代入
+            Point thisCenter = this.GetHitArea().Center;//自分の中心位置を代入
+            Point otherCenter = otherCell.GetHitArea().Center;//相手の中心位置を代入
 
             //向きのベクトルを取得
             Vector2 dir =
@@ -110,23 +112,26 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// 当たり判定の矩形エリアをの取得
+        /// </summary>
+        /// <returns></returns>
+        public virtual Rectangle GetHitArea()
+        {
+            Rectangle hitArea = new Rectangle(
+                                    new Point((int)position.X, (int)position.Y),
+                                    new Point(WIDTH, HEIGHT));
+
+            return hitArea;
+        }
+
+        /// <summary>
         /// 自分と相手の当たり判定
         /// </summary>
         /// <param name="otherCell">衝突してくる別のCellオブジェクト</param>
         /// <returns></returns>
         public bool IsCollision(Cell otherCell)
         {
-            return CellArea.Intersects(otherCell.CellArea);
-        }
-
-        /// <summary>
-        /// 衝突処理
-        /// (なんか音でも鳴らす予定)
-        /// </summary>
-        /// <param name="other"></param>
-        public virtual void Hit(Cell other)
-        {
-            
+            return GetHitArea().Intersects(otherCell.GetHitArea());
         }
 
         /// <summary>
@@ -139,6 +144,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         //抽象メソッド群
+        public abstract void Hit(Cell other);
         public abstract void Update(GameTime gameTime);//更新処理
         public abstract void Initialize();//初期化処理
         public abstract object Clone(); //オブジェクトのクローン

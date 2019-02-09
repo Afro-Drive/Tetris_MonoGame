@@ -50,7 +50,6 @@
     <Compile Include="Tetris_Block\LineField.cs" />
     <Compile Include="Tetris_Block\Tetrimino.cs" />
     <Compile Include="Tetris_Block\Mino_Array.cs" />
-    <Compile Include="Tetris_Block\TetrminoFactory.cs" />
     <Compile Include="Tetris_Block\Space.cs" />
     <Compile Include="Tetris_Block\Block.cs" />
     <Compile Include="Define\Screen.cs" />

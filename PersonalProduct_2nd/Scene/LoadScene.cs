@@ -110,7 +110,7 @@ namespace PersonalProduct_2nd.Scene
         /// <returns>ロゴシーン</returns>
         public EScene Next()
         {
-            return EScene.LogoScene;
+            return EScene.GameScene;
         }
 
         /// <summary>

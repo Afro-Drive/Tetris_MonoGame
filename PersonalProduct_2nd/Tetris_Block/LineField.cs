@@ -22,19 +22,15 @@ namespace PersonalProduct_2nd.Tetris_Block
         //ListのListで縦横の２次元配列的構造
         private List<List<Cell>> mapList;
         private DeviceManager deviceManager; //ゲームデバイス
-        private TetrminoFactory factory; //Tetriminoオブジェクト生産者
-        private IGameMediator mediator; //ゲーム仲介者
         #endregion フィールド
 
         /// <summary>
         ///　コンストラクタ
         /// </summary>
         /// <param name="device"></param>
-        /// <param name="mediator"></param>
-        public LineField(DeviceManager device, IGameMediator mediator)
+        public LineField(DeviceManager device)
         {
             mapList = new List<List<Cell>>();//マップの実態生成
-            this.mediator = mediator;
             deviceManager = device;
 
             Initialize();
@@ -42,8 +38,6 @@ namespace PersonalProduct_2nd.Tetris_Block
 
         public void Initialize()
         {
-            factory = new TetrminoFactory(mediator);
-            factory.AddMino(new Tetrimino(Form_mino.Test, mediator));
         }
 
         /// <summary>
@@ -73,7 +67,6 @@ namespace PersonalProduct_2nd.Tetris_Block
                 {
                     //ディクショナリから元データを取り出し、クローン機能で複製
                     Cell work = (Cell)cellDict[s].Clone();
-                    if (cellDict[s] is Block) ((Block)cellDict[s]).IsOnLand = true;
                     //1列の要素を１ブロックずつ配置する
                     work.Position = new Vector2(colCnt * work.Width, lineCnt * work.Height);
                     workList.Add(work);
@@ -134,8 +127,6 @@ namespace PersonalProduct_2nd.Tetris_Block
                     cell.Update(gameTime);
                 }
             }
-
-            factory.Update(gameTime);
         }
 
         /// <summary>
@@ -144,7 +135,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <param name="cell">基準となるセルオブジェクト</param>
         public void Hit(Cell cell)
         {
-            Point work = cell.CellRect.Location;//左上の座標を取得
+            Point work = cell.GetHitArea().Location;//左上の座標を取得
             //配列の何行何列目にいるか計算
             int x = work.X / cell.Width;
             int y = work.Y / cell.Height;
@@ -171,13 +162,62 @@ namespace PersonalProduct_2nd.Tetris_Block
                     //その場所のオブジェクトを取得(調べる相手)
                     Cell cll = mapList[row][col];
 
-                    //objがSpaceクラスのオブジェクトなら次へ
+                    //Spaceクラスのオブジェクトなら次へ
                     if (cll is Space)
                         continue;
 
-                    //衝突判定(CellがBlockの場合)
-                    if (cll.IsCollision(cell) || ((Block)cll).IsOnLand)
-                        cell.Hit(cll);
+                    if (cll is Block)
+                        cell.Hit(cll); //引数のCellオブジェクトはその隣り合うCellオブジェクトに衝突した
+                }
+            }
+        }
+        /// <summary>
+        /// テトリミノとの衝突判定・衝突後処理
+        /// </summary>
+        /// <param name="cell">基準となるセルオブジェクト</param>
+        public void Hit(Tetrimino tetrimino)
+        {
+            //当たり判定を格納した配列を受け取る
+            Rectangle[] checkArray = tetrimino.GetHitArea();
+
+            //テトリミノの当たり判定を一つずつ確認
+            for (int i = 0; i < checkArray.Length; i++)
+            {
+                //左上の座標を取得
+                Point work = checkArray[i].Location;
+
+                //配列の何行何列目にいるか計算
+                int x = work.X / Cell.WIDTH;
+                int y = work.Y / Cell.HEIGHT;
+
+                //移動で食い込んでいる時の修正
+                if (x < 1)
+                    x = 1;
+                if (y < 1)
+                    y = 1;
+
+                Range yRange = new Range(0, mapList.Count() - 1); //行の範囲(配列番号に対応)
+                Range xRange = new Range(0, mapList[0].Count() - 1); //列の範囲(配列番号に対応)
+
+                //引数cellの周りの8つのセルに衝突対象がないかどうか確認(テトリミノのブロックごとに改良する必要ありか？)
+                for (int row = y - 1; row <= (y + 1); row++) //自分の上と下のセル
+                {
+                    for (int col = x - 1; col <= (x + 1); col++) //自分の右と左のセル
+                    {
+                        //配列外なら何もしない
+                        if (xRange.IsOutOfRange(col) || yRange.IsOutOfRange(row))
+                            continue;
+
+                        //その場所のオブジェクトを取得(調べる相手)
+                        Cell cll = mapList[row][col];
+
+                        //Spaceクラスのオブジェクトなら次へ
+                        if (cll is Space)
+                            continue;
+
+                        if (cll is Block)
+                            tetrimino.Hit(cll); //引数のTetriminoオブジェクトはその隣り合うCellオブジェクトに衝突した
+                    }
                 }
             }
         }
@@ -188,7 +228,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <param name="renderer"></param>
         public void Draw(Renderer renderer)
         {
-            //Vector2 basePos = new Vector2(100, 250);  //枠を移動させる時にまたどうぞ          
+            Vector2 basePos = new Vector2(100, 250);  //枠を移動させる時にまたどうぞ          
             //すべてのオブジェクト(Block, Space)を要素一つずつ描画していく
             //maplistは二重配列的構造よりループは2重となる
             foreach (var line in mapList) //line is List<Cell>型
@@ -198,18 +238,6 @@ namespace PersonalProduct_2nd.Tetris_Block
                     cell.Draw(renderer);
                 }
             }
-
-            //Tetriminoの描画(Factoryを経由)
-            factory.Draw(renderer);
-        }
-
-        /// <summary>
-        /// フィールド内の落下中のテトリミノ取得のプロパティ
-        /// (所有するTetriminoFactoryから取得)
-        /// </summary>
-        public Tetrimino ActiveMino
-        {
-            get { return factory.FallingMino; }
         }
     }
 }
