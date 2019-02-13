@@ -41,6 +41,8 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Define\Size.cs" />
+    <Compile Include="Device\ArrayRenderer.cs" />
     <Compile Include="Device\BGM_Loader.cs" />
     <Compile Include="Device\CSVReader.cs" />
     <Compile Include="Device\Loader.cs" />

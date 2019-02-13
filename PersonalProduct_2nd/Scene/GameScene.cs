@@ -23,8 +23,6 @@ namespace PersonalProduct_2nd.Scene
         private DeviceManager device;//デバイス管理者
         private SoundManager sound; //サウンド管理者  
 
-        private Tetrimino tetrimino; //テトリミノ
-
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -43,7 +41,7 @@ namespace PersonalProduct_2nd.Scene
         public void Draw(Renderer renderer)
         {
             field.Draw(renderer);
-            tetrimino.Draw(renderer);
+            //tetrimino.Draw(renderer);
         }
 
         /// <summary>
@@ -55,7 +53,7 @@ namespace PersonalProduct_2nd.Scene
             field = new LineField(device);
             field.Load("LineField.csv", "./csv/"); //フィールド元のファイルの読み込み
 
-            tetrimino = new Tetrimino();
+            //tetrimino = new Tetrimino();
         }
 
         /// <summary>
@@ -91,8 +89,8 @@ namespace PersonalProduct_2nd.Scene
             //if (Input.IskeyDown(Keys.Enter))
             //    isEndFlag = true;
 
-            tetrimino.Update(gameTime);
-            field.Hit(tetrimino); //表示したテトリミノが接触してないか確認
+            //tetrimino.Update(gameTime);
+            //field.Hit(tetrimino); //表示したテトリミノが接触してないか確認
 
             field.Update(gameTime);
         }

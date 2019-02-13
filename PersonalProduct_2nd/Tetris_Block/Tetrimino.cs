@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
+using PersonalProduct_2nd.Define;
 using PersonalProduct_2nd.Device;
 using PersonalProduct_2nd.Utility;
 
@@ -21,16 +22,16 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <summary>
         /// テトリミノの種類列挙型
         /// </summary>
-        enum Form_mino
-        { I = 1, T, J, L, S, Z, O, }
+        public enum Form_mino
+        { I, T, J, L, S, Z, O, }
         private Form_mino form;
 
         /// <summary>
         /// テトリミノの種類ごとの描画するアセット名の列挙型
         /// </summary>
-        enum blk_Col
-        { mino_I = 1, mino_T, mino_J, mino_L, mino_S, mino_Z, mino_O, }
-        private blk_Col col;
+        public enum blk_Col
+        { mino_I, mino_T, mino_J, mino_L, mino_S, mino_Z, mino_O, }
+         blk_Col col;
 
         private int[,] rotate_Array; //回転処理用配列
         //private Cell[,] imageRotate_Array; //回転可能か検証する用の配列
@@ -38,6 +39,8 @@ namespace PersonalProduct_2nd.Tetris_Block
         private float GRAVITY = 5f; //重力
         private SoundManager sound; //動作音用
         private IGameMediator mediator; //ゲーム仲介者
+
+        private ArrayRenderer arrayRenderer; //二次元配列描画用オブジェクト
         #endregion フィールド
 
         /// <summary>
@@ -62,27 +65,40 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public override void Initialize()
         {
-            //各種回転用の配列を初期化
-            //I型
-            rotate_Array = new int[5, 5]
-            {
-                { 0, 0, 1, 0, 0 },
-                { 0, 0, 1, 0, 0 },
-                { 0, 0, 1, 0, 0 },
-                { 0, 0, 1, 0, 0 },
-                { 0, 0, 0, 0, 0 },
-            }; //5×5を基本単位とする(奇数の方が回転の中心を取りやすい)
+            //型を指定
+            form = Form_mino.I;　//今はI型にしておく
+            //使用色ブロックを指定(formの値に対応した色を指定する)
+            col = (blk_Col)((int)form);
 
-            //使用するアセットの初期化
-            assetName = "mino_I";
+            //回転用配列を初期化
+            rotate_Array = Mino_Array.mino_Data[(int)form]; //要素番号と列挙型のメンバの値とのズレをなくして指定
+            #region データクラスから持ってくる処理に変更
+            //rotate_Array = new int[5, 5] 
+            //{
+            //    { 0, 0, 1, 0, 0 },
+            //    { 0, 0, 1, 0, 0 },
+            //    { 0, 0, 1, 0, 0 },
+            //    { 0, 0, 1, 0, 0 },
+            //    { 0, 0, 0, 0, 0 },
+            //}; //5×5を基本単位とする(奇数の方が回転の中心を取りやすい)
+            #endregion データクラスから持ってくる処理に変更
 
-            position = new Vector2(WIDTH * 10, 0); //X座標が大体フィールドの真ん中らへんに来るように設定
+            ////使用するアセットの初期化(formに応じて指定できるように変更したため削除)
+            //assetName = form.ToString();
+
+            //LineFieldの枠とズレるため削除
+            position = new Vector2(Size.WIDTH * 10, Size.HEIGHT * 3); //X座標が大体フィールドの真ん中らへんに来るように設定
+
+            //配列描画オブジェクトを生成・使用配列を指定
+            //コンストラクタの引数がLineFieldで生成したArrayRendererのものと紐づける方法を考える
+            arrayRenderer = new ArrayRenderer(new Vector2(Size.WIDTH * 2, Size.HEIGHT * 1));
+            arrayRenderer.SetData(Mino_Array.mino_Data[(int)form]);
         }
 
         public override void Update(GameTime gameTime)
         {
-            MoveX();
-            MoveY(gameTime);
+            //MoveX();
+            //MoveY(gameTime);
         }
 
         /// <summary>
@@ -133,37 +149,63 @@ namespace PersonalProduct_2nd.Tetris_Block
         //}
 
         /// <summary>
-        /// 横移動
+        /// 横移動→キー入力と移動確認をLineFieldに委託
         /// </summary>
-        public void MoveX()
+        //public void MoveX()
+        //{
+        //    //左移動
+        //    if (Input.GetKeyTrigger(Keys.Left))
+        //    {
+        //        position.X -= Size.WIDTH;
+        //    }
+        //    //右移動
+        //    if (Input.GetKeyTrigger(Keys.Right))
+        //    {
+        //        position.X += Size.WIDTH;
+        //    }
+        //}
+
+        /// <summary>
+        /// 右へ移動
+        /// </summary>
+        public void MoveR()
         {
-            if (Input.GetKeyTrigger(Keys.Left))
-            {
-                position.X -= WIDTH;
-            }
-            if (Input.GetKeyTrigger(Keys.Right))
-            {
-                position.X += WIDTH;
-            }
+            position.X += Size.WIDTH;
         }
 
         /// <summary>
-        /// 縦(下方向のみ)移動
+        /// 左へ移動
+        /// </summary>
+        public void MoveL()
+        {
+            position.X -= Size.WIDTH;
+        }
+
+        /// <summary>
+        /// 縦(下方向のみ)移動→キー入力・移動確認をLineFieldに委託
         /// </summary>
         /// <param name="gameTime"></param>
-        public void MoveY(GameTime gameTime)
-        {
-            //fallTimer.Update(gameTime);
-            //if (fallTimer.TimeUP()) //専用タイマーが時間切れになったら1マス分落下
-            //{
-            //    position.Y += Height;
-            //    fallTimer.Initialize();
-            //}
+        //public void MoveY(GameTime gameTime)
+        //{
+        //    //fallTimer.Update(gameTime);
+        //    //if (fallTimer.TimeUP()) //専用タイマーが時間切れになったら1マス分落下
+        //    //{
+        //    //    position.Y += Height;
+        //    //    fallTimer.Initialize();
+        //    //}
 
-            if (Input.IsKeyDown(Keys.Down))
-            {
-                position.Y += GRAVITY;
-            }
+        //    if (Input.IsKeyDown(Keys.Down))
+        //    {
+        //        position.Y += GRAVITY;
+        //    }
+        //}
+
+        /// <summary>
+        /// 下へ移動
+        /// </summary>
+        public void MoveDown()
+        {
+            position.Y += Size.HEIGHT;
         }
 
         public override void Hit(Cell other)
@@ -180,7 +222,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             if (dir == Direction.Top)
             {
                 //衝突対象の矩形の上面の上に接する座標に
-                position.Y = cell.GetHitArea().Top - this.Height;
+                position.Y = cell.GetHitArea().Top - Size.HEIGHT;
             }
             //右面
             else if (dir == Direction.Right)
@@ -190,7 +232,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             //左面
             else if (dir == Direction.Left)
             {
-                position.X = cell.GetHitArea().Left - this.Width;
+                position.X = cell.GetHitArea().Left - Size.WIDTH;
             }
             //下面
             else if (dir == Direction.Bottom)
@@ -210,48 +252,52 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <param name="renderer"></param>
         public override void Draw(Renderer renderer)
         {
-            //回転用配列の要素番号に合わせて描画する
-            for (int y = 0; y < rotate_Array.GetLength(0); y++)
-            {
-                for (int x = 0; x < rotate_Array.GetLength(1); x++)
-                {
-                    //要素番号によって使用するアセットを設定
-                    switch (rotate_Array[y, x])
-                    {
-                        case 0:
-                            assetName = "";
-                            break;
-                        case 1:
-                            assetName = "mino_I";
-                            break;
-                        case 2:
-                            assetName = "mino_T";
-                            break;
-                        case 3:
-                            assetName = "mino_J";
-                            break;
-                        case 4:
-                            assetName = "mino_L";
-                            break;
-                        case 5:
-                            assetName = "mino_S";
-                            break;
-                        case 6:
-                            assetName = "mino_Z";
-                            break;
-                        case 7:
-                            assetName = "mino_O";
-                            break;
-                    }
+            //配列描画オブジェクトに描画を委託
+            arrayRenderer.RenderTetrimino(renderer, position, col);
 
-                    if (rotate_Array[y, x] == 0) continue; //要素が0の場合は飛ばす
+            #region 回転用配列の要素番号に合わせて描画する→二次元配列描画クラスに委託
+            //for (int y = 0; y < rotate_Array.GetLength(0); y++)
+            //{
+            //    for (int x = 0; x < rotate_Array.GetLength(1); x++)
+            //    {
+            //        //要素番号によって使用するアセットを設定
+            //        switch (rotate_Array[y, x])
+            //        {
+            //            case 0:
+            //                assetName = "";
+            //                break;
+            //            case 1:
+            //                assetName = "mino_I";
+            //                break;
+            //            case 2:
+            //                assetName = "mino_T";
+            //                break;
+            //            case 3:
+            //                assetName = "mino_J";
+            //                break;
+            //            case 4:
+            //                assetName = "mino_L";
+            //                break;
+            //            case 5:
+            //                assetName = "mino_S";
+            //                break;
+            //            case 6:
+            //                assetName = "mino_Z";
+            //                break;
+            //            case 7:
+            //                assetName = "mino_O";
+            //                break;
+            //        }
 
-                    //設定したアセットで座標を指定して描画する
-                    renderer.DrawTexture(
-                        assetName,
-                        new Vector2(position.X + 64 * x, position.Y + 64 * y));
-                }
-            }
+            //        if (rotate_Array[y, x] == 0) continue; //要素が0の場合は飛ばす
+
+            //        //設定したアセットで座標を指定して描画する
+            //        renderer.DrawTexture(
+            //            assetName,
+            //            new Vector2(position.X + 64 * x, position.Y + 64 * y));
+            //    }
+            //}
+            #endregion　回転用配列の要素番号に合わせて描画する→二次元配列描画クラスに委託
         }
 
         /// <summary>
@@ -282,6 +328,34 @@ namespace PersonalProduct_2nd.Tetris_Block
             hitArea_Array = hitAreas.ToArray();
             //変換した配列を返却
             return hitArea_Array;
+        }
+
+        /// <summary>
+        /// 回転配列の中心位置からのテトリミノの構成ブロックの相対位置の取得
+        /// </summary>
+        /// <returns>ミノの1ブロックの座標を格納したリスト</returns>
+        public List<Vector2> GetMinoUnitPos()
+        {
+            //ミノのユニット位置格納用リストの生成
+            List<Vector2> list_UnitPos = new List<Vector2>();
+
+            //回転用配列の要素を一つずつ確認
+            for (int y = 0; y < rotate_Array.GetLength(0); y++)
+            {
+                for (int x = 0; x < rotate_Array.GetLength(1); x++)
+                {
+                    //テトリミノを構成するブロック(＝空白でない)ならば
+                    if (rotate_Array[y, x] != 0)
+                    {
+                        //[2,2]を基準とした相対座標をリストに追加
+                        list_UnitPos.Add(
+                            new Vector2(Size.WIDTH * (x - 2), Size.HEIGHT * (y - 2))
+                            );
+                    }
+                }
+            }
+            //リストを返却
+            return list_UnitPos;
         }
     }
 }

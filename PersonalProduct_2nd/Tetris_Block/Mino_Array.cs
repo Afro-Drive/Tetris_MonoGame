@@ -1,4 +1,5 @@
-﻿using System;
+﻿using PersonalProduct_2nd.Define;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,73 +14,80 @@ namespace PersonalProduct_2nd.Tetris_Block
     /// </summary>
     static class Mino_Array
     {
-        #region Tetrimino専用の配列(４×４が基本単位)
+        #region Tetrimino専用の配列(5×5が基本単位)
         public static List<int[,]> mino_Data = new List<int[,]>()
         {
             //Iミノ
             new int[,]
             {
-                { 0, 2, 0, 0 },
-                { 0, 2, 0, 0 },
-                { 0, 2, 0, 0 },
-                { 0, 2, 0, 0 }
+                { 0, 0, 1, 0, 0 },
+                { 0, 0, 1, 0, 0 },
+                { 0, 0, 1, 0, 0 },
+                { 0, 0, 1, 0, 0 },
+                { 0, 0, 0, 0, 0 },
             },
 
             //T
             new int[,]
             {
-                { 0, 0, 0, 0 },
-                { 0, 2, 0, 0 },
-                { 0, 2, 2, 0 },
-                { 0, 2, 0, 0 }
+                { 0, 0, 0, 0, 0 },
+                { 0, 0, 2, 0, 0 },
+                { 0, 2, 2, 2, 0 },
+                { 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0 },
             },
 
             //J
             new int[,]
             {
-                { 0, 0, 0, 0 },
-                { 0, 2, 2, 0 },
-                { 0, 2, 0, 0 },
-                { 0, 2, 0, 0 }
+                { 0, 0, 3, 0, 0 },
+                { 0, 0, 3, 0, 0 },
+                { 0, 3, 3, 0, 0 },
+                { 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0 },
             },
 
             //L
             new int[,]
             {
-                { 0, 0, 0, 0 },
-                { 0, 2, 2, 0 },
-                { 0, 0, 2, 0 },
-                { 0, 0, 2, 0 }
+                { 0, 0, 4, 0, 0 },
+                { 0, 0, 4, 0, 0 },
+                { 0, 0, 4, 4, 0 },
+                { 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0 },
             },
 
             //S
             new int[,]
             {
-                { 0, 0, 0, 0 },
-                { 0, 0, 2, 2 },
-                { 0, 2, 2, 0 },
-                { 0, 0, 0, 0 }
+                { 0, 0, 0, 0, 0 },
+                { 0, 0, 5, 5, 0 },
+                { 0, 5, 5, 0, 0 },
+                { 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0 },
             },
 
             //Z
             new int[,]
             {
-                { 0, 0, 0, 0 },
-                { 2, 2, 0, 0 },
-                { 0, 2, 2, 0 },
-                { 0, 0, 0, 0 }
+                { 0, 0, 0, 0, 0 },
+                { 0, 6, 6, 0, 0 },
+                { 0, 0, 6, 6, 0 },
+                { 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0 },
             },
 
-            //O(Test)
+            //O
             new int[,]
             {
-                { 0, 0, 0, 0 },
-                { 0, 2, 2, 0 },
-                { 0, 2, 2, 0 },
-                { 0, 0, 0, 0 }
+                { 0, 0, 0, 0, 0 },
+                { 0, 7, 7, 0, 0 },
+                { 0, 7, 7, 0, 0 },
+                { 0, 0, 0, 0, 0 },
+                { 0, 0, 0, 0, 0 },
             },
         };
-        #endregion Tetrimino専用の配列(４×４が基本単位)
+        #endregion Tetrimino専用の配列(5×5が基本単位)
 
         /// <summary>
         /// 各種テトリミノの長さの取得
@@ -88,11 +96,11 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <returns>指定テトリミノの縦の長さ</returns>
         public static int Length(int form)
         {
-            int sides = Cell.HEIGHT; //一辺の長さ(Cellの縦の長さで初期化)
+            int sides = Size.HEIGHT; //一辺の長さ(Cellの縦の長さで初期化)
             //管理リスト内の指定配列の縦の要素数分さらに加算
             for (int i = 0; i < mino_Data[form].GetLength(0); i++)
             {
-                sides += Cell.HEIGHT;
+                sides += Size.HEIGHT;
             }
             return sides;
         }

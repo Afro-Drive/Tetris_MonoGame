@@ -1,4 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using PersonalProduct_2nd.Define;
 using PersonalProduct_2nd.Device;
 using PersonalProduct_2nd.Utility;
 using System;
@@ -22,6 +24,10 @@ namespace PersonalProduct_2nd.Tetris_Block
         //ListのListで縦横の２次元配列的構造
         private List<List<Cell>> mapList;
         private DeviceManager deviceManager; //ゲームデバイス
+        private bool canMove; //テトリミノは移動可能か？
+        private Tetrimino tetrimino; //フィールドに出現しているテトリミノ
+        private ArrayRenderer arrayRenderer; //二次元配列描画オブジェクト
+        private int[,] fieldData; //プレイ画面内のフィールドデータ
         #endregion フィールド
 
         /// <summary>
@@ -38,6 +44,12 @@ namespace PersonalProduct_2nd.Tetris_Block
 
         public void Initialize()
         {
+            //テトリミノの実体生成
+            tetrimino = new Tetrimino();
+            //二次元配列描画オブジェクトを実体生成
+            arrayRenderer = new ArrayRenderer(new Vector2(Size.WIDTH * 2, Size.HEIGHT * 1));
+            //最初はテトリミノは移動可能として初期化
+            canMove = true;
         }
 
         /// <summary>
@@ -68,7 +80,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                     //ディクショナリから元データを取り出し、クローン機能で複製
                     Cell work = (Cell)cellDict[s].Clone();
                     //1列の要素を１ブロックずつ配置する
-                    work.Position = new Vector2(colCnt * work.Width, lineCnt * work.Height);
+                    work.Position = new Vector2(colCnt * Size.WIDTH, lineCnt * Size.HEIGHT);
                     workList.Add(work);
                 }
                 catch (Exception e)　//例外処理
@@ -92,14 +104,18 @@ namespace PersonalProduct_2nd.Tetris_Block
             CSVReader csvReader = new CSVReader();
             csvReader.Read(filename, path);
 
-            var data = csvReader.GetData(); //List<string[]>型で取得
+            fieldData = csvReader.GetIntMatrix(); //int[,]型で取得
 
+            arrayRenderer.SetData(fieldData); //描画を行うための配列を受け渡す→RenderFieldメソッドの準備
+
+            #region ラインをブロックに変換せずに生成する方法に変更
             //1行ごとにmapListに追加していく
-            for (int lineCnt = 0; lineCnt < data.Count(); lineCnt++)
-            {
-                //ここで更にListの要素の配列をひとつずつ処理する
-                mapList.Add(addBlock(lineCnt, data[lineCnt]));
-            }
+            //for (int lineCnt = 0; lineCnt < data.Count(); lineCnt++)
+            //{
+            //    //ここで更にListの要素の配列をひとつずつ処理する
+            //    mapList.Add(addBlock(lineCnt, data[lineCnt]));
+            //}
+            #endregion ラインをブロックに変換せずに生成する方法に変更
         }
 
         /// <summary>
@@ -116,6 +132,11 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <param name="gameTime"></param>
         public void Update(GameTime gameTime)
         {
+            tetrimino.Update(gameTime);
+            //テトリミノが動ける状態か判定
+            MoveLRCheck(); //左右移動
+            MoveDCheck();　//下移動
+
             foreach (var list in mapList)//listはList<Cell>型
             {
                 foreach (var cell in list) //cellはCell型
@@ -137,8 +158,8 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             Point work = cell.GetHitArea().Location;//左上の座標を取得
             //配列の何行何列目にいるか計算
-            int x = work.X / cell.Width;
-            int y = work.Y / cell.Height;
+            int x = work.X / Size.WIDTH;
+            int y = work.Y / Size.HEIGHT;
 
             //移動で食い込んでいる時の修正
             if (x < 1)
@@ -187,8 +208,8 @@ namespace PersonalProduct_2nd.Tetris_Block
                 Point work = checkArray[i].Location;
 
                 //配列の何行何列目にいるか計算
-                int x = work.X / Cell.WIDTH;
-                int y = work.Y / Cell.HEIGHT;
+                int x = work.X / Size.WIDTH;
+                int y = work.Y / Size.HEIGHT;
 
                 //移動で食い込んでいる時の修正
                 if (x < 1)
@@ -223,21 +244,118 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// テトリミノが左右移動可能か検証
+        /// </summary>
+        /// <param name="cell">基準となるセルオブジェクト</param>
+        public void MoveLRCheck()
+        {
+            //テトリミノが右に移動しようとしている
+            if (Input.GetKeyTrigger(Keys.Right))
+            {
+                //移動可能にする
+                canMove = true;
+
+                //出現中のテトリミノの構成ブロックの回転中心からの相対座標を取得
+                //それを一つずつ取り出し、フィールド内での位置を取得する
+                foreach(var point in tetrimino.GetMinoUnitPos())
+                {                    
+                    //テトリミノ本体の座標と相対座標の和に右側隣接するマップ要素がSpace以外なら
+                    if(fieldData[ (int)tetrimino.Position.Y / Size.HEIGHT + (int)point.Y / Size.HEIGHT ,
+                                    ((int)tetrimino.Position.X / Size.WIDTH + (int)point.X / Size.WIDTH ) + 1 ] 
+                        != 0)
+                    {
+                        canMove = false; //移動不能に通知
+                    }
+                }
+                //全て取り出し切って、一つも条件に抵触しなければ
+                if (canMove)
+                    tetrimino.MoveR(); //移動する
+            }
+
+            //テトリミノが左に移動しようとしている
+            if (Input.GetKeyTrigger(Keys.Left))
+            {
+                //移動可能にする
+                canMove = true;
+
+                //出現中のテトリミノの構成ブロックの回転中心からの相対座標を取得
+                //それを一つずつ取り出し、フィールド内での位置を取得する
+                foreach (var point in tetrimino.GetMinoUnitPos())
+                {
+                    //構成ブロックに対応するフィールドの配列位置を取得
+                    int unitPos_X = (int)(tetrimino.Position.X + point.X) / Size.WIDTH;
+                    int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.HEIGHT;
+
+                    //テトリミノ本体の座標と相対座標の和に左側隣接するマップ要素が０以外なら
+                    if (fieldData[unitPos_Y, unitPos_X - 1] != 0)
+                    {
+                        canMove = false; //移動不能に通知
+                    }
+                }
+                //全て取り出し切って、一つも条件に抵触しなければ
+                if (canMove)
+                    tetrimino.MoveL(); //移動する
+            }
+        }
+
+        /// <summary>
+        /// テトリミノが落下移動可能か検証
+        /// </summary>
+        public void MoveDCheck()
+        {
+            //テトリミノが下方に移動しようとしている
+            if (Input.GetKeyTrigger(Keys.Down))
+            {
+                //まずは移動可能とする
+                canMove = true;
+
+                //出現中のテトリミノの構成ブロックの回転中心からの相対座標を取得
+                //それを一つずつ取り出し、フィールド内での位置を取得する
+                foreach (var point in tetrimino.GetMinoUnitPos())
+                {
+                    //構成ブロックに対応した配列位置を取得
+                    int unitPos_X = (int)(tetrimino.Position.X + point.X) / Size.WIDTH;
+                    int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.WIDTH;
+
+                    //構成ブロックの1ブロック分下部のブロックが0（＝空白）以外なら
+                    if (fieldData[unitPos_Y + 1, unitPos_X] != 0)
+                    {
+                        //移動不可能にする
+                        canMove = false;
+                    }
+                }
+
+                //構成ブロックを全て調べて、条件に抵触しなければ移動する
+                if (canMove)
+                {
+                    tetrimino.MoveDown();
+                }
+            }
+        }
+
+        /// <summary>
         /// 描画
         /// </summary>
         /// <param name="renderer"></param>
         public void Draw(Renderer renderer)
         {
-            Vector2 basePos = new Vector2(100, 250);  //枠を移動させる時にまたどうぞ          
+            //テトリミノを描画
+            tetrimino.Draw(renderer);
+
+            //フィールドを描画
+            arrayRenderer.RenderField(renderer);
+
+            #region int型のままフィールドを生成する方法に変更
             //すべてのオブジェクト(Block, Space)を要素一つずつ描画していく
             //maplistは二重配列的構造よりループは2重となる
-            foreach (var line in mapList) //line is List<Cell>型
-            {
-                foreach (var cell in line) //cell is Cell型{
-                {
-                    cell.Draw(renderer);
-                }
-            }
+            //foreach (var line in mapList) //line is List<Cell>型
+            //{
+            //    foreach (var cell in line) //cell is Cell型{
+            //    {
+            //        cell.Draw(renderer);
+            //    }
+            //}
+            #endregion int型のままフィールドを生成する方法に変更
         }
     }
 }

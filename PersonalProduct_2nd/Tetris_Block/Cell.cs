@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using PersonalProduct_2nd.Define;
 using PersonalProduct_2nd.Device;
 using System;
 using System.Collections.Generic;
@@ -24,8 +25,9 @@ namespace PersonalProduct_2nd.Tetris_Block
         protected Vector2 position;
         //マス目関連
         //protected Rectangle CellArea; //マス目の矩形
-        public static readonly int WIDTH = 64;　//縦(静的メンバ)
-        public static readonly int HEIGHT = 64;　//横（静的メンバ）
+
+        //public static readonly int WIDTH = 64;　//縦(静的メンバ)
+        //public static readonly int HEIGHT = 64;　//横（静的メンバ）
         #endregion フィールド
 
         /// <summary>
@@ -65,20 +67,20 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
-        /// 当たり判定の横幅の取得プロパティ
+        /// 当たり判定の横幅の取得プロパティ→Size定義クラスに委託
         /// </summary>
-        public int Width
-        {
-            get { return WIDTH; }
-        }
+        //public int Width
+        //{
+        //    get { return WIDTH; }
+        //}
 
         /// <summary>
-        /// 当たり判定の縦の大きさの取得プロパティ
+        /// 当たり判定の縦の大きさの取得プロパティ→Size定義クラスに委託
         /// </summary>
-        public int Height
-        {
-            get { return HEIGHT; }
-        }
+        //public int Height
+        //{
+        //    get { return HEIGHT; }
+        //}
 
         public Direction CheckDirection(Cell otherCell)
         {
@@ -119,7 +121,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             Rectangle hitArea = new Rectangle(
                                     new Point((int)position.X, (int)position.Y),
-                                    new Point(WIDTH, HEIGHT));
+                                    new Point(Size.WIDTH, Size.HEIGHT));
 
             return hitArea;
         }
