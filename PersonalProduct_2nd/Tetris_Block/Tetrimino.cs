@@ -37,10 +37,15 @@ namespace PersonalProduct_2nd.Tetris_Block
         //private Cell[,] imageRotate_Array; //回転可能か検証する用の配列
 
         private float GRAVITY = 5f; //重力
-        private SoundManager sound; //動作音用
         private IGameMediator mediator; //ゲーム仲介者
 
         private ArrayRenderer arrayRenderer; //二次元配列描画用オブジェクト
+
+        private Timer landTimer; //着地後操作猶予タイマー
+        private Timer fallTimer; //自動落下タイマー
+
+        private bool landON; //着地フラグ
+        private bool isLocked; //操作可能か？
         #endregion フィールド
 
         /// <summary>
@@ -49,7 +54,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         public Tetrimino()
             : base()
         {
-            sound = DeviceManager.CreateInstance().GetSound();
 
             Initialize(); //各種変数の初期化
         }
@@ -93,10 +97,49 @@ namespace PersonalProduct_2nd.Tetris_Block
             //コンストラクタの引数がLineFieldで生成したArrayRendererのものと紐づける方法を考える
             arrayRenderer = new ArrayRenderer(new Vector2(Size.WIDTH * 2, Size.HEIGHT * 1));
             arrayRenderer.SetData(Mino_Array.mino_Data[(int)form]);
+
+            //各種タイマーを生成
+            landTimer = new CountDown_Timer(2.0f);
+            fallTimer = new CountDown_Timer(1.5f);
+
+            //離陸状態で初期化
+            landON = false;
+            //操作可能状態で初期化
+            isLocked = false;
         }
 
+        /// <summary>
+        /// 更新
+        /// </summary>
+        /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime)
         {
+            if (landON) //着地状態なら
+            {
+                //着地タイマーを起動
+                landTimer.Update(gameTime);
+            }
+            else //離陸したら
+            {
+                //初期化
+                landTimer.Initialize();
+            }
+            if (landTimer.TimeUP()) //着地タイマーが時間切れ
+            {
+                //操作不可能とする(その場で位置を固定）
+                isLocked = true;
+            }
+
+            //落下タイマーの更新（初期化はLineFieldで行われる）
+            fallTimer.Update(gameTime);
+
+            #region 落下タイマーが時間切れ時の処理→LineFieldに委託
+            //if(fallTimer.TimeUP()) 
+            //{
+            //    //落下タイマーを初期化
+            //    fallTimer.Initialize();
+            //}
+            #endregion 落下タイマーが時間切れ時の処理→LineFieldに委託
             //MoveX();
             //MoveY(gameTime);
         }
@@ -356,6 +399,32 @@ namespace PersonalProduct_2nd.Tetris_Block
             }
             //リストを返却
             return list_UnitPos;
+        }
+
+        /// <summary>
+        /// 着地状態の切り替え
+        /// </summary>
+        /// <param name="flag">True→着地　False→離陸</param>
+        public void LandSwich(bool flag)
+        {
+            landON = Convert.ToBoolean(flag);
+        }
+
+        /// <summary>
+        /// 落下状態か？
+        /// </summary>
+        /// <returns>落下タイマーが時間切れかどうか返却</returns>
+        public bool IsFall()
+        {
+            return fallTimer.TimeUP();
+        }
+
+        /// <summary>
+        /// 落下タイマーの初期化
+        /// </summary>
+        public void InitFall()
+        {
+            fallTimer.Initialize();
         }
     }
 }

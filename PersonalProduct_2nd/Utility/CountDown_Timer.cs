@@ -35,6 +35,9 @@ namespace PersonalProduct_2nd.Utility
         /// </summary>
         public override void Initialize()
         {
+            if (currentTime == limitTime)
+                return;
+
             currentTime = limitTime;
         }
 

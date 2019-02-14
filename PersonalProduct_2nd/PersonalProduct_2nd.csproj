@@ -50,6 +50,7 @@
     <Compile Include="Device\Texture_Loader.cs" />
     <Compile Include="Tetris_Block\Cell.cs" />
     <Compile Include="Tetris_Block\LineField.cs" />
+    <Compile Include="Tetris_Block\MinoMove.cs" />
     <Compile Include="Tetris_Block\Tetrimino.cs" />
     <Compile Include="Tetris_Block\Mino_Array.cs" />
     <Compile Include="Tetris_Block\Space.cs" />
