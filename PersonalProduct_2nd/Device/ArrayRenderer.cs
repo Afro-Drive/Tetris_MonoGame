@@ -67,10 +67,32 @@ namespace PersonalProduct_2nd.Device
             {
                 for (int x = 0; x < fieldData.GetLength(1); x++)
                 {
-                    //0(Space)でなければ描画する
-                    if (fieldData[y, x] != 0)
+                    //要素番号に応じたブロックを描画する(もう少し効率的に書けないか？)
+                    if (fieldData[y, x] == 1)
                         renderer.DrawTexture("black",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if(fieldData[y, x] == 2)
+                        renderer.DrawTexture("mino_I",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldData[y, x] == 3)
+                        renderer.DrawTexture("mino_T",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldData[y, x] == 4)
+                        renderer.DrawTexture("mino_J",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldData[y, x] == 5)
+                        renderer.DrawTexture("mino_L",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldData[y, x] == 6)
+                        renderer.DrawTexture("mino_S",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldData[y, x] == 7)
+                        renderer.DrawTexture("mino_Z",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldData[y, x] == 8)
+                        renderer.DrawTexture("mino_O",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+
                 }
             }
         }

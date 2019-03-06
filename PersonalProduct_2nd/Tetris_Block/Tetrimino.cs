@@ -31,7 +31,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public enum blk_Col
         { mino_I, mino_T, mino_J, mino_L, mino_S, mino_Z, mino_O, }
-         blk_Col col;
+        blk_Col col;
 
         private int[,] rotate_Array; //回転処理用配列
         //private Cell[,] imageRotate_Array; //回転可能か検証する用の配列
@@ -91,7 +91,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             //assetName = form.ToString();
 
             //LineFieldの枠とズレるため削除
-            position = new Vector2(Size.WIDTH * 10, Size.HEIGHT * 3); //X座標が大体フィールドの真ん中らへんに来るように設定
+            Position = new Vector2(Size.WIDTH * 10, Size.HEIGHT * 3); //X座標が大体フィールドの真ん中らへんに来るように設定
 
             //配列描画オブジェクトを生成・使用配列を指定
             //コンストラクタの引数がLineFieldで生成したArrayRendererのものと紐づける方法を考える
@@ -199,12 +199,12 @@ namespace PersonalProduct_2nd.Tetris_Block
         //    //左移動
         //    if (Input.GetKeyTrigger(Keys.Left))
         //    {
-        //        position.X -= Size.WIDTH;
+        //        Position.X -= Size.WIDTH;
         //    }
         //    //右移動
         //    if (Input.GetKeyTrigger(Keys.Right))
         //    {
-        //        position.X += Size.WIDTH;
+        //        Position.X += Size.WIDTH;
         //    }
         //}
 
@@ -213,7 +213,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public void MoveR()
         {
-            position.X += Size.WIDTH;
+            Position += new Vector2(Size.WIDTH, 0);
         }
 
         /// <summary>
@@ -221,7 +221,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public void MoveL()
         {
-            position.X -= Size.WIDTH;
+            Position -= new Vector2(Size.WIDTH, 0);
         }
 
         /// <summary>
@@ -233,13 +233,13 @@ namespace PersonalProduct_2nd.Tetris_Block
         //    //fallTimer.Update(gameTime);
         //    //if (fallTimer.TimeUP()) //専用タイマーが時間切れになったら1マス分落下
         //    //{
-        //    //    position.Y += Height;
+        //    //    Position.Y += Height;
         //    //    fallTimer.Initialize();
         //    //}
 
         //    if (Input.IsKeyDown(Keys.Down))
         //    {
-        //        position.Y += GRAVITY;
+        //        Position.Y += GRAVITY;
         //    }
         //}
 
@@ -248,41 +248,41 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public void MoveDown()
         {
-            position.Y += Size.HEIGHT;
+            Position += new Vector2(0, Size.HEIGHT);
         }
 
         public override void Hit(Cell other)
         {
-            hitBlock(other);
+            //hitBlock(other);
         }
 
-        private void hitBlock(Cell cell)
-        {
-            //衝突対象の衝突面を取得
-            Direction dir = this.CheckDirection(cell);
+        //private void hitBlock(Cell cell)
+        //{
+        //    //衝突対象の衝突面を取得
+        //    Direction dir = this.CheckDirection(cell);
 
-            //上面
-            if (dir == Direction.Top)
-            {
-                //衝突対象の矩形の上面の上に接する座標に
-                position.Y = cell.GetHitArea().Top - Size.HEIGHT;
-            }
-            //右面
-            else if (dir == Direction.Right)
-            {
-                position.X = cell.GetHitArea().Right;
-            }
-            //左面
-            else if (dir == Direction.Left)
-            {
-                position.X = cell.GetHitArea().Left - Size.WIDTH;
-            }
-            //下面
-            else if (dir == Direction.Bottom)
-            {
-                position.Y = cell.GetHitArea().Bottom;
-            }
-        }
+        //    //上面
+        //    if (dir == Direction.Top)
+        //    {
+        //        //衝突対象の矩形の上面の上に接する座標に
+        //        Position = new Vector2(0, cell.GetHitArea().Top - Size.HEIGHT);
+        //    }
+        //    //右面
+        //    else if (dir == Direction.Right)
+        //    {
+        //        Position.X = cell.GetHitArea().Right;
+        //    }
+        //    //左面
+        //    else if (dir == Direction.Left)
+        //    {
+        //        Position.X = cell.GetHitArea().Left - Size.WIDTH;
+        //    }
+        //    //下面
+        //    else if (dir == Direction.Bottom)
+        //    {
+        //        Position.Y = cell.GetHitArea().Bottom;
+        //    }
+        //}
 
         public override object Clone()
         {
@@ -296,7 +296,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         public override void Draw(Renderer renderer)
         {
             //配列描画オブジェクトに描画を委託
-            arrayRenderer.RenderTetrimino(renderer, position, col);
+            arrayRenderer.RenderTetrimino(renderer, Position, col);
 
             #region 回転用配列の要素番号に合わせて描画する→二次元配列描画クラスに委託
             //for (int y = 0; y < rotate_Array.GetLength(0); y++)
@@ -337,7 +337,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             //        //設定したアセットで座標を指定して描画する
             //        renderer.DrawTexture(
             //            assetName,
-            //            new Vector2(position.X + 64 * x, position.Y + 64 * y));
+            //            new Vector2(Position.X + 64 * x, Position.Y + 64 * y));
             //    }
             //}
             #endregion　回転用配列の要素番号に合わせて描画する→二次元配列描画クラスに委託
@@ -362,7 +362,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                     //回転配列の座標に合わせた位置に矩形を生成、リストに追加
                     hitAreas.Add(
                         new Rectangle(
-                            new Point((int)position.X + x * 64, (int)position.Y + y * 64),
+                            new Point((int)Position.X + x * 64, (int)Position.Y + y * 64),
                             new Point(64, 64))
                             );
                 }
@@ -425,6 +425,24 @@ namespace PersonalProduct_2nd.Tetris_Block
         public void InitFall()
         {
             fallTimer.Initialize();
+        }
+
+        /// <summary>
+        /// テトリミノが固定状態か？
+        /// </summary>
+        /// <returns>フィールドのisLocked</returns>
+        public bool IsLocked()
+        {
+            return isLocked;
+        }
+
+        /// <summary>
+        /// 型に応じた数値を取得
+        /// </summary>
+        /// <returns>フィールドformをint型にキャストして＋２した値</returns>
+        public int GetUnitNum()
+        {
+            return (int)form + 2;
         }
     }
 }

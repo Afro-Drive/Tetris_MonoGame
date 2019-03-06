@@ -25,7 +25,8 @@ namespace PersonalProduct_2nd.Tetris_Block
         public MinoMove(Tetrimino target)
         {
             //引数受け取り
-            this.target = target;
+            SetTarget(target);
+            //this.target = target;
 
             //移動量をゼロで初期化
             moveValue = Vector2.Zero;
@@ -37,7 +38,11 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <returns>ブロック1つ分右の移動量</returns>
         public void LetMinoMoveR()
         {
-            target.Position += new Vector2(Size.WIDTH, 0);
+            //ターゲットが固定状態でなければ
+            if (!target.IsLocked())
+            {
+                target.Position += new Vector2(Size.WIDTH, 0);
+            }
         }
 
         /// <summary>
@@ -46,7 +51,11 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <returns>ブロック1つ分左の移動</returns>
         public void LetMinoMoveL()
         {
-            target.Position += new Vector2(-Size.WIDTH, 0);
+            //ターゲットが固定状態でなければ
+            if (!target.IsLocked())
+            {
+                target.Position += new Vector2(-Size.WIDTH, 0);
+            }
         }
 
         /// <summary>
@@ -54,16 +63,30 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public void LetMinoFall()
         {
-            target.Position += new Vector2(0, Size.HEIGHT);
+            //ターゲットが固定状態でなければ
+            if (!target.IsLocked())
+            {
+                target.Position += new Vector2(0, Size.HEIGHT);
+            }
         }
 
         /// <summary>
         /// 移動対象のテトリミノの着地状態を設定
+        /// →越権行為によりMinoStateManagerクラスに委託
         /// </summary>
         /// <param name="state">true→着地　false→離陸</param>
-        public void SetLandState(bool state)
+        //public void SetLandState(bool state)
+        //{
+        //    target.LandSwich(state);
+        //}
+
+        /// <summary>
+        /// 移動処理を施す対象を設定する
+        /// </summary>
+        /// <param name="target">動かしたいターゲット</param>
+        public void SetTarget(Tetrimino target)
         {
-            target.LandSwich(state);
+            this.target = target;
         }
     }
 }

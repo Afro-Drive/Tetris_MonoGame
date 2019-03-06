@@ -22,7 +22,8 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public enum Direction { Top, Bottom, Right, Left }
         protected string assetName;　//使用画像のアセット名
-        protected Vector2 position;
+
+        //protected Vector2 position;
         //マス目関連
         //protected Rectangle CellArea; //マス目の矩形
 
@@ -38,7 +39,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             //各種メンバの初期化
             //this.assetName = name;
-            position = Vector2.Zero;
+            Position = Vector2.Zero;
             //マス目を生成→これだと値型で現在座標に即した位置に矩形を作らないため削除
             //代わりに改めて現在位置に矩形を生成して取得するメソッドを追加
             //CellArea = new Rectangle(
@@ -57,13 +58,12 @@ namespace PersonalProduct_2nd.Tetris_Block
 
         /// <summary>
         /// 位置のプロパティ
-        /// get→フィールドpositionを取得
-        /// set→フィールドpositionを設定
+        /// get→positionを取得
+        /// set→positionを設定
         /// </summary>
         public Vector2 Position
         {
-            get { return position; }
-            set { position = value; }
+            get; set;
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         public virtual Rectangle GetHitArea()
         {
             Rectangle hitArea = new Rectangle(
-                                    new Point((int)position.X, (int)position.Y),
+                                    new Point((int)Position.X, (int)Position.Y),
                                     new Point(Size.WIDTH, Size.HEIGHT));
 
             return hitArea;
@@ -142,7 +142,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <param name="renderer"></param>
         public virtual void Draw(Renderer renderer)
         {
-            renderer.DrawTexture(assetName, position);
+            renderer.DrawTexture(assetName, Position);
         }
 
         //抽象メソッド群
