@@ -34,7 +34,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         blk_Col col;
 
         private int[,] rotate_Array; //回転処理用配列
-        //private Cell[,] imageRotate_Array; //回転可能か検証する用の配列
+        private int[,] imageRotate_Array; //回転可能か検証する用の配列
 
         private float GRAVITY = 5f; //重力
         private IGameMediator mediator; //ゲーム仲介者
@@ -46,6 +46,9 @@ namespace PersonalProduct_2nd.Tetris_Block
 
         private bool landON; //着地フラグ
         private bool isLocked; //操作可能か？
+
+        private Random rnd; //ランダムオブジェクト
+        private List<Form_mino> formList; //テトリミノの形を格納したリスト
         #endregion フィールド
 
         /// <summary>
@@ -69,8 +72,11 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public override void Initialize()
         {
-            //型を指定
-            form = Form_mino.I;　//今はI型にしておく
+            //ランダムを生成
+            rnd = DeviceManager.CreateInstance().GetRandom();
+            //テトリミノの型の中からランダムに型を指定
+            int enumLength = Enum.GetValues(typeof(Form_mino)).GetLength(0);
+            form = (Form_mino)(rnd.Next(0, enumLength));
             //使用色ブロックを指定(formの値に対応した色を指定する)
             col = (blk_Col)((int)form);
 
@@ -96,7 +102,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             //配列描画オブジェクトを生成・使用配列を指定
             //コンストラクタの引数がLineFieldで生成したArrayRendererのものと紐づける方法を考える
             arrayRenderer = new ArrayRenderer(new Vector2(Size.WIDTH * 2, Size.HEIGHT * 1));
-            arrayRenderer.SetData(Mino_Array.mino_Data[(int)form]);
+            arrayRenderer.SetData(rotate_Array);
 
             //各種タイマーを生成
             landTimer = new CountDown_Timer(2.0f);
@@ -133,6 +139,16 @@ namespace PersonalProduct_2nd.Tetris_Block
             //落下タイマーの更新（初期化はLineFieldで行われる）
             fallTimer.Update(gameTime);
 
+            #region Aキーが入力されたら時計回りに90度回転→Rotate_Clockwiseメソッドに委託
+            //if (Input.GetKeyTrigger(Keys.A))
+            //{
+            //    //回転用配列に回転後の配列を格納
+            //    rotate_Array = GetRotate_Clockwise_Array();
+            //    //描画する配列を設定しなおす(refとかで書き直せる？)
+            //    arrayRenderer.SetData(rotate_Array);
+            //}
+            #endregion Aキーが入力されたら時計回りに90度回転→Rotate_Clockwiseメソッドに委託
+
             #region 落下タイマーが時間切れ時の処理→LineFieldに委託
             //if(fallTimer.TimeUP()) 
             //{
@@ -147,49 +163,99 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <summary>
         /// 二次元配列を時計回りに回転
         /// </summary>
-        /// <param name="basedArray">回転したい配列</param>
-        /// <returns>時計回りに90°回転させた二次元配列</returns>
-        //public Cell[,] Rotate_Clockwise(Cell[,] basedArray)
-        //{
-        //    int rows = basedArray.GetLength(0); //列(横)
-        //    int cols = basedArray.GetLength(1); //行(縦)
-        //    imageRotate_Array = new Cell[cols, rows]; //回転前とは行と列を逆にした配列を生成
+        public void Rotate_Clockwise()
+        {
+            //検証用回転配列を実際の回転配列に代入
+            rotate_Array = imageRotate_Array;
+            //二次元描画対象を設定しなおす
+            arrayRenderer.SetData(rotate_Array);
+            #region GetRotate_Clockwise_Arrayメソッドに委託
+            //int rows = rotate_Array.GetLength(0); //列(横)
+            //int cols = rotate_Array.GetLength(1); //行(縦)
+            //imageRotate_Array = new int[cols, rows]; //回転前とは行と列を逆にした配列を生成
 
-        //    for (int y = 0; y < rows; y++) //回転後の配列の列に回転前の配列の行分要素を用意
-        //    {
-        //        for (int x = 0; x < cols; x++) //回転後の配列の行に回転前の配列の列分要素を用意
-        //        {
-        //            //回転後の配列の列は、回転前の配列の行からy(新規配列の列の生成回数)と1を引いたものに一致する
-        //            //知るかこの野郎
-        //            imageRotate_Array[x, rows - y - 1] = basedArray[y, x];
-        //        }
-        //    }
-        //    return imageRotate_Array;
-        //}
+            //for (int y = 0; y < rows; y++) //回転後の配列の列に回転前の配列の行分要素を用意
+            //{
+            //    for (int x = 0; x < cols; x++) //回転後の配列の行に回転前の配列の列分要素を用意
+            //    {
+            //        //回転後の配列の列は、回転前の配列の行からy(新規配列の列の生成回数)と1を引いたものに一致する
+            //        //知るかこの野郎
+            //        imageRotate_Array[x, rows - y - 1] = rotate_Array[y, x];
+            //    }
+            //}
+            #endregion GetRotate_Clockwise_Arrayメソッドに委託
+        }
 
         /// <summary>
-        /// 二次元配列を反時計回りに回転
+        /// 時計回りに90度回転後のテトリミノ配列を取得する
         /// </summary>
-        /// <param name="basedArray">回転したい二次元配列</param>
+        /// <returns>時計回りに90度回転後の二次元配列</returns>
+        public int[,] GetClockwise_RotatedArray()
+        {
+            int rows = rotate_Array.GetLength(0); //列(横)
+            int cols = rotate_Array.GetLength(1); //行(縦)
+            imageRotate_Array = new int[cols, rows]; //回転前とは行と列を逆にした配列を生成
+
+            for (int y = 0; y < rows; y++) //回転後の配列の列に回転前の配列の行分要素を用意
+            {
+                for (int x = 0; x < cols; x++) //回転後の配列の行に回転前の配列の列分要素を用意
+                {
+                    //回転後の配列の列は、回転前の配列の行からy(新規配列の列の生成回数)と1を引いたものに一致する
+                    //知るかこの野郎
+                    imageRotate_Array[x, rows - y - 1] = rotate_Array[y, x];
+                }
+            }
+            return imageRotate_Array;
+        }
+
+        /// <summary>
+        /// テトリミノを反時計回りに90度回転させる
+        /// </summary>
+        public void Rotate_AntiClockwise()
+        {
+            #region GetAntiClockwise_RotatedArrayメソッドに委託
+            //int rows = rotate_Array.GetLength(0); //行(横)
+            //int cols = rotate_Array.GetLength(1); //列(縦)
+            //imageRotate_Array = new int[cols, rows];
+
+            //for (int y = 0; y < rows; y++) //回転後の配列の列に回転前の配列の行分だけ要素を用意
+            //{
+            //    for (int x = 0; x < cols; x++) //回転後の配列の行に回転前の配列の列分だけ要素を用意
+            //    {
+            //        //回転後の配列の列は回転前の配列の行からx(回転後の列を用意した回数)と1を引いたものに一致する
+            //        //時計回りとはややこしくなる方が逆になるんだね。知らんけど。
+            //        imageRotate_Array[rows - x - 1, y] = rotate_Array[y, x];
+            //    }
+            //}
+            #endregion GetAntiClockwise_RotatedArrayメソッドに委託
+
+            //回転用配列に回転後の配列を格納
+            rotate_Array = imageRotate_Array;
+            //描画する配列を設定しなおす(refとかで書き直せる？)
+            arrayRenderer.SetData(rotate_Array);
+        }
+
+        /// <summary>
+        /// 反時計回りに回転させたテトリミノ配列の取得
+        /// </summary>
         /// <returns>反時計回りに90°回転させた二次元配列</returns>
-        //public Cell[,] Rotate_AntiClockwise(Cell[,] basedArray)
-        //{
-        //    int rows = basedArray.GetLength(0); //行(横)
-        //    int cols = basedArray.GetLength(1); //列(縦)
-        //    imageRotate_Array = new Cell[cols, rows];
+        public int[,] GetAntiClockwise_RotatedArray()
+        {
+            int rows = rotate_Array.GetLength(0); //行(横)
+            int cols = rotate_Array.GetLength(1); //列(縦)
+            imageRotate_Array = new int[cols, rows];
 
-        //    for (int y = 0; y < rows; y++) //回転後の配列の列に回転前の配列の行分だけ要素を用意
-        //    {
-        //        for (int x = 0; x < cols; x++) //回転後の配列の行に回転前の配列の列分だけ要素を用意
-        //        {
-        //            //回転後の配列の列は回転前の配列の行からx(回転後の列を用意した回数)と1を引いたものに一致する
-        //            //時計回りとはややこしくなる方が逆になるんだね。知らんけど。
-        //            imageRotate_Array[rows - x - 1, y] = basedArray[y, x];
-        //        }
-        //    }
-
-        //    return imageRotate_Array;
-        //}
+            for (int y = 0; y < rows; y++) //回転後の配列の列に回転前の配列の行分だけ要素を用意
+            {
+                for (int x = 0; x < cols; x++) //回転後の配列の行に回転前の配列の列分だけ要素を用意
+                {
+                    //回転後の配列の列は回転前の配列の行からx(回転後の列を用意した回数)と1を引いたものに一致する
+                    //時計回りとはややこしくなる方が逆になるんだね。知らんけど。
+                    imageRotate_Array[rows - x - 1, y] = rotate_Array[y, x];
+                }
+            }
+            return imageRotate_Array;
+        }
 
         /// <summary>
         /// 横移動→キー入力と移動確認をLineFieldに委託
@@ -209,20 +275,20 @@ namespace PersonalProduct_2nd.Tetris_Block
         //}
 
         /// <summary>
-        /// 右へ移動
+        /// 右へ移動→MinoMoveへ委託
         /// </summary>
-        public void MoveR()
-        {
-            Position += new Vector2(Size.WIDTH, 0);
-        }
+        //public void MoveR()
+        //{
+        //    Position += new Vector2(Size.WIDTH, 0);
+        //}
 
         /// <summary>
-        /// 左へ移動
+        /// 左へ移動→MinoMoveへ委託
         /// </summary>
-        public void MoveL()
-        {
-            Position -= new Vector2(Size.WIDTH, 0);
-        }
+        //public void MoveL()
+　      //{
+        //    Position -= new Vector2(Size.WIDTH, 0);
+        //}
 
         /// <summary>
         /// 縦(下方向のみ)移動→キー入力・移動確認をLineFieldに委託
@@ -244,12 +310,12 @@ namespace PersonalProduct_2nd.Tetris_Block
         //}
 
         /// <summary>
-        /// 下へ移動
+        /// 下へ移動→MinoMoveへ委託
         /// </summary>
-        public void MoveDown()
-        {
-            Position += new Vector2(0, Size.HEIGHT);
-        }
+        //public void MoveDown()
+        //{
+        //    Position += new Vector2(0, Size.HEIGHT);
+        //}
 
         public override void Hit(Cell other)
         {
@@ -402,6 +468,36 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// 回転後のテトリミノ構成ブロックの中心からの相対座標の取得
+        /// </summary>
+        /// <param name="checkArray">回転後のテトリミノの回転配列</param>
+        /// <returns>配列内のブロックの座標を格納したリスト</returns>
+        public List<Vector2> GetRotatedUnitPos(int[,] checkArray)
+        {
+            //返却用のリストを生成
+            List<Vector2> list_Pos = new List<Vector2>();
+
+            //引数の配列内の要素を一つずつ確かめる
+            for (int y = 0; y < checkArray.GetLength(0); y++)
+            {
+                for (int x = 0; x < checkArray.GetLength(1); x++)
+                {
+                    //確認した要素が0以外なら
+                    if (checkArray[y, x] != 0)
+                    {
+                        //リストに追加する
+                        //中心[2,2]を基準とした座標を算出
+                        list_Pos.Add(
+                            new Vector2(Size.WIDTH * (x - 2), Size.HEIGHT * (y - 2))
+                            );
+                    }
+                }
+            }
+            //リストを返却する
+            return list_Pos;
+        }
+
+        /// <summary>
         /// 着地状態の切り替え
         /// </summary>
         /// <param name="flag">True→着地　False→離陸</param>
@@ -444,5 +540,9 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             return (int)form + 2;
         }
+
+        #region 回転可能かのプロパティ→MinoStateManagerクラスのCanMoveに委託
+        //public bool CanRotate { get; set; }
+        #endregion 回転可能かのプロパティ→MinoStateManagerクラスに委託
     }
 }

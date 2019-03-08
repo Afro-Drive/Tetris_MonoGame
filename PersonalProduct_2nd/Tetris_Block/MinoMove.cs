@@ -71,6 +71,24 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// テトリミノを時計回りに回転させる
+        /// </summary>
+        public void LetMinoRotate_Clockwise()
+        {
+            if (!target.IsLocked())
+                target.Rotate_Clockwise();
+        }
+
+        /// <summary>
+        /// テトリミノを反時計回りに90度回転させる
+        /// </summary>
+        public void LetMinoRotate_AntiClockwise()
+        {
+            if (!target.IsLocked())
+                target.Rotate_AntiClockwise();
+        }
+
+        /// <summary>
         /// 移動対象のテトリミノの着地状態を設定
         /// →越権行為によりMinoStateManagerクラスに委託
         /// </summary>

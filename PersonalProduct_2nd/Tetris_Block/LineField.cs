@@ -24,9 +24,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         //ListのListで縦横の２次元配列的構造
         private List<List<Cell>> mapList;
         private DeviceManager deviceManager; //ゲームデバイス
-        //private bool canMove; //テトリミノは移動可能か？→MinoStateManagerに委託
         private Tetrimino tetrimino; //フィールドに出現しているテトリミノ
-        //private Tetrimino tetrimino2; //上記のテトリミノの次に移動を始めるテトリミノ
         private ArrayRenderer arrayRenderer; //二次元配列描画オブジェクト
         private int[,] fieldData; //プレイ画面内のフィールドデータ
         private MinoMove minoMove; //テトリミノ移動オブジェクト
@@ -49,8 +47,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             //テトリミノの実体生成
             tetrimino = new Tetrimino();
-            //テトリミノその2をカラの状態にする
-            //tetrimino2 = null;
             //テトリミノ移動オブジェクトを生成、移動ターゲットを設定
             minoMove = new MinoMove(tetrimino);
             //テトリミノの状態管理オブジェクトを生成、管理ターゲットを設定
@@ -60,7 +56,6 @@ namespace PersonalProduct_2nd.Tetris_Block
             arrayRenderer = new ArrayRenderer(new Vector2(Size.WIDTH * 2, Size.HEIGHT * 1));
             //最初はテトリミノは移動可能として初期化
             minoStateManager.CanMove = true;
-            //canMove = true;
         }
 
         /// <summary>
@@ -149,7 +144,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             if (tetrimino.IsLocked())
             {
                 //テトリミノの構成ブロックの座標を取得(配列？)
-                foreach(var point in tetrimino.GetMinoUnitPos())
+                foreach (var point in tetrimino.GetMinoUnitPos())
                 {
                     //構成ブロックに対応するフィールドの配列位置を取得
                     int unitPos_X = (int)(tetrimino.Position.X + point.X) / Size.WIDTH;
@@ -162,6 +157,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                 tetrimino.Initialize();
             }
 
+            #region テトリミノの変数を一つにしたため削除
             //一つ目のテトリミノが固定され、二つ目のテトリミノがまだ生成されてなければ
             //この方法だと変数が無限に必要になるため、生成者を用意する
             //if(tetrimino.IsLocked() && tetrimino2 == null)
@@ -178,10 +174,12 @@ namespace PersonalProduct_2nd.Tetris_Block
             //    //テトリミノを更新する
             //    tetrimino2.Update(gameTime);
             //}
+            #endregion テトリミノの変数を一つにしたため削除
 
             //テトリミノが動ける状態か判定
             MoveLRCheck(); //左右移動
             MoveDCheck();　//下移動
+            RotateCheck(); //回転
 
             foreach (var list in mapList)//listはList<Cell>型
             {
@@ -304,14 +302,14 @@ namespace PersonalProduct_2nd.Tetris_Block
 
                 //出現中のテトリミノの構成ブロックの回転中心からの相対座標を取得
                 //それを一つずつ取り出し、フィールド内での位置を取得する
-                foreach(var point in tetrimino.GetMinoUnitPos())
+                foreach (var point in tetrimino.GetMinoUnitPos())
                 {
                     //構成ブロックに対応するフィールドの配列位置を取得
                     int unitPos_X = (int)(tetrimino.Position.X + point.X) / Size.WIDTH;
                     int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.HEIGHT;
 
                     //テトリミノ本体の座標と相対座標の和に右側隣接するマップ要素がSpace以外なら
-                    if (fieldData[ unitPos_Y ,unitPos_X + 1 ] != 0)
+                    if (fieldData[unitPos_Y, unitPos_X + 1] != 0)
                     {
                         //移動不能に通知
                         minoStateManager.CanMove = false;
@@ -321,7 +319,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                 //全て取り出し切って、一つも条件に抵触しなければ
                 if (minoStateManager.CanMove)
                     minoMove.LetMinoMoveR(); //テトリミノを右移動させる
-                    //tetrimino.MoveR(); //移動する
+                                             //tetrimino.MoveR(); //移動する
             }
 
             //テトリミノが左に移動しようとしている
@@ -350,7 +348,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                 //全て取り出し切って、一つも条件に抵触しなければ
                 if (minoStateManager.CanMove)
                     minoMove.LetMinoMoveL(); //テトリミノを左移動させる
-                    //tetrimino.MoveL(); //移動する
+                                             //tetrimino.MoveL(); //移動する
             }
         }
 
@@ -404,6 +402,63 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// テトリミノが回転可能か調べる
+        /// 必要に応じて座標を補正する
+        /// </summary>
+        public void RotateCheck()
+        {
+            //AかDキーが入力された
+            //なんか見づらいコードやなぁ・・・
+            if (Input.GetKeyTrigger(Keys.A)
+                || Input.GetKeyTrigger(Keys.D))
+            {
+                //まずは回転可能にする
+                minoStateManager.CanMove = true;
+                //回転配列をカラの状態で生成
+                int[,] willRotateArray = null;
+
+                //Aキー入力→テトリミノが時計回りに90度回転した際の配列を取得
+                if (Input.GetKeyTrigger(Keys.A))
+                    willRotateArray = tetrimino.GetClockwise_RotatedArray();
+                //Dキー入力→テトリミノが反時計回りに90回転した際の配列
+                if (Input.GetKeyTrigger(Keys.D))
+                    willRotateArray = tetrimino.GetAntiClockwise_RotatedArray();
+
+                //テトリミノの構成ブロックの座標を取得、一つずつ調べる
+                foreach (var point in tetrimino.GetRotatedUnitPos(willRotateArray))
+                {
+                    //構成ブロックに対応した配列位置を取得
+                    int unitPos_X = (int)(tetrimino.Position.X + point.X) / Size.WIDTH;
+                    int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.WIDTH;
+
+                    //対応するフィールドの位置がブロックならば
+                    //配列指定位置が負の数の場合も
+                    if (unitPos_X <= 0
+                        || unitPos_Y <= 0
+                        || fieldData[unitPos_Y, unitPos_X] != 0)
+                    {
+                        //回転不可能とする
+                        minoStateManager.CanMove = false;
+                        //ループ終了
+                        break;
+                    }
+                }
+                //条件に抵触しなければ入力キーに応じて回転処理
+                if (minoStateManager.CanMove)
+                {
+                    if (Input.GetKeyTrigger(Keys.A))
+                        //テトリミノを回転する(後でMinoMoveに行わせる)
+                        minoMove.LetMinoRotate_Clockwise();
+                    //tetrimino.Rotate_Clockwise();
+                    else if (Input.GetKeyTrigger(Keys.D))
+                        //テトリミノを反時計回りに回転
+                        minoMove.LetMinoRotate_AntiClockwise();
+                    //tetrimino.Rotate_AntiClockwise();
+                }
+            }
+        }
+
+        /// <summary>
         /// 描画
         /// </summary>
         /// <param name="renderer"></param>
@@ -411,8 +466,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             //テトリミノを描画
             tetrimino.Draw(renderer);
-            //if (tetrimino2 != null)
-            //    tetrimino2.Draw(renderer);
 
             //フィールドを描画
             arrayRenderer.RenderField(renderer);
@@ -429,5 +482,19 @@ namespace PersonalProduct_2nd.Tetris_Block
             //}
             #endregion int型のままフィールドを生成する方法に変更
         }
+
+        //public List<int> PickUpRemoveLineNum()
+        //{
+        //    //返却用のリストを生成
+        //    List<int> removeLineNum = new List<int>();
+
+        //    //フィールドのデータの要素を一つずつ確認する
+        //    for (int y = 0; y < fieldData.GetLength(0); y++)
+        //    {
+        //        //下端は除外
+        //        if (y == fieldData.GetLength(0) - 1)
+        //            continue;                
+        //    }
+        //}
     }
 }
