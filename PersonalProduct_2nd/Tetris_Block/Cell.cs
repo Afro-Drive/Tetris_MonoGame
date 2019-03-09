@@ -17,18 +17,7 @@ namespace PersonalProduct_2nd.Tetris_Block
     abstract class Cell : ICloneable
     {
         #region フィールド
-        /// <summary>
-        /// 衝突した矩形(マス)の面の列挙型
-        /// </summary>
-        public enum Direction { Top, Bottom, Right, Left }
         protected string assetName;　//使用画像のアセット名
-
-        //protected Vector2 position;
-        //マス目関連
-        //protected Rectangle CellArea; //マス目の矩形
-
-        //public static readonly int WIDTH = 64;　//縦(静的メンバ)
-        //public static readonly int HEIGHT = 64;　//横（静的メンバ）
         #endregion フィールド
 
         /// <summary>
@@ -40,11 +29,6 @@ namespace PersonalProduct_2nd.Tetris_Block
             //各種メンバの初期化
             //this.assetName = name;
             Position = Vector2.Zero;
-            //マス目を生成→これだと値型で現在座標に即した位置に矩形を作らないため削除
-            //代わりに改めて現在位置に矩形を生成して取得するメソッドを追加
-            //CellArea = new Rectangle(
-            //    new Point((int)position.X, (int)position.Y),
-            //    new Point(WIDTH, HEIGHT));
         }
 
         /// <summary>
@@ -82,60 +66,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         //    get { return HEIGHT; }
         //}
 
-        public Direction CheckDirection(Cell otherCell)
-        {
-            Point thisCenter = this.GetHitArea().Center;//自分の中心位置を代入
-            Point otherCenter = otherCell.GetHitArea().Center;//相手の中心位置を代入
-
-            //向きのベクトルを取得
-            Vector2 dir =
-                new Vector2(thisCenter.X, thisCenter.Y) -
-                new Vector2(otherCenter.X, otherCenter.Y);
-
-            //当たっている側面をリターン
-            //X成分とY成分でどちらのほうが量が多いか
-            if (Math.Abs(dir.X) > Math.Abs(dir.Y))
-            {
-                //Xの向きが正の時
-                if (dir.X > 0)
-                {
-                    return Direction.Right;
-                }
-                return Direction.Left; //Xの向きが負の時
-            }
-
-            //Y成分が大きく、正の値か？
-            if (dir.Y > 0)
-            {
-                return Direction.Bottom;
-            }
-            //ブロックに乗った
-            return Direction.Top;
-        }
-
-        /// <summary>
-        /// 当たり判定の矩形エリアをの取得
-        /// </summary>
-        /// <returns></returns>
-        public virtual Rectangle GetHitArea()
-        {
-            Rectangle hitArea = new Rectangle(
-                                    new Point((int)Position.X, (int)Position.Y),
-                                    new Point(Size.WIDTH, Size.HEIGHT));
-
-            return hitArea;
-        }
-
-        /// <summary>
-        /// 自分と相手の当たり判定
-        /// </summary>
-        /// <param name="otherCell">衝突してくる別のCellオブジェクト</param>
-        /// <returns></returns>
-        public bool IsCollision(Cell otherCell)
-        {
-            return GetHitArea().Intersects(otherCell.GetHitArea());
-        }
-
         /// <summary>
         /// 描画処理
         /// </summary>
@@ -146,7 +76,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         //抽象メソッド群
-        public abstract void Hit(Cell other);
         public abstract void Update(GameTime gameTime);//更新処理
         public abstract void Initialize();//初期化処理
         public abstract object Clone(); //オブジェクトのクローン

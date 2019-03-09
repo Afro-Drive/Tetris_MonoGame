@@ -50,31 +50,10 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
-        /// ピクセル画像の描画
-        /// (Tetriminoオブジェクト用)
-        /// </summary>
-        /// <param name="renderer"></param>
-        /// <param name="position"></param>
-        /// <param name="scale"></param>
-        public void DrawMino(Renderer renderer, string minoCol, Vector2 position, float scale)
-        {
-            renderer.DrawTexture(
-                minoCol,
-                position,
-                null, 
-                scale,
-                Vector2.Zero);
-        }
-
-        /// <summary>
         /// 更新処理
         /// </summary>
         /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime)
-        {
-        }
-
-        public override void Hit(Cell other)
         {
         }
     }

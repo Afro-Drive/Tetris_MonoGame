@@ -59,47 +59,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
-        /// CSVファイルに合わせてブロックの追加
-        /// (フィールドmapListの要素内の文字列型配列をここで更に分析)
-        /// </summary>
-        /// <param name="lineCnt"></param>
-        /// <param name="line"></param>
-        /// <returns></returns>
-        private List<Cell> addBlock(int lineCnt, string[] line)
-        //privateメソッドより先頭を小文字とする
-        {
-            //コピー元オブジェクト登録用ディクショナリ
-            Dictionary<string, Cell> cellDict = new Dictionary<string, Cell>();
-            //スペースは0
-            cellDict.Add("0", new Space());
-            //ブロックは1
-            cellDict.Add("1", new Block());
-
-            //作業用リスト
-            List<Cell> workList = new List<Cell>();
-
-            int colCnt = 0; //列カウント用
-            foreach (var s in line)
-            {
-                try
-                {
-                    //ディクショナリから元データを取り出し、クローン機能で複製
-                    Cell work = (Cell)cellDict[s].Clone();
-                    //1列の要素を１ブロックずつ配置する
-                    work.Position = new Vector2(colCnt * Size.WIDTH, lineCnt * Size.HEIGHT);
-                    workList.Add(work);
-                }
-                catch (Exception e)　//例外処理
-                {
-                    Console.WriteLine(e);
-                }
-                //列カウンタを増やす。次の列へ移動
-                colCnt += 1;
-            }
-            return workList;
-        }
-
-        /// <summary>
         /// CSVReaderを使ってMapの読み込み
         /// (フィールドのmapListの要素を分析)
         /// </summary>
@@ -141,24 +100,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             //テトリミノを更新
             tetrimino.Update(gameTime);
 
-            if (tetrimino.IsLocked())
-            {
-                //テトリミノの構成ブロックの座標を取得(配列？)
-                foreach (var point in tetrimino.GetMinoUnitPos())
-                {
-                    //構成ブロックに対応するフィールドの配列位置を取得
-                    int unitPos_X = (int)(tetrimino.Position.X + point.X) / Size.WIDTH;
-                    int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.HEIGHT;
-
-                    //対応する位置のフィールドの要素を書き換える
-                    fieldData[unitPos_Y][unitPos_X] = tetrimino.GetUnitNum();
-                }
-                //横一列が揃ったか検証、揃ったらラインを消去
-                RemoveAndFillLine();
-                //一通り書き換えが終わったら初期化
-                tetrimino.Initialize();
-            }
-
+            RefToField(); //テトリミノが凍結後にフィールドに反映
             #region テトリミノの変数を一つにしたため削除
             //一つ目のテトリミノが固定され、二つ目のテトリミノがまだ生成されてなければ
             //この方法だと変数が無限に必要になるため、生成者を用意する
@@ -182,110 +124,81 @@ namespace PersonalProduct_2nd.Tetris_Block
             MoveLRCheck(); //左右移動
             MoveDCheck();　//下移動
             RotateCheck(); //回転
-
-            foreach (var list in mapList)//listはList<Cell>型
-            {
-                foreach (var cell in list) //cellはCell型
-                {
-                    //objがSpaceクラスのオブジェクトなら次へ
-                    if (cell is Space)
-                        continue;
-
-                    cell.Update(gameTime);
-                }
-            }
         }
 
-        /// <summary>
-        /// 衝突判定・衝突後処理
-        /// </summary>
-        /// <param name="cell">基準となるセルオブジェクト</param>
-        public void Hit(Cell cell)
-        {
-            Point work = cell.GetHitArea().Location;//左上の座標を取得
-            //配列の何行何列目にいるか計算
-            int x = work.X / Size.WIDTH;
-            int y = work.Y / Size.HEIGHT;
-
-            //移動で食い込んでいる時の修正
-            if (x < 1)
-                x = 1;
-            if (y < 1)
-                y = 1;
-
-            Range yRange = new Range(0, mapList.Count() - 1); //行の範囲(配列番号に対応)
-            Range xRange = new Range(0, mapList[0].Count() - 1); //列の範囲(配列番号に対応)
-
-            //引数cellの周りの8つのセルに衝突対象がないかどうか確認(テトリミノのブロックごとに改良する必要ありか？)
-            for (int row = y - 1; row <= (y + 1); row++)　//自分の上と下のセル
-            {
-                for (int col = x - 1; col <= (x + 1); col++)　//自分の右と左のセル
-                {
-                    //配列外なら何もしない
-                    //
-                    if (xRange.IsOutOfRange(col) || yRange.IsOutOfRange(row))
-                        continue;
-
-                    //その場所のオブジェクトを取得(調べる相手)
-                    Cell cll = mapList[row][col];
-
-                    //Spaceクラスのオブジェクトなら次へ
-                    if (cll is Space)
-                        continue;
-
-                    if (cll is Block)
-                        cell.Hit(cll); //引数のCellオブジェクトはその隣り合うCellオブジェクトに衝突した
-                }
-            }
-        }
         /// <summary>
         /// テトリミノとの衝突判定・衝突後処理
+        /// →キー入力時に判定を行う方法に変更
         /// </summary>
         /// <param name="cell">基準となるセルオブジェクト</param>
-        public void Hit(Tetrimino tetrimino)
+        //public void Hit(Tetrimino tetrimino)
+        //{
+        //    //当たり判定を格納した配列を受け取る
+        //    Rectangle[] checkArray = tetrimino.GetHitArea();
+
+        //    //テトリミノの当たり判定を一つずつ確認
+        //    for (int i = 0; i < checkArray.Length; i++)
+        //    {
+        //        //左上の座標を取得
+        //        Point work = checkArray[i].Location;
+
+        //        //配列の何行何列目にいるか計算
+        //        int x = work.X / Size.WIDTH;
+        //        int y = work.Y / Size.HEIGHT;
+
+        //        //移動で食い込んでいる時の修正
+        //        if (x < 1)
+        //            x = 1;
+        //        if (y < 1)
+        //            y = 1;
+
+        //        Range yRange = new Range(0, mapList.Count() - 1); //行の範囲(配列番号に対応)
+        //        Range xRange = new Range(0, mapList[0].Count() - 1); //列の範囲(配列番号に対応)
+
+        //        //引数cellの周りの8つのセルに衝突対象がないかどうか確認(テトリミノのブロックごとに改良する必要ありか？)
+        //        for (int row = y - 1; row <= (y + 1); row++) //自分の上と下のセル
+        //        {
+        //            for (int col = x - 1; col <= (x + 1); col++) //自分の右と左のセル
+        //            {
+        //                //配列外なら何もしない
+        //                if (xRange.IsOutOfRange(col) || yRange.IsOutOfRange(row))
+        //                    continue;
+
+        //                //その場所のオブジェクトを取得(調べる相手)
+        //                Cell cll = mapList[row][col];
+
+        //                //Spaceクラスのオブジェクトなら次へ
+        //                if (cll is Space)
+        //                    continue;
+
+        //                if (cll is Block)
+        //                    tetrimino.Hit(cll); //引数のTetriminoオブジェクトはその隣り合うCellオブジェクトに衝突した
+        //            }
+        //        }
+        //    }
+        //}
+
+        ///<summary>
+        ///固定状態のテトリミノに対応するフィールドの座標データへ反映
+        ///</summary>
+        public void RefToField()
         {
-            //当たり判定を格納した配列を受け取る
-            Rectangle[] checkArray = tetrimino.GetHitArea();
-
-            //テトリミノの当たり判定を一つずつ確認
-            for (int i = 0; i < checkArray.Length; i++)
+            if (tetrimino.IsLocked())
             {
-                //左上の座標を取得
-                Point work = checkArray[i].Location;
-
-                //配列の何行何列目にいるか計算
-                int x = work.X / Size.WIDTH;
-                int y = work.Y / Size.HEIGHT;
-
-                //移動で食い込んでいる時の修正
-                if (x < 1)
-                    x = 1;
-                if (y < 1)
-                    y = 1;
-
-                Range yRange = new Range(0, mapList.Count() - 1); //行の範囲(配列番号に対応)
-                Range xRange = new Range(0, mapList[0].Count() - 1); //列の範囲(配列番号に対応)
-
-                //引数cellの周りの8つのセルに衝突対象がないかどうか確認(テトリミノのブロックごとに改良する必要ありか？)
-                for (int row = y - 1; row <= (y + 1); row++) //自分の上と下のセル
+                //テトリミノの構成ブロックの座標を取得(配列？)
+                foreach (var point in tetrimino.GetMinoUnitPos())
                 {
-                    for (int col = x - 1; col <= (x + 1); col++) //自分の右と左のセル
-                    {
-                        //配列外なら何もしない
-                        if (xRange.IsOutOfRange(col) || yRange.IsOutOfRange(row))
-                            continue;
+                    //構成ブロックに対応するフィールドの配列位置を取得
+                    int unitPos_X = (int)(tetrimino.Position.X + point.X) / Size.WIDTH;
+                    int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.HEIGHT;
 
-                        //その場所のオブジェクトを取得(調べる相手)
-                        Cell cll = mapList[row][col];
-
-                        //Spaceクラスのオブジェクトなら次へ
-                        if (cll is Space)
-                            continue;
-
-                        if (cll is Block)
-                            tetrimino.Hit(cll); //引数のTetriminoオブジェクトはその隣り合うCellオブジェクトに衝突した
-                    }
+                    //対応する位置のフィールドの要素を書き換える
+                    fieldData[unitPos_Y][unitPos_X] = tetrimino.GetUnitNum();
                 }
+                //横一列が揃ったか検証、揃ったらラインを消去
+                RemoveAndFillLine();
+                //一通り書き換えが終わったら初期化
+                tetrimino.Initialize();
             }
         }
 
@@ -396,9 +309,6 @@ namespace PersonalProduct_2nd.Tetris_Block
 
                     //テトリミノの落下状態を初期化
                     minoStateManager.ResetFallTimer();
-                    //tetrimino.InitFall();
-
-                    //tetrimino.MoveDown();
                 }
             }
         }
@@ -503,13 +413,10 @@ namespace PersonalProduct_2nd.Tetris_Block
             //返却用のリストを生成
             List<int> removeLineNum = new List<int>();
 
-            //フィールドのデータの要素を一つずつ確認する
-            for (int y = 0; y < fieldData.GetLength(0); y++)
+            //フィールドのデータの要素を下段から一つずつ確認する
+            //(ただし下端は除外)
+            for (int y = fieldData.GetLength(0) - 2; y > 0; y--)
             {
-                //下端は除外
-                if (y == fieldData.GetLength(0) - 1)
-                    continue;
-
                 //列内に0が含まれていた場合は除外
                 if (fieldData[y].Contains(0))
                     continue;
@@ -525,18 +432,18 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// ラインの消去
         /// </summary>
         /// <returns>消去対象の列数</returns>
-        public int RemoveLine()
+        public List<int> RemoveLine()
         {
-            //詰める列数を格納する変数を用意
-            int fillLine = 0;
-
-            //消去対象の列がなければ終了
+            //消去対象の列がなければNullを返却
             if (PickUpRemoveLineNum().Count == 0)
-                return fillLine;
+                return null;
+
+            //返却用のリストを生成
+            List<int> removeLineNum = PickUpRemoveLineNum();
 
             //消去対象の列番号内の要素を全て０にする
             foreach (var lineNum in PickUpRemoveLineNum())
-            { 
+            {
                 //列番号内の要素を一つずつ書き換え
                 for (int row = 0; row < fieldData[lineNum].Length; row++)
                 {
@@ -548,25 +455,37 @@ namespace PersonalProduct_2nd.Tetris_Block
                     //要素を０にする
                     fieldData[lineNum][row] = 0;
                 }
-                //詰める列数に加算
-                fillLine++;
             }
 
-            //詰める必要のある列数を返却、詰める処理にバトンタッチ
-            return fillLine;
+            //詰める必要のある列数を格納したリストを返却
+            //詰める処理にバトンタッチ
+            return removeLineNum;
         }
 
         /// <summary>
         /// 一段上の列をコピーして詰める
         /// </summary>
-        /// <param name="removeLineCnt">消去された列数</param>
-        public void FillLine(int removeLineCnt)
+        /// <param name="removeLine">消去された列番号を格納したリスト</param>
+        public void FillLine(List<int> removeLine)
         {
+            //特に削除する列がなければ終了
+            if (removeLine == null)
+                return;
+
             //消去対象の列の個数だけ繰り返す
-            for (int i = 0; i < removeLineCnt; i++)
+            for (int i = 0; i < removeLine.Count; i++)
             {
-                //全ての列でコピーを行う(ただし下端・上端は除外)
-                for (int col = 1; col < fieldData.GetLength(0) - 1; col++)
+                //列番号が連続していない場合は飛ばす
+                //ここがうまくいかない…
+                if (i < removeLine.Count - 1
+                    && Math.Abs(removeLine[i] - removeLine[i + 1]) != 1)
+                {
+                    continue;
+                }
+                //消去対象の列番号のうち最大の列番号からコピーを行う
+                //(ただし下端・上端は除外)
+                //ループ方向は下の列から上の列なのに注意
+                for (int col = removeLine.Max(); col > 1; col--)
                 {
                     //一段上の列をコピーする
                     fieldData[col - 1].CopyTo(fieldData[col], 0);

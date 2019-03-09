@@ -59,9 +59,5 @@ namespace PersonalProduct_2nd.Tetris_Block
         public override void Draw(Renderer renderer)
         {            
         }
-
-        public override void Hit(Cell other)
-        {
-        }
     }
 }
