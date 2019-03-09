@@ -20,7 +20,8 @@ namespace PersonalProduct_2nd.Device
     {
         //フィールド
         private Vector2 offset; //描画開始位置
-        private int[,] fieldData; //LineField用の描画に用いる配列データ
+        private int[,] fieldMatrixData; //LineField用の描画に用いる正方形配列データ
+        private int[][] fieldJaggedData; //LineField用の描画に用いるジャグ配列データ
         private Dictionary<blk_Col, int[,]> data; //テトリミノの描画に用いるデータをまとめたディクショナリ
 
         /// <summary>
@@ -47,12 +48,22 @@ namespace PersonalProduct_2nd.Device
         /// <summary>
         /// 描画に用いる配列の設定
         /// </summary>
-        /// <param name="dataName">使用用途に合わせた二次元配列の名前</param>
         /// <param name="data">描画に使う二次元配列</param>
         /// <returns></returns>
         public bool SetData(int[,] data)
         {
-            this.fieldData = data;
+            this.fieldMatrixData = data;
+            return true;
+        }
+
+        /// <summary>
+        /// 描画に用いるジャグ配列の設定
+        /// </summary>
+        /// <param name="jaggedData">描画用配列(ジャグ配列)</param>
+        /// <returns></returns>
+        public bool SetData(int[][] jaggedData)
+        {
+            this.fieldJaggedData = jaggedData;
             return true;
         }
 
@@ -63,36 +74,76 @@ namespace PersonalProduct_2nd.Device
         public void RenderField(Renderer renderer)
         {
             //配列を一要素ずつ描画する
-            for (int y = 0; y < fieldData.GetLength(0); y++)
+            for (int y = 0; y < fieldMatrixData.GetLength(0); y++)
             {
-                for (int x = 0; x < fieldData.GetLength(1); x++)
+                for (int x = 0; x < fieldMatrixData.GetLength(1); x++)
                 {
                     //要素番号に応じたブロックを描画する(もう少し効率的に書けないか？)
-                    if (fieldData[y, x] == 1)
+                    if (fieldMatrixData[y, x] == 1)
                         renderer.DrawTexture("black",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    else if(fieldData[y, x] == 2)
+                    else if(fieldMatrixData[y, x] == 2)
                         renderer.DrawTexture("mino_I",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    else if (fieldData[y, x] == 3)
+                    else if (fieldMatrixData[y, x] == 3)
                         renderer.DrawTexture("mino_T",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    else if (fieldData[y, x] == 4)
+                    else if (fieldMatrixData[y, x] == 4)
                         renderer.DrawTexture("mino_J",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    else if (fieldData[y, x] == 5)
+                    else if (fieldMatrixData[y, x] == 5)
                         renderer.DrawTexture("mino_L",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    else if (fieldData[y, x] == 6)
+                    else if (fieldMatrixData[y, x] == 6)
                         renderer.DrawTexture("mino_S",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    else if (fieldData[y, x] == 7)
+                    else if (fieldMatrixData[y, x] == 7)
                         renderer.DrawTexture("mino_Z",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    else if (fieldData[y, x] == 8)
+                    else if (fieldMatrixData[y, x] == 8)
                         renderer.DrawTexture("mino_O",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                }
+            }
+        }
 
+        /// <summary>
+        /// ステージの描画(ジャグ配列)
+        /// ジャグ配列と多次元配列をまとめて使えないだろうか？
+        /// </summary>
+        /// <param name="renderer"></param>
+        public void RenderJugField(Renderer renderer)
+        {
+            //配列を一要素ずつ描画する
+            for (int y = 0; y < fieldJaggedData.GetLength(0); y++)
+            {
+                for (int x = 0; x < fieldJaggedData[y].Length; x++)
+                {
+                    //要素番号に応じたブロックを描画する(もう少し効率的に書けないか？)
+                    if (fieldJaggedData[y][x] == 1)
+                        renderer.DrawTexture("black",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if(fieldJaggedData[y][x] == 2)
+                        renderer.DrawTexture("mino_I",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldJaggedData[y][x] == 3)
+                        renderer.DrawTexture("mino_T",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldJaggedData[y][x] == 4)
+                        renderer.DrawTexture("mino_J",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldJaggedData[y][x] == 5)
+                        renderer.DrawTexture("mino_L",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldJaggedData[y][x] == 6)
+                        renderer.DrawTexture("mino_S",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldJaggedData[y][x] == 7)
+                        renderer.DrawTexture("mino_Z",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                    else if (fieldJaggedData[y][x] == 8)
+                        renderer.DrawTexture("mino_O",
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
                 }
             }
         }
@@ -110,7 +161,7 @@ namespace PersonalProduct_2nd.Device
                 for (int x = 0; x < data[color].GetLength(1); x++)
                 {
                     //0(Space)でなければ描画する
-                    if (fieldData[y, x] != 0)
+                    if (fieldMatrixData[y, x] != 0)
                         renderer.DrawTexture(color.ToString(),
                             center + new Vector2((x - 2) * Size.WIDTH, (y - 2) * Size.HEIGHT) + offset);
                 }

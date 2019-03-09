@@ -26,7 +26,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         private DeviceManager deviceManager; //ゲームデバイス
         private Tetrimino tetrimino; //フィールドに出現しているテトリミノ
         private ArrayRenderer arrayRenderer; //二次元配列描画オブジェクト
-        private int[,] fieldData; //プレイ画面内のフィールドデータ
+        private int[][] fieldData; //プレイ画面内のフィールドデータ
         private MinoMove minoMove; //テトリミノ移動オブジェクト
         private MinoStateManager minoStateManager; //テトリミノの状態管理オブジェクト
         #endregion フィールド
@@ -110,7 +110,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             CSVReader csvReader = new CSVReader();
             csvReader.Read(filename, path);
 
-            fieldData = csvReader.GetIntMatrix(); //int[,]型で取得
+            fieldData = csvReader.GetIntData(); //int[,]型で取得
 
             arrayRenderer.SetData(fieldData); //描画を行うための配列を受け渡す→RenderFieldメソッドの準備
 
@@ -151,8 +151,10 @@ namespace PersonalProduct_2nd.Tetris_Block
                     int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.HEIGHT;
 
                     //対応する位置のフィールドの要素を書き換える
-                    fieldData[unitPos_Y, unitPos_X] = tetrimino.GetUnitNum();
+                    fieldData[unitPos_Y][unitPos_X] = tetrimino.GetUnitNum();
                 }
+                //横一列が揃ったか検証、揃ったらラインを消去
+                RemoveAndFillLine();
                 //一通り書き換えが終わったら初期化
                 tetrimino.Initialize();
             }
@@ -309,7 +311,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                     int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.HEIGHT;
 
                     //テトリミノ本体の座標と相対座標の和に右側隣接するマップ要素がSpace以外なら
-                    if (fieldData[unitPos_Y, unitPos_X + 1] != 0)
+                    if (fieldData[unitPos_Y][unitPos_X + 1] != 0)
                     {
                         //移動不能に通知
                         minoStateManager.CanMove = false;
@@ -338,7 +340,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                     int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.HEIGHT;
 
                     //テトリミノ本体の座標と相対座標の和に左側隣接するマップ要素が０以外なら
-                    if (fieldData[unitPos_Y, unitPos_X - 1] != 0)
+                    if (fieldData[unitPos_Y][unitPos_X - 1] != 0)
                     {
                         //移動不能に通知
                         minoStateManager.CanMove = false;
@@ -374,7 +376,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                     int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.WIDTH;
 
                     //構成ブロックの1ブロック分下部のブロックが0（＝空白）以外なら
-                    if (fieldData[unitPos_Y + 1, unitPos_X] != 0)
+                    if (fieldData[unitPos_Y + 1][unitPos_X] != 0)
                     {
                         //移動不可能にする
                         minoStateManager.CanMove = false;
@@ -435,7 +437,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                     //配列指定位置が負の数の場合も
                     if (unitPos_X <= 0
                         || unitPos_Y <= 0
-                        || fieldData[unitPos_Y, unitPos_X] != 0)
+                        || fieldData[unitPos_Y][unitPos_X] != 0)
                     {
                         //回転不可能とする
                         minoStateManager.CanMove = false;
@@ -468,7 +470,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             tetrimino.Draw(renderer);
 
             //フィールドを描画
-            arrayRenderer.RenderField(renderer);
+            arrayRenderer.RenderJugField(renderer);
 
             #region int型のままフィールドを生成する方法に変更
             //すべてのオブジェクト(Block, Space)を要素一つずつ描画していく
@@ -483,18 +485,93 @@ namespace PersonalProduct_2nd.Tetris_Block
             #endregion int型のままフィールドを生成する方法に変更
         }
 
-        //public List<int> PickUpRemoveLineNum()
-        //{
-        //    //返却用のリストを生成
-        //    List<int> removeLineNum = new List<int>();
+        /// <summary>
+        /// ラインを消去し、詰める
+        /// </summary>
+        public void RemoveAndFillLine()
+        {
+            //消去されたラインを詰める
+            FillLine(RemoveLine());
+        }
 
-        //    //フィールドのデータの要素を一つずつ確認する
-        //    for (int y = 0; y < fieldData.GetLength(0); y++)
-        //    {
-        //        //下端は除外
-        //        if (y == fieldData.GetLength(0) - 1)
-        //            continue;                
-        //    }
-        //}
+        /// <summary>
+        /// ブロックが一列揃った列番号を取得
+        /// </summary>
+        /// <returns>一列揃った列番号を格納したリスト</returns>
+        public List<int> PickUpRemoveLineNum()
+        {
+            //返却用のリストを生成
+            List<int> removeLineNum = new List<int>();
+
+            //フィールドのデータの要素を一つずつ確認する
+            for (int y = 0; y < fieldData.GetLength(0); y++)
+            {
+                //下端は除外
+                if (y == fieldData.GetLength(0) - 1)
+                    continue;
+
+                //列内に0が含まれていた場合は除外
+                if (fieldData[y].Contains(0))
+                    continue;
+
+                //上記の条件に抵触しなければその列番号をリストに追加する
+                removeLineNum.Add(y);
+            }
+            //リストを返却
+            return removeLineNum;
+        }
+
+        /// <summary>
+        /// ラインの消去
+        /// </summary>
+        /// <returns>消去対象の列数</returns>
+        public int RemoveLine()
+        {
+            //詰める列数を格納する変数を用意
+            int fillLine = 0;
+
+            //消去対象の列がなければ終了
+            if (PickUpRemoveLineNum().Count == 0)
+                return fillLine;
+
+            //消去対象の列番号内の要素を全て０にする
+            foreach (var lineNum in PickUpRemoveLineNum())
+            { 
+                //列番号内の要素を一つずつ書き換え
+                for (int row = 0; row < fieldData[lineNum].Length; row++)
+                {
+                    //右端と左端は飛ばす
+                    if (row == 0
+                        || row == fieldData[lineNum].Length - 1)
+                        continue;
+
+                    //要素を０にする
+                    fieldData[lineNum][row] = 0;
+                }
+                //詰める列数に加算
+                fillLine++;
+            }
+
+            //詰める必要のある列数を返却、詰める処理にバトンタッチ
+            return fillLine;
+        }
+
+        /// <summary>
+        /// 一段上の列をコピーして詰める
+        /// </summary>
+        /// <param name="removeLineCnt">消去された列数</param>
+        public void FillLine(int removeLineCnt)
+        {
+            //消去対象の列の個数だけ繰り返す
+            for (int i = 0; i < removeLineCnt; i++)
+            {
+                //全ての列でコピーを行う(ただし下端・上端は除外)
+                for (int col = 1; col < fieldData.GetLength(0) - 1; col++)
+                {
+                    //一段上の列をコピーする
+                    fieldData[col - 1].CopyTo(fieldData[col], 0);
+                }
+            }
+        }
     }
 }
