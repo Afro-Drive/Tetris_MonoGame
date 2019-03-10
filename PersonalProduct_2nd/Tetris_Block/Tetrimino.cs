@@ -93,15 +93,12 @@ namespace PersonalProduct_2nd.Tetris_Block
             //}; //5×5を基本単位とする(奇数の方が回転の中心を取りやすい)
             #endregion データクラスから持ってくる処理に変更
 
-            ////使用するアセットの初期化(formに応じて指定できるように変更したため削除)
-            //assetName = form.ToString();
-
-            //LineFieldの枠とズレるため削除
-            Position = new Vector2(Size.WIDTH * 10, Size.HEIGHT * 3); //X座標が大体フィールドの真ん中らへんに来るように設定
+            //初期位置を設定
+            Position = new Vector2(Size.WIDTH * 7, Size.HEIGHT * 3); //X座標が大体フィールドの真ん中らへんに来るように設定
 
             //配列描画オブジェクトを生成・使用配列を指定
             //コンストラクタの引数がLineFieldで生成したArrayRendererのものと紐づける方法を考える
-            arrayRenderer = new ArrayRenderer(new Vector2(Size.WIDTH * 2, Size.HEIGHT * 1));
+            arrayRenderer = new ArrayRenderer(Size.offset);
             arrayRenderer.SetData(rotate_Array);
 
             //各種タイマーを生成

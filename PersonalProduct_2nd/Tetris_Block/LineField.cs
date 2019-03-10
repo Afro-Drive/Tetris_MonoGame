@@ -29,6 +29,8 @@ namespace PersonalProduct_2nd.Tetris_Block
         private int[][] fieldData; //プレイ画面内のフィールドデータ
         private MinoMove minoMove; //テトリミノ移動オブジェクト
         private MinoStateManager minoStateManager; //テトリミノの状態管理オブジェクト
+
+        private readonly int deadLine = 3; //ゲームオーバーか確認用の列番号
         #endregion フィールド
 
         /// <summary>
@@ -53,9 +55,11 @@ namespace PersonalProduct_2nd.Tetris_Block
             minoStateManager = new MinoStateManager(tetrimino);
 
             //二次元配列描画オブジェクトを実体生成
-            arrayRenderer = new ArrayRenderer(new Vector2(Size.WIDTH * 2, Size.HEIGHT * 1));
+            arrayRenderer = new ArrayRenderer(Size.offset);
             //最初はテトリミノは移動可能として初期化
             minoStateManager.CanMove = true;
+            //最初は死亡フラグはOFFにする
+            IsDeadFlag = false;
         }
 
         /// <summary>
@@ -119,6 +123,8 @@ namespace PersonalProduct_2nd.Tetris_Block
             //    tetrimino2.Update(gameTime);
             //}
             #endregion テトリミノの変数を一つにしたため削除
+            //ゲームオーバー領域にブロックが残っているか検証
+            DeadCheck();
 
             //テトリミノが動ける状態か判定
             MoveLRCheck(); //左右移動
@@ -379,8 +385,17 @@ namespace PersonalProduct_2nd.Tetris_Block
             //テトリミノを描画
             tetrimino.Draw(renderer);
 
-            //フィールドを描画
-            arrayRenderer.RenderJugField(renderer);
+            //ゲーム状態に応じてフィールドを描画
+            if (DeadCheck())
+            {
+                //積まれたブロックを赤く描画
+                arrayRenderer.RenderJugField(renderer, Color.Red);
+                //死亡フラグを立てる
+                IsDeadFlag = true;
+            }
+            else
+                //普段は標準描画
+                arrayRenderer.RenderJugField(renderer, Color.White);
 
             #region int型のままフィールドを生成する方法に変更
             //すべてのオブジェクト(Block, Space)を要素一つずつ描画していく
@@ -491,6 +506,37 @@ namespace PersonalProduct_2nd.Tetris_Block
                     fieldData[col - 1].CopyTo(fieldData[col], 0);
                 }
             }
+        }
+
+        /// <summary>
+        /// デッドラインにブロックが残っているか判定
+        /// </summary>
+        /// <returns>ブロックが残っている→真
+        /// 残っていない→偽</returns>
+        public bool DeadCheck()
+        {
+            //fliedData内で、デッドラインの領域を調べる
+            for (int col = 0; col < deadLine; col++)
+            {
+                //ただし、両端は飛ばす
+                for (int row = 1; row < fieldData[col].Length - 1; row++)
+                {
+                    //その配列内に0以外の要素があった時点で終了
+                    if (fieldData[col][row] != 0)
+                        return true;
+                }
+            }
+            //普段は偽を返却
+            return false;
+        }
+
+        /// <summary>
+        /// プレイヤーが死亡したか？
+        /// </summary>
+        public bool IsDeadFlag
+        {
+            get;
+            private set;
         }
     }
 }

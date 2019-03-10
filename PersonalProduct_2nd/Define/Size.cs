@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,5 +17,8 @@ namespace PersonalProduct_2nd.Define
         public static readonly int HEIGHT = 64;
         //横
         public static readonly int WIDTH = 64;
+
+        //描画位置
+        public static readonly Vector2 offset = new Vector2(Size.WIDTH * 2, Size.HEIGHT * -5);
     }
 }

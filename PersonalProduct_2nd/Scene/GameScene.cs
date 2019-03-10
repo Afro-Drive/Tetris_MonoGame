@@ -71,7 +71,7 @@ namespace PersonalProduct_2nd.Scene
         /// <returns>シーンオブジェクトに対応する列挙型</returns>
         public EScene Next()
         {
-            return EScene.LoadScene;
+            return EScene.Result;
         }
 
         /// <summary>
@@ -86,8 +86,9 @@ namespace PersonalProduct_2nd.Scene
         /// </summary>
         public void Update(GameTime gameTime)
         {
-            //if (Input.IskeyDown(Keys.Enter))
-            //    isEndFlag = true;
+            //デッドラインにブロックが達したら終了
+            if (field.IsDeadFlag)
+                isEndFlag = true;
 
             //tetrimino.Update(gameTime);
             //field.Hit(tetrimino); //表示したテトリミノが接触してないか確認

@@ -112,7 +112,8 @@ namespace PersonalProduct_2nd.Device
         /// ジャグ配列と多次元配列をまとめて使えないだろうか？
         /// </summary>
         /// <param name="renderer"></param>
-        public void RenderJugField(Renderer renderer)
+        /// <param name="color">描画色</param>
+        public void RenderJugField(Renderer renderer, Color color)
         {
             //配列を一要素ずつ描画する
             for (int y = 0; y < fieldJaggedData.GetLength(0); y++)
@@ -122,28 +123,36 @@ namespace PersonalProduct_2nd.Device
                     //要素番号に応じたブロックを描画する(もう少し効率的に書けないか？)
                     if (fieldJaggedData[y][x] == 1)
                         renderer.DrawTexture("black",
-                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
+                            color);
                     else if(fieldJaggedData[y][x] == 2)
                         renderer.DrawTexture("mino_I",
-                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
+                            color);
                     else if (fieldJaggedData[y][x] == 3)
                         renderer.DrawTexture("mino_T",
-                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
+                            color);
                     else if (fieldJaggedData[y][x] == 4)
                         renderer.DrawTexture("mino_J",
-                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
+                            color);
                     else if (fieldJaggedData[y][x] == 5)
                         renderer.DrawTexture("mino_L",
-                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
+                            color);
                     else if (fieldJaggedData[y][x] == 6)
                         renderer.DrawTexture("mino_S",
-                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
+                            color);
                     else if (fieldJaggedData[y][x] == 7)
                         renderer.DrawTexture("mino_Z",
-                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
+                            color);
                     else if (fieldJaggedData[y][x] == 8)
                         renderer.DrawTexture("mino_O",
-                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
+                            new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
+                            color);
                 }
             }
         }

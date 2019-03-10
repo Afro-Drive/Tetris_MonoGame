@@ -16,6 +16,7 @@ namespace PersonalProduct_2nd.Scene
     class Result : IScene
     {
         private bool isEndFlag;//終了フラグ
+        private IScene backGround; //背景に移すシーン
 
         private DeviceManager device;//デバイス管理者
         private SoundManager sound; //サウンド管理者      
@@ -23,9 +24,11 @@ namespace PersonalProduct_2nd.Scene
         /// <summary>
         /// コンストラクタ
         /// </summary>
-        public Result()
+        /// <param name="pastScene">1つ前のシーン</param>
+        public Result(IScene pastScene)
         {
             isEndFlag = false;
+            this.backGround = pastScene;
 
             device = DeviceManager.CreateInstance();
             sound = device.GetSound();
@@ -37,7 +40,9 @@ namespace PersonalProduct_2nd.Scene
         /// <param name="renderer"></param>
         public void Draw(Renderer renderer)
         {
-            renderer.DrawTexture("christmas_dance_tonakai", new Vector2(100, 190));
+            //背景シーンを描画
+            backGround.Draw(renderer);
+            renderer.DrawTexture("christmas_dance_tonakai", new Vector2(700, 190));
         }
 
         /// <summary>
@@ -63,7 +68,7 @@ namespace PersonalProduct_2nd.Scene
         /// <returns>Titleシーンに対応する列挙型</returns>
         public EScene Next()
         {
-            return EScene.Title;
+            return EScene.GameScene;
         }
 
         /// <summary>
