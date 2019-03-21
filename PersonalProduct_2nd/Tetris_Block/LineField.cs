@@ -31,6 +31,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         private MinoStateManager minoStateManager; //テトリミノの状態管理オブジェクト
 
         private readonly int deadLine = 3; //ゲームオーバーか確認用の列番号
+        private int removeCnt; //消去したラインの数
         #endregion フィールド
 
         /// <summary>
@@ -60,6 +61,8 @@ namespace PersonalProduct_2nd.Tetris_Block
             minoStateManager.CanMove = true;
             //最初は死亡フラグはOFFにする
             IsDeadFlag = false;
+            //消去した列の数は０で初期化
+            removeCnt = 0; 
         }
 
         /// <summary>
@@ -130,6 +133,12 @@ namespace PersonalProduct_2nd.Tetris_Block
             MoveLRCheck(); //左右移動
             MoveDCheck();　//下移動
             RotateCheck(); //回転
+
+            //消去した列の数に応じて落下速度を再設定
+            if (removeCnt % 5 == 0 && removeCnt != 0)
+            {
+                tetrimino.ResetFallTimer(0.05f);
+            }
         }
 
         /// <summary>
@@ -470,6 +479,8 @@ namespace PersonalProduct_2nd.Tetris_Block
                     //要素を０にする
                     fieldData[lineNum][row] = 0;
                 }
+                //消去したライン数を加算
+                removeCnt++;
             }
 
             //詰める必要のある列数を格納したリストを返却

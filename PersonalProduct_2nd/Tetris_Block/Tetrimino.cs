@@ -41,8 +41,8 @@ namespace PersonalProduct_2nd.Tetris_Block
 
         private ArrayRenderer arrayRenderer; //二次元配列描画用オブジェクト
 
-        private Timer landTimer; //着地後操作猶予タイマー
-        private Timer fallTimer; //自動落下タイマー
+        private CountDown_Timer landTimer; //着地後操作猶予タイマー
+        private CountDown_Timer fallTimer; //自動落下タイマー
 
         private bool landON; //着地フラグ
         private bool isLocked; //操作可能か？
@@ -102,8 +102,8 @@ namespace PersonalProduct_2nd.Tetris_Block
             arrayRenderer.SetData(rotate_Array);
 
             //各種タイマーを生成
-            landTimer = new CountDown_Timer(2.0f);
-            fallTimer = new CountDown_Timer(1.5f);
+            landTimer = new CountDown_Timer(1.5f);
+            fallTimer = new CountDown_Timer(0.5f);
 
             //離陸状態で初期化
             landON = false;
@@ -473,6 +473,24 @@ namespace PersonalProduct_2nd.Tetris_Block
         public int GetUnitNum()
         {
             return (int)form + 2;
+        }
+
+        /// <summary>
+        /// 着地後のタイマーの制限時間を再設定
+        /// </summary>
+        /// <param name="newCount"></param>
+        public void ResetLandTimer(float newCount)
+        {
+            landTimer.ResetLimitTime(newCount);
+        }
+
+        /// <summary>
+        /// 落下タイマーの制限時間を再設定
+        /// </summary>
+        /// <param name="newCount"></param>
+        public void ResetFallTimer(float newCount)
+        {
+            fallTimer.ResetLimitTime(newCount);
         }
 
         #region 回転可能かのプロパティ→MinoStateManagerクラスのCanMoveに委託

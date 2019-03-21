@@ -70,5 +70,15 @@ namespace PersonalProduct_2nd.Utility
             //現在時間と0.0で大きい方を返却する
             currentTime = Math.Max(currentTime, 0.0f);
         }
+
+        /// <summary>
+        /// 制限時間を再設定
+        /// </summary>
+        /// <param name="newLimit">再設定用の制限時間</param>
+        public void ResetLimitTime(float newLimit)
+        {
+            this.limitTime = newLimit;
+            Initialize();
+        }
     }
 }
