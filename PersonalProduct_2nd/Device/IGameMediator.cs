@@ -13,5 +13,16 @@ namespace PersonalProduct_2nd.Device
     /// </summary>
     interface IGameMediator
     {
+        //スコアの加算
+        void AddScore(int num);
+
+        //スコアの取得
+        int GetScore();
+
+        //消去したライン数の取得
+        int GetRemoveLineValue();
+
+        //消去したラインを加算
+        void AddRemoveLine();
     }
 }

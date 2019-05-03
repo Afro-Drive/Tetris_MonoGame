@@ -63,12 +63,12 @@ namespace PersonalProduct_2nd
             sceneManager = new SceneManager();
             //sceneManager.AddScene(EScene.LoadScene, new LoadScene(GraphicsDevice));
             //sceneManager.AddScene(EScene.LogoScene, new LogoScene());
-            //sceneManager.AddScene(EScene.Title,     new Title());
+            sceneManager.AddScene(EScene.Title, new Title());
             //sceneManager.AddScene(EScene.Tutorial,  new Tutorial());
             IScene addScene = new GameScene();
             sceneManager.AddScene(EScene.GameScene, addScene);
             sceneManager.AddScene(EScene.Result, new Result(addScene));
-            sceneManager.SetScene(EScene.GameScene);
+            sceneManager.SetScene(EScene.Title);
             #endregion シーンの追加、設定
 
             // この上にロジックを記述
@@ -85,8 +85,12 @@ namespace PersonalProduct_2nd
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // この下にロジックを記述
-            renderer.LoadContent("christmas_dance_tonakai"); //シーン遷移確認用画像
-            renderer.LoadContent("black");
+            renderer.LoadContent("christmas_dance_tonakai", "./Texture/"); //シーン遷移確認用画像
+            renderer.LoadContent("black", "./Texture/");
+            renderer.LoadContent("load", "./Texture/");
+            renderer.LoadContent("number", "./Texture/");
+            renderer.LoadContent("title", "./Texture/");
+            renderer.LoadContent("score", "./Texture/");
 
             //テトリミノの色ブロック
             renderer.LoadContent("mino_I", "./Tetrimino/");

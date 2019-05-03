@@ -19,6 +19,8 @@ namespace PersonalProduct_2nd.Scene
     {
         private bool isEndFlag;//終了フラグ
         private LineField field; //プレイエリアのフィールド
+        private Score score; //スコア
+        private RemoveLineBoard removeLineBoard; //消去ライン数表示ボード
 
         private DeviceManager device;//デバイス管理者
         private SoundManager sound; //サウンド管理者  
@@ -36,12 +38,48 @@ namespace PersonalProduct_2nd.Scene
         }
 
         /// <summary>
+        /// 消去したラインの加算をラインボードに通達する
+        /// </summary>
+        public void AddRemoveLine()
+        {
+            removeLineBoard.AddRemoveLine();
+        }
+
+        /// <summary>
+        /// スコアの加算
+        /// </summary>
+        /// <param name="num">加算得点</param>
+        public void AddScore(int num)
+        {
+            score.Add(num);
+        }
+
+        /// <summary>
         /// 描画処理
         /// </summary>
         public void Draw(Renderer renderer)
         {
             field.Draw(renderer);
-            //tetrimino.Draw(renderer);
+            score.Draw(renderer);
+            removeLineBoard.Draw(renderer);
+        }
+
+        /// <summary>
+        /// 消去したライン数の取得
+        /// </summary>
+        /// <returns></returns>
+        public int GetRemoveLineValue()
+        {
+            return field.GetRemoveCnt();
+        }
+
+        /// <summary>
+        /// スコアの取得
+        /// </summary>
+        /// <returns>現在スコア</returns>
+        public int GetScore()
+        {
+            return score.GetScore();
         }
 
         /// <summary>
@@ -50,8 +88,10 @@ namespace PersonalProduct_2nd.Scene
         public void Initialize()
         {
             isEndFlag = false;
-            field = new LineField(device);
+            field = new LineField(device, this);
             field.Load("LineField.csv", "./csv/"); //フィールド元のファイルの読み込み
+            score = new Score();
+            removeLineBoard = new RemoveLineBoard();
 
             //tetrimino = new Tetrimino();
         }
@@ -71,7 +111,8 @@ namespace PersonalProduct_2nd.Scene
         /// <returns>シーンオブジェクトに対応する列挙型</returns>
         public EScene Next()
         {
-            return EScene.Result;
+            //return EScene.Result;
+            return EScene.Title;
         }
 
         /// <summary>
@@ -79,6 +120,8 @@ namespace PersonalProduct_2nd.Scene
         /// </summary>
         public void Shutdown()
         {
+            score.Shutdown();
+            removeLineBoard.Shutdown();
         }
 
         /// <summary>
@@ -94,6 +137,8 @@ namespace PersonalProduct_2nd.Scene
             //field.Hit(tetrimino); //表示したテトリミノが接触してないか確認
 
             field.Update(gameTime);
+            score.Update(gameTime);
+            removeLineBoard.Update(gameTime);
         }
     }
 }

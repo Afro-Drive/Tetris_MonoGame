@@ -106,5 +106,17 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             this.target = target;
         }
+
+        /// <summary>
+        /// 落下タイマーを無視した超高速落下
+        /// </summary>
+        /// <param name="landPos">落下後の着地地点</param>
+        public void HardFall(Vector2 landPos)
+        {
+            if (!target.IsLocked())
+            {
+
+            }
+        }
     }
 }

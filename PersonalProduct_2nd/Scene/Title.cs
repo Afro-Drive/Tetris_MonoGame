@@ -38,7 +38,7 @@ namespace PersonalProduct_2nd.Scene
         /// <param name="renderer"></param>
         public void Draw(Renderer renderer)
         {
-            renderer.DrawTexture("christmas_dance_tonakai", new Vector2(1000, 800));
+            renderer.DrawTexture("title", Vector2.Zero);            
         }
 
         /// <summary>
@@ -64,7 +64,8 @@ namespace PersonalProduct_2nd.Scene
         /// <returns>Tutorialに対応する列挙型</returns>
         public EScene Next()
         {
-            return EScene.Tutorial;
+            //return EScene.Tutorial;
+            return EScene.GameScene;
         }
 
         /// <summary>

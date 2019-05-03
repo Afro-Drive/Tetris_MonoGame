@@ -29,6 +29,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         private int[][] fieldData; //プレイ画面内のフィールドデータ
         private MinoMove minoMove; //テトリミノ移動オブジェクト
         private MinoStateManager minoStateManager; //テトリミノの状態管理オブジェクト
+        private IGameMediator mediator; //ゲーム仲介者
 
         private readonly int deadLine = 3; //ゲームオーバーか確認用の列番号
         private int removeCnt; //消去したラインの数
@@ -38,10 +39,12 @@ namespace PersonalProduct_2nd.Tetris_Block
         ///　コンストラクタ
         /// </summary>
         /// <param name="device"></param>
-        public LineField(DeviceManager device)
+        /// <param name="mediator"></param>
+        public LineField(DeviceManager device, IGameMediator mediator)
         {
             mapList = new List<List<Cell>>();//マップの実態生成
             deviceManager = device;
+            this.mediator = mediator;
 
             Initialize();
         }
@@ -135,6 +138,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             RotateCheck(); //回転
 
             //消去した列の数に応じて落下速度を再設定
+            //→メソッド化予定
             if (removeCnt % 5 == 0 && removeCnt != 0)
             {
                 tetrimino.ResetFallTimer(0.05f);
@@ -336,8 +340,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             //AかDキーが入力された
             //なんか見づらいコードやなぁ・・・
-            if (Input.GetKeyTrigger(Keys.A)
-                || Input.GetKeyTrigger(Keys.D))
+            if (Input.GetKeyTrigger(Keys.A) || Input.GetKeyTrigger(Keys.D))
             {
                 //まずは回転可能にする
                 minoStateManager.CanMove = true;
@@ -398,8 +401,9 @@ namespace PersonalProduct_2nd.Tetris_Block
             if (DeadCheck())
             {
                 //積まれたブロックを赤く描画
+                //→Endingシーンなどで色を変える予定
                 arrayRenderer.RenderJugField(renderer, Color.Red);
-                //死亡フラグを立てる
+                //死亡フラグを立てる→ここでフラグをいじってはダメ
                 IsDeadFlag = true;
             }
             else
@@ -472,8 +476,8 @@ namespace PersonalProduct_2nd.Tetris_Block
                 for (int row = 0; row < fieldData[lineNum].Length; row++)
                 {
                     //右端と左端は飛ばす
-                    if (row == 0
-                        || row == fieldData[lineNum].Length - 1)
+                    if (row == 0 || 
+                        row == fieldData[lineNum].Length - 1)
                         continue;
 
                     //要素を０にする
@@ -481,6 +485,10 @@ namespace PersonalProduct_2nd.Tetris_Block
                 }
                 //消去したライン数を加算
                 removeCnt++;
+                //消去ライン計測者へ受け渡し
+                mediator.AddRemoveLine();
+                //スコアを加算する
+                mediator.AddScore(100);
             }
 
             //詰める必要のある列数を格納したリストを返却
@@ -548,6 +556,15 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             get;
             private set;
+        }
+
+        /// <summary>
+        /// 消去したライン数の取得
+        /// </summary>
+        /// <returns>フィールドremoveCnt</returns>
+        public int GetRemoveCnt()
+        {
+            return removeCnt;
         }
     }
 }
