@@ -294,7 +294,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             //テトリミノが下方に移動しようとしている
             //(下キーが入力された、または、テトリミノが落下状態)
-            if (Input.GetKeyTrigger(Keys.Down) || minoStateManager.IsFall())
+            if (Input.GetKeyState(Keys.Down) || minoStateManager.IsFall())
             {
                 //まずは移動可能とする
                 minoStateManager.CanMove = true;
@@ -324,25 +324,27 @@ namespace PersonalProduct_2nd.Tetris_Block
                 {
                     //テトリミノを離陸状態とする
                     minoStateManager.SetLandState(false);
-                    //テトリミノを落下移動させる
-                    minoMove.LetMinoFall();
-
-                    //テトリミノの落下状態を初期化
-                    minoStateManager.ResetFallTimer();
+                    //キー入力による落下要求の場合
+                    if (Input.GetKeyState(Keys.Down))
+                    {
+                        //キー入力による猶予タイマーを起動
+                        minoStateManager.SetInputFallState(true);
+                        //その猶予タイマーが終了したらミノを落下させる
+                        if (minoStateManager.CanInputFall())
+                            minoMove.LetMinoFall();
+                    }
+                    //テトリミノの自動落下ならタイマーを初期化
+                    if (minoStateManager.IsFall())
+                    {
+                        //テトリミノを落下移動させる
+                        minoMove.LetMinoFall();
+                        minoStateManager.ResetFallTimer();
+                    }
                 }
             }
-        }
-
-        /// <summary>
-        /// ノーマルドロップが可能か調べる
-        /// </summary>
-        private void NormalFallCheck()
-        {
-            //下キーが入力されたら検証開始
-            if (Input.GetKeyState(Keys.Down))
-            {
-
-            }
+            //キー入力が途切れたら、落下猶予タイマーを初期化
+            else if (!Input.GetKeyState(Keys.Down))
+                minoStateManager.ResetInputFallTimer();
         }
 
         /// <summary>
@@ -366,7 +368,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                     for (int i = 1; i < fieldData.GetLength(0) - unitPos_Y; i++)
                     {
                         //0以外の要素が出てきた時点で距離を記録
-                        if(fieldData[unitPos_Y + i][unitPos_X] != 0)
+                        if (fieldData[unitPos_Y + i][unitPos_X] != 0)
                         {
                             toLandVal.Add(unitPos_Y + i);
                         }

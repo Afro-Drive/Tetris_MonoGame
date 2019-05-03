@@ -43,9 +43,11 @@ namespace PersonalProduct_2nd.Tetris_Block
 
         private CountDown_Timer landTimer; //着地後操作猶予タイマー
         private CountDown_Timer fallTimer; //自動落下タイマー
+        private CountDown_Timer inputFallTimer; //キー入力時の落下タイマー
 
         private bool landON; //着地フラグ
         private bool isLocked; //操作可能か？
+        private bool inputFallON; //落下用キー入力がされたか？
 
         private Random rnd; //ランダムオブジェクト
         private List<Form_mino> formList; //テトリミノの形を格納したリスト
@@ -104,11 +106,14 @@ namespace PersonalProduct_2nd.Tetris_Block
             //各種タイマーを生成
             landTimer = new CountDown_Timer(1.5f);
             fallTimer = new CountDown_Timer(0.5f);
+            inputFallTimer = new CountDown_Timer(0.2f);
 
             //離陸状態で初期化
             landON = false;
             //操作可能状態で初期化
             isLocked = false;
+            //落下入力はされていない状態で初期化
+            inputFallON = false;
         }
 
         /// <summary>
@@ -117,6 +122,15 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime)
         {
+            //キー入力による落下タイマー
+            if (inputFallON)
+            {
+                inputFallTimer.Update(gameTime);
+            }
+            else
+            {
+                inputFallTimer.Initialize();
+            }
             if (landON) //着地状態なら
             {
                 //着地タイマーを起動
@@ -441,6 +455,15 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// キー入力による落下受付
+        /// </summary>
+        /// <param name="flag"></param>
+        public void InputFallSwitch(bool flag)
+        {
+            inputFallON = Convert.ToBoolean(flag);
+        }
+
+        /// <summary>
         /// 落下状態か？
         /// </summary>
         /// <returns>落下タイマーが時間切れかどうか返却</returns>
@@ -455,6 +478,14 @@ namespace PersonalProduct_2nd.Tetris_Block
         public void InitFall()
         {
             fallTimer.Initialize();
+        }
+
+        /// <summary>
+        /// キー入力落下タイマーの初期化
+        /// </summary>
+        public void InitInputFall()
+        {
+            inputFallTimer.Initialize();
         }
 
         /// <summary>
@@ -499,6 +530,15 @@ namespace PersonalProduct_2nd.Tetris_Block
         public void ResetFallTimer(float newCount)
         {
             fallTimer.ResetLimitTime(newCount);
+        }
+
+        /// <summary>
+        /// キー入力落下可能となったか？
+        /// </summary>
+        /// <returns>キー入力後の落下タイマーが時間切れになったかどうか</returns>
+        public bool CanInputFall()
+        {
+            return inputFallTimer.TimeUP();
         }
 
         #region 回転可能かのプロパティ→MinoStateManagerクラスのCanMoveに委託

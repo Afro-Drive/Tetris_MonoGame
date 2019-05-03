@@ -41,12 +41,44 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// キー入力落下状態の設定
+        /// </summary>
+        /// <param name="state"></param>
+        public void SetInputFallState(bool state)
+        {
+            if (!target.IsLocked())
+            {
+                target.InputFallSwitch(state);
+            }
+        }
+
+        /// <summary>
+        /// テトリミノはキー入力後の落下ができる状態か？
+        /// </summary>
+        /// <returns></returns>
+        public bool CanInputFall()
+        {
+            return target.CanInputFall(); 
+        }
+
+        /// <summary>
         /// テトリミノの自動落下状態を取得
         /// </summary>
         /// <returns>自動落下タイマーが切れたらTrue</returns>
         public bool IsFall()
         {
             return target.IsFall();
+        }
+
+        /// <summary>
+        /// テトリミノのインプット落下タイマーの初期化
+        /// </summary>
+        public void ResetInputFallTimer()
+        {
+            if (!target.IsLocked())
+            {
+                target.InitInputFall();
+            }
         }
 
         /// <summary>
