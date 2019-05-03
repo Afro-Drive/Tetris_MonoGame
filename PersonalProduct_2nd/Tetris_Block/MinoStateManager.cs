@@ -61,6 +61,17 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// テトリミノの落下タイマーを０にする
+        /// </summary>
+        public void ShutLandTimeDown()
+        {
+            if (!target.IsLocked())
+            {
+                target.LandTimeZero();
+            }
+        }
+
+        /// <summary>
         /// 状態管理を行う対象を設定
         /// </summary>
         /// <param name="target">管理したいテトリミノ</param>

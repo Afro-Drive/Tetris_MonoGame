@@ -458,6 +458,14 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// 落下タイマーを強制終了
+        /// </summary>
+        public void LandTimeZero()
+        {
+            landTimer.ForceZero();
+        }
+
+        /// <summary>
         /// テトリミノが固定状態か？
         /// </summary>
         /// <returns>フィールドのisLocked</returns>

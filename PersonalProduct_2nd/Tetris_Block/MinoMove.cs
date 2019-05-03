@@ -115,7 +115,8 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             if (!target.IsLocked())
             {
-
+                //ミノの座標を着地位置まで一気に移動
+                target.Position = landPos;
             }
         }
     }

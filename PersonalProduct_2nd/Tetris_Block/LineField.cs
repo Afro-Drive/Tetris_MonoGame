@@ -65,7 +65,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             //最初は死亡フラグはOFFにする
             IsDeadFlag = false;
             //消去した列の数は０で初期化
-            removeCnt = 0; 
+            removeCnt = 0;
         }
 
         /// <summary>
@@ -135,6 +135,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             //テトリミノが動ける状態か判定
             MoveLRCheck(); //左右移動
             MoveDCheck();　//下移動
+            HardFallCheck(); //超高速落下移動
             RotateCheck(); //回転
 
             //消去した列の数に応じて落下速度を再設定
@@ -333,6 +334,55 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// ノーマルドロップが可能か調べる
+        /// </summary>
+        private void NormalFallCheck()
+        {
+            //下キーが入力されたら検証開始
+            if (Input.GetKeyState(Keys.Down))
+            {
+
+            }
+        }
+
+        /// <summary>
+        /// 超高速落下が可能か調べる
+        /// </summary>
+        private void HardFallCheck()
+        {
+            //上キーが入力されたら検証開始
+            if (Input.GetKeyTrigger(Keys.Up))
+            {
+                minoStateManager.CanMove = true;
+                //ミノ構成ブロックと着地点までの距離リストを用意
+                var toLandVal = new List<int>();
+                //テトリミノの構成ブロックを一つずつ取り出し
+                foreach (var point in tetrimino.GetMinoUnitPos())
+                {
+                    //構成ブロックの座標に対応する要素番号の特定
+                    int unitPos_X = (int)(tetrimino.Position.X + point.X) / Size.WIDTH;
+                    int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.HEIGHT;
+                    //落下中のミノの下部のフィールド位置の要素を検証
+                    for (int i = 1; i < fieldData.GetLength(0) - unitPos_Y; i++)
+                    {
+                        //0以外の要素が出てきた時点で距離を記録
+                        if(fieldData[unitPos_Y + i][unitPos_X] != 0)
+                        {
+                            toLandVal.Add(unitPos_Y + i);
+                        }
+                    }
+                }
+                //最も近距離の値の一つ上を着地予定地Yと定める
+                var landPosY = (toLandVal.Min() - 1) * Size.HEIGHT;
+                //着地予定地まで一気に落下させる
+                minoMove.HardFall(new Vector2(tetrimino.Position.X, landPosY));
+                //ミノの着地時間も終了状態にする
+                minoStateManager.ShutLandTimeDown();
+                minoStateManager.SetLandState(true);
+            }
+        }
+
+        /// <summary>
         /// テトリミノが回転可能か調べる
         /// 必要に応じて座標を補正する
         /// </summary>
@@ -476,7 +526,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                 for (int row = 0; row < fieldData[lineNum].Length; row++)
                 {
                     //右端と左端は飛ばす
-                    if (row == 0 || 
+                    if (row == 0 ||
                         row == fieldData[lineNum].Length - 1)
                         continue;
 

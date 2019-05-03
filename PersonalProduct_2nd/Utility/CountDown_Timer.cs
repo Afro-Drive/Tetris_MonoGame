@@ -80,5 +80,13 @@ namespace PersonalProduct_2nd.Utility
             this.limitTime = newLimit;
             Initialize();
         }
+
+        /// <summary>
+        /// 残り時間を強制的に０にする
+        /// </summary>
+        public void ForceZero()
+        {
+            currentTime = 0;
+        }
     }
 }
