@@ -448,6 +448,8 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             //テトリミノを描画
             tetrimino.Draw(renderer);
+            //テトリミノの影の描画
+            tetrimino.DrawShadow(renderer, CalcMinoShadowPos());
 
             //ゲーム状態に応じてフィールドを描画
             if (DeadCheck())
@@ -473,6 +475,36 @@ namespace PersonalProduct_2nd.Tetris_Block
             //    }
             //}
             #endregion int型のままフィールドを生成する方法に変更
+        }
+
+        /// <summary>
+        /// 落下中のミノの影を落とす位置の計算
+        /// </summary>
+        /// <returns></returns>
+        private Vector2 CalcMinoShadowPos()
+        {
+            //ミノ構成ブロックと着地点までの距離リストを用意
+            var toLandVal = new List<int>();
+            //テトリミノの構成ブロックを一つずつ取り出し
+            foreach (var point in tetrimino.GetMinoUnitPos())
+            {
+                //構成ブロックの座標に対応する要素番号の特定
+                int unitPos_X = (int)(tetrimino.Position.X + point.X) / Size.WIDTH;
+                int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.HEIGHT;
+                //落下中のミノの下部のフィールド位置の要素を検証
+                for (int i = 1; i < fieldData.GetLength(0) - unitPos_Y; i++)
+                {
+                    //0以外の要素が出てきた時点で距離を記録
+                    if (fieldData[unitPos_Y + i][unitPos_X] != 0)
+                    {
+                        toLandVal.Add(unitPos_Y + i);
+                    }
+                }
+            }
+            //最も近距離の値の一つ上を着地予定地Yと定める
+            var shadowPosY = (toLandVal.Min() - 1) * Size.HEIGHT;
+            //影を投射する座標を返却
+            return new Vector2(tetrimino.Position.X, shadowPosY);
         }
 
         /// <summary>

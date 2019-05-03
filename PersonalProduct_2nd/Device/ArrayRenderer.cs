@@ -163,7 +163,8 @@ namespace PersonalProduct_2nd.Device
         /// <param name="renderer"></param>
         /// <param name="center">回転配列の中心座標</param>
         /// <param name="color">描画を行うテトリミノのblk_Colメンバ</param>
-        public void RenderTetrimino(Renderer renderer, Vector2 center, blk_Col color)
+        /// <param name="alpha">透明度(デフォルト値1.0)</param>
+        public void RenderTetrimino(Renderer renderer, Vector2 center, blk_Col color, float alpha = 1.0f)
         {
             for (int y = 0; y < data[color].GetLength(0); y++)
             {
@@ -172,7 +173,8 @@ namespace PersonalProduct_2nd.Device
                     //0(Space)でなければ描画する
                     if (fieldMatrixData[y, x] != 0)
                         renderer.DrawTexture(color.ToString(),
-                            center + new Vector2((x - 2) * Size.WIDTH, (y - 2) * Size.HEIGHT) + offset);
+                            center + new Vector2((x - 2) * Size.WIDTH, (y - 2) * Size.HEIGHT) + offset,
+                            alpha);
                 }
             }
         }

@@ -388,6 +388,17 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// テトリミノの影の描画
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <param name="bottonPos"></param>
+        public void DrawShadow(Renderer renderer, Vector2 bottonPos)
+        {
+            //透明度を下げた状態で描画する
+            arrayRenderer.RenderTetrimino(renderer, bottonPos, col, 0.3f);
+        }
+
+        /// <summary>
         /// 回転配列の中心位置からのテトリミノの構成ブロックの相対位置の取得
         /// </summary>
         /// <returns>ミノの1ブロックの座標を格納したリスト</returns>
