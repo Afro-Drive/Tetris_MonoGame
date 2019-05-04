@@ -18,7 +18,7 @@ namespace PersonalProduct_2nd.Tetris_Block
     /// 作成者:谷永吾
     /// 作成開始日:2018年11月7日
     /// </summary>
-    class LineField
+    class LineField : IControllerMediator
     {
         #region フィールド
         //ListのListで縦横の２次元配列的構造
@@ -55,9 +55,9 @@ namespace PersonalProduct_2nd.Tetris_Block
             //テトリミノの実体生成
             tetrimino = new Tetrimino();
             //各種テトリミノ管理者を生成、ターゲットを設定
-            minoMove = new MinoMove(tetrimino);
-            minoStateManager = new MinoStateManager(tetrimino);
-            minoCordinate = new MinoCordinateController(tetrimino, fieldData);
+            minoMove = new MinoMove(tetrimino, this);
+            minoStateManager = new MinoStateManager(tetrimino, this);
+            minoCordinate = new MinoCordinateController(tetrimino, fieldData, this);
 
             //最初は死亡フラグはOFFにする
             IsDeadFlag = false;
@@ -104,6 +104,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             //テトリミノを更新
             tetrimino.Update(gameTime);
+            minoStateManager.Update(gameTime);
 
             RefToField(); //テトリミノが凍結後にフィールドに反映
             #region テトリミノの変数を一つにしたため削除
@@ -191,7 +192,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         ///</summary>
         public void RefToField()
         {
-            if (tetrimino.IsLocked())
+            if (minoStateManager.IsLocked)
             {
                 //テトリミノの構成ブロックの座標を取得(配列？)
                 foreach (var point in tetrimino.GetMinoUnitPos())
@@ -205,6 +206,9 @@ namespace PersonalProduct_2nd.Tetris_Block
                 }
                 //横一列が揃ったか検証、揃ったらラインを消去
                 RemoveAndFillLine();
+
+                //状態管理者を初期化
+                minoStateManager.Initialize();
                 //一通り書き換えが終わったら初期化
                 tetrimino.Initialize();
             }
@@ -647,6 +651,15 @@ namespace PersonalProduct_2nd.Tetris_Block
             }
             //普段は偽を返却
             return false;
+        }
+
+        /// <summary>
+        /// フィールドに出ているtetriminoオブジェクトが固定状態か？
+        /// </summary>
+        /// <returns></returns>
+        public bool IsMinoLocked()
+        {
+            return minoStateManager.IsLocked;
         }
 
         /// <summary>

@@ -18,16 +18,19 @@ namespace PersonalProduct_2nd.Tetris_Block
         //フィールド
         private Tetrimino target;//動作制御オブジェクト
         private int[][] field;//テトリミノの制御を行う配列データ
+        private IControllerMediator mediator; //テトリミノ制御オブジェクト間の仲介者
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="target">制御を行うテトリミノオブジェクト</param>
         /// <param name="jagArrayData">制御対象のテトリミノが含まれるフィールドデータ</param>
-        public MinoCordinateController(Tetrimino target, int[][] jagArrayData)
+        /// <param name="mediator">テトリミノの制御の仲介者</param>
+        public MinoCordinateController(Tetrimino target, int[][] jagArrayData, IControllerMediator mediator)
         {
             SetTarget(target);
             this.field = jagArrayData;
+            this.mediator = mediator;
             CanMove = true;
         }
 

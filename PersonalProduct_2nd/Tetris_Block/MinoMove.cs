@@ -17,16 +17,18 @@ namespace PersonalProduct_2nd.Tetris_Block
     {
         private Vector2 moveValue; //移動量
         private Tetrimino target; //移動を施すテトリミノオブジェクト
+        private IControllerMediator mediator; //テトリミノ制御の仲介者
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="target">移動処理を施したいテトリミノ</param>
-        public MinoMove(Tetrimino target)
+        /// <param name="mediator"></param>
+        public MinoMove(Tetrimino target, IControllerMediator mediator)
         {
             //引数受け取り
             SetTarget(target);
-            //this.target = target;
+            this.mediator = mediator;
 
             //移動量をゼロで初期化
             moveValue = Vector2.Zero;
@@ -39,7 +41,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         public void LetMinoMoveR()
         {
             //ターゲットが固定状態でなければ
-            if (!target.IsLocked())
+            if (!mediator.IsMinoLocked())
             {
                 target.Position += new Vector2(Size.WIDTH, 0);
             }
@@ -52,7 +54,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         public void LetMinoMoveL()
         {
             //ターゲットが固定状態でなければ
-            if (!target.IsLocked())
+            if (!mediator.IsMinoLocked())
             {
                 target.Position += new Vector2(-Size.WIDTH, 0);
             }
@@ -64,7 +66,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         public void LetMinoFall()
         {
             //ターゲットが固定状態でなければ
-            if (!target.IsLocked())
+            if (!mediator.IsMinoLocked())
             {
                 target.Position += new Vector2(0, Size.HEIGHT);
             }
@@ -75,7 +77,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public void LetMinoRotate_Clockwise()
         {
-            if (!target.IsLocked())
+            if (!mediator.IsMinoLocked())
                 target.Rotate_Clockwise();
         }
 
@@ -84,7 +86,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public void LetMinoRotate_AntiClockwise()
         {
-            if (!target.IsLocked())
+            if (!mediator.IsMinoLocked())
                 target.Rotate_AntiClockwise();
         }
 
@@ -113,7 +115,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <param name="landPos">落下後の着地地点</param>
         public void HardFall(Vector2 landPos)
         {
-            if (!target.IsLocked())
+            if (!mediator.IsMinoLocked())
             {
                 //ミノの座標を着地位置まで一気に移動
                 target.Position = landPos;
