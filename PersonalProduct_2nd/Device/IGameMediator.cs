@@ -27,5 +27,6 @@ namespace PersonalProduct_2nd.Device
 
         //現在レベルの取得
         int GetLevel();
+
     }
 }

@@ -113,13 +113,13 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
-        /// 移動可能かのプロパティ
+        /// 移動可能かのプロパティ→MinoCordinateControllerに委託
         /// get→trueかfalseかを取得
         /// set→trueかfalseかを設定
         /// </summary>
-        public bool CanMove
-        {
-            get; set;
-        }
+        //public bool CanMove
+        //{
+        //    get; set;
+        //}
     }
 }

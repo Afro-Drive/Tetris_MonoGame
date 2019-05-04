@@ -52,6 +52,7 @@
     <Compile Include="Scene\RemoveLineBoard.cs" />
     <Compile Include="Tetris_Block\Cell.cs" />
     <Compile Include="Tetris_Block\LineField.cs" />
+    <Compile Include="Tetris_Block\MinoCordinateController.cs" />
     <Compile Include="Tetris_Block\MinoMove.cs" />
     <Compile Include="Tetris_Block\MinoStateManager.cs" />
     <Compile Include="Tetris_Block\Tetrimino.cs" />
