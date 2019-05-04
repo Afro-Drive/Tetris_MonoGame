@@ -12,6 +12,18 @@ using PersonalProduct_2nd.Utility;
 namespace PersonalProduct_2nd.Tetris_Block
 {
     /// <summary>
+    /// テトリミノの種類列挙型
+    /// </summary>
+    enum Form_mino
+    { I, T, J, L, S, Z, O, }
+
+    /// <summary>
+    /// テトリミノの種類ごとの描画するアセット名の列挙型
+    /// </summary>
+    enum Blk_Col
+    { mino_I, mino_T, mino_J, mino_L, mino_S, mino_Z, mino_O, }
+
+    /// <summary>
     /// Blockクラスを継承した操作可能テトリスブロッククラス
     /// 作成者:谷永吾
     /// 作成開始日:2018年11月7日
@@ -19,19 +31,8 @@ namespace PersonalProduct_2nd.Tetris_Block
     class Tetrimino : Cell
     {
         #region フィールド
-        /// <summary>
-        /// テトリミノの種類列挙型
-        /// </summary>
-        public enum Form_mino
-        { I, T, J, L, S, Z, O, }
-        private Form_mino form;
-
-        /// <summary>
-        /// テトリミノの種類ごとの描画するアセット名の列挙型
-        /// </summary>
-        public enum blk_Col
-        { mino_I, mino_T, mino_J, mino_L, mino_S, mino_Z, mino_O, }
-        blk_Col col;
+        private Form_mino form;//テトリミノの形
+        Blk_Col col;//テトリミノの色
 
         private int[,] rotate_Array; //回転処理用配列
         private int[,] imageRotate_Array; //回転可能か検証する用の配列
@@ -39,7 +40,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         private ArrayRenderer arrayRenderer; //二次元配列描画用オブジェクト
 
         private Random rnd; //ランダムオブジェクト
-        private List<Form_mino> formList; //テトリミノの形を格納したリスト
         #endregion フィールド
 
         /// <summary>
@@ -48,8 +48,28 @@ namespace PersonalProduct_2nd.Tetris_Block
         public Tetrimino()
             : base()
         {
+            //ランダムを生成
+            rnd = DeviceManager.CreateInstance().GetRandom();
+            //テトリミノの型の中からランダムに型を指定
+            int enumLength = Enum.GetValues(typeof(Form_mino)).GetLength(0);
+            form = (Form_mino)(rnd.Next(0, enumLength));
+            //使用色ブロックを指定(formの値に対応した色を指定する)
+            col = (Blk_Col)((int)form);
 
             Initialize(); //各種変数の初期化
+        }
+
+        /// <summary>
+        /// コンストラクタ
+        /// </summary>
+        /// <param name="form">指定する形</param>
+        public Tetrimino(Form_mino form)
+            :base()
+        {
+            this.form = form;
+            col = (Blk_Col)((int)form);
+
+            Initialize();
         }
 
         public Tetrimino(Tetrimino other)
@@ -63,14 +83,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public override void Initialize()
         {
-            //ランダムを生成
-            rnd = DeviceManager.CreateInstance().GetRandom();
-            //テトリミノの型の中からランダムに型を指定
-            int enumLength = Enum.GetValues(typeof(Form_mino)).GetLength(0);
-            form = (Form_mino)(rnd.Next(0, enumLength));
-            //使用色ブロックを指定(formの値に対応した色を指定する)
-            col = (blk_Col)((int)form);
-
             //回転用配列を初期化
             rotate_Array = Mino_Array.mino_Data[(int)form]; //要素番号と列挙型のメンバの値とのズレをなくして指定
 

@@ -55,6 +55,7 @@
     <Compile Include="Tetris_Block\LineField.cs" />
     <Compile Include="Tetris_Block\LineJudgement.cs" />
     <Compile Include="Tetris_Block\MinoCordinateController.cs" />
+    <Compile Include="Tetris_Block\MinoGenerator.cs" />
     <Compile Include="Tetris_Block\MinoMove.cs" />
     <Compile Include="Tetris_Block\MinoStateManager.cs" />
     <Compile Include="Tetris_Block\Tetrimino.cs" />

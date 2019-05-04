@@ -22,7 +22,7 @@ namespace PersonalProduct_2nd.Device
         private Vector2 offset; //描画開始位置
         private int[,] fieldMatrixData; //LineField用の描画に用いる正方形配列データ
         private int[][] fieldJaggedData; //LineField用の描画に用いるジャグ配列データ
-        private Dictionary<blk_Col, int[,]> data; //テトリミノの描画に用いるデータをまとめたディクショナリ
+        private Dictionary<Blk_Col, int[,]> data; //テトリミノの描画に用いるデータをまとめたディクショナリ
 
         /// <summary>
         /// コンストラクタ
@@ -33,15 +33,15 @@ namespace PersonalProduct_2nd.Device
             //描画の基点を取得
             this.offset = offset;
             //ディクショナリの生成(ミノの形に対応した回転配列を登録)
-            data = new Dictionary<blk_Col, int[,]>()
+            data = new Dictionary<Blk_Col, int[,]>()
             {
-                { blk_Col.mino_I, mino_Data[0] },
-                { blk_Col.mino_T, mino_Data[1] },
-                { blk_Col.mino_J, mino_Data[2] },
-                { blk_Col.mino_L, mino_Data[3] },
-                { blk_Col.mino_S, mino_Data[4] },
-                { blk_Col.mino_Z, mino_Data[5] },
-                { blk_Col.mino_O, mino_Data[6] },
+                { Blk_Col.mino_I, mino_Data[0] },
+                { Blk_Col.mino_T, mino_Data[1] },
+                { Blk_Col.mino_J, mino_Data[2] },
+                { Blk_Col.mino_L, mino_Data[3] },
+                { Blk_Col.mino_S, mino_Data[4] },
+                { Blk_Col.mino_Z, mino_Data[5] },
+                { Blk_Col.mino_O, mino_Data[6] },
             };
         }
 
@@ -164,7 +164,7 @@ namespace PersonalProduct_2nd.Device
         /// <param name="center">回転配列の中心座標</param>
         /// <param name="color">描画を行うテトリミノのblk_Colメンバ</param>
         /// <param name="alpha">透明度(デフォルト値1.0)</param>
-        public void RenderTetrimino(Renderer renderer, Vector2 center, blk_Col color, float alpha = 1.0f)
+        public void RenderTetrimino(Renderer renderer, Vector2 center, Blk_Col color, float alpha = 1.0f)
         {
             for (int y = 0; y < data[color].GetLength(0); y++)
             {

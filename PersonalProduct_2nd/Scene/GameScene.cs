@@ -90,9 +90,11 @@ namespace PersonalProduct_2nd.Scene
         public void Initialize()
         {
             isEndFlag = false;
+
             field = new LineField(device, this);
             field.Load("LineField.csv", "./csv/"); //フィールド元のファイルの読み込み
             field.Initialize();
+
             score = new Score();
             removeLineBoard = new RemoveLineBoard();
             levelBoard = new LevelBoard();

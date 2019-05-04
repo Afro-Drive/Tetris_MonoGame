@@ -121,5 +121,52 @@ namespace PersonalProduct_2nd.Tetris_Block
                 target.Position = landPos;
             }
         }
+
+        /// <summary>
+        /// 落下中のミノの影を落とす位置の計算
+        /// </summary>
+        /// <returns>ミノの影を投射する座標</returns>
+        public Vector2 CalcMinoShadowPos()
+        {
+            int[][] data = mediator.GetFieldArray();
+
+            //ミノ構成ブロックと着地点までの距離リストを用意
+            var unitPosList_Y = new List<int>();
+            var toLandVal = new List<int>();
+
+            var currentPosX = (int)(this.target.Position.X) / Size.WIDTH;
+            var currentPosY = (int)(this.target.Position.Y) / Size.HEIGHT;
+
+            //テトリミノの構成ブロックを一つずつ取り出し
+            foreach (var point in target.GetMinoUnitPos())
+            {
+                //構成ブロックのY座標に対応する要素番号の特定
+                int unitPos_Y = (int)(target.Position.Y + point.Y) / Size.HEIGHT;
+
+                //それぞれをリストに格納
+                unitPosList_Y.Add(unitPos_Y);
+            }
+
+            //格納したユニットの座標を1つずつ検証
+            foreach (var pointY in unitPosList_Y)
+            {
+                //落下中のミノの下部のフィールド位置の要素を検証
+                for (int i = 1; i < data.GetLength(0) - pointY; i++)
+                {
+                    //0以外の要素が出てきた時点で距離を記録
+                    if (data[pointY + i][currentPosX] != 0)
+                    {
+                        toLandVal.Add(i);
+                        break;//記録後にforのループを脱出
+                    }
+                }
+            }
+            //ブロックとの距離が最短の座標-1を着地予定地Yと定める
+            int landPosY = currentPosY + toLandVal.Min() - 1;
+            int shadowPosY = landPosY * Size.HEIGHT;
+            //影を投射する座標を返却
+            return new Vector2(target.Position.X, shadowPosY);
+        }
+
     }
 }
