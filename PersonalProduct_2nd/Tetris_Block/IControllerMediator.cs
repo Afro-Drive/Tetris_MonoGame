@@ -13,5 +13,7 @@ namespace PersonalProduct_2nd.Tetris_Block
     {
         //テトリミノが固定状態か
         bool IsMinoLocked();
+
+
     }
 }

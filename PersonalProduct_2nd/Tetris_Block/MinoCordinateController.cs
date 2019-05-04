@@ -74,39 +74,11 @@ namespace PersonalProduct_2nd.Tetris_Block
                 {
                     //移動不可能にする
                     CanMove = false;
-
-                    //テトリミノを着地状態とする
-                    //→これはLinefieldでStateManagerが直接行う
-                    //stateRole.SetLandState(true);
                 }
             }
 
             //動作可能性を返却
             return CanMove;
-            //構成ブロックを全て調べて、条件に抵触しなければ移動する
-            //→これはLineFieldで行う
-
-            //if (stateRole.CanMove)
-            //{
-            //    //テトリミノを離陸状態とする
-            //    stateRole.SetLandState(false);
-            //    //キー入力による落下要求の場合
-            //    if (Input.GetKeyState(Keys.Down))
-            //    {
-            //        //キー入力による猶予タイマーを起動
-            //        stateRole.SetInputFallState(true);
-            //        //その猶予タイマーが終了したらミノを落下させる
-            //        if (stateRole.CanInputFall())
-            //            moveRole.LetMinoFall();
-            //    }
-            //    //テトリミノの自動落下ならタイマーを初期化
-            //    if (stateRole.IsFall())
-            //    {
-            //        //テトリミノを落下移動させる
-            //        moveRole.LetMinoFall();
-            //        stateRole.ResetFallTimer();
-            //    }
-            //}
         }
 
         /// <summary>
@@ -135,11 +107,6 @@ namespace PersonalProduct_2nd.Tetris_Block
                         CanMove = false;
                     }
                 }
-                //LineFieldで直接行う
-                ////全て取り出し切って、一つも条件に抵触しなければ
-                //if (minoStateManager.CanMove)
-                //    minoMove.LetMinoMoveR(); //テトリミノを右移動させる
-                //tetrimino.MoveR(); //移動する
             }
 
             //テトリミノが左に移動しようとしている
@@ -160,12 +127,6 @@ namespace PersonalProduct_2nd.Tetris_Block
                         CanMove = false;
                     }
                 }
-
-                //LineFieldで直接行う
-                //全て取り出し切って、一つも条件に抵触しなければ
-                //if (minoStateManager.CanMove)
-                //    minoMove.LetMinoMoveL(); //テトリミノを左移動させる
-                //tetrimino.MoveL(); //移動する
             }
 
             return CanMove;
@@ -198,17 +159,11 @@ namespace PersonalProduct_2nd.Tetris_Block
                     }
                 }
             }
+
             //最も近距離の値の一つ上を着地予定地Yと定める
             var landPosY = (toLandVal.Min() - 1) * Size.HEIGHT;
 
             return new Vector2(target.Position.X, landPosY);
-
-            //LineFieldで直接行う
-            //    //着地予定地まで一気に落下させる
-            //    minoMove.HardFall(new Vector2(tetrimino.Position.X, landPosY));
-            //    //ミノの着地時間も終了状態にする
-            //    minoStateManager.ShutLandTimeDown();
-            //    minoStateManager.SetLandState(true);
         }
 
         /// <summary>
@@ -250,20 +205,6 @@ namespace PersonalProduct_2nd.Tetris_Block
             }
 
             return CanMove;
-
-            //LineFieldで直接行うMoveが直接行う
-            //条件に抵触しなければ入力キーに応じて回転処理
-            //if (minoStateManager.CanMove)
-            //{
-            //    if (Input.GetKeyTrigger(Keys.A))
-            //        //テトリミノを回転する(後でMinoMoveに行わせる)
-            //        minoMove.LetMinoRotate_Clockwise();
-            //    //tetrimino.Rotate_Clockwise();
-            //    else if (Input.GetKeyTrigger(Keys.D))
-            //        //テトリミノを反時計回りに回転
-            //        minoMove.LetMinoRotate_AntiClockwise();
-            //    //tetrimino.Rotate_AntiClockwise();
-            //}
         }
 
     }
