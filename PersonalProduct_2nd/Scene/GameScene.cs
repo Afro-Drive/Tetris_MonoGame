@@ -21,6 +21,7 @@ namespace PersonalProduct_2nd.Scene
         private LineField field; //プレイエリアのフィールド
         private Score score; //スコア
         private RemoveLineBoard removeLineBoard; //消去ライン数表示ボード
+        private LevelBoard levelBoard; //レベルボード
 
         private DeviceManager device;//デバイス管理者
         private SoundManager sound; //サウンド管理者  
@@ -62,15 +63,16 @@ namespace PersonalProduct_2nd.Scene
             field.Draw(renderer);
             score.Draw(renderer);
             removeLineBoard.Draw(renderer);
+            levelBoard.Draw(renderer);
         }
 
         /// <summary>
-        /// 消去したライン数の取得
+        /// 現在レベルの取得
         /// </summary>
         /// <returns></returns>
-        public int GetRemoveLineValue()
+        public int GetLevel()
         {
-            return field.GetRemoveCnt();
+            return levelBoard.Level;
         }
 
         /// <summary>
@@ -92,8 +94,25 @@ namespace PersonalProduct_2nd.Scene
             field.Load("LineField.csv", "./csv/"); //フィールド元のファイルの読み込み
             score = new Score();
             removeLineBoard = new RemoveLineBoard();
+            levelBoard = new LevelBoard();
+        }
 
-            //tetrimino = new Tetrimino();
+        /// <summary>
+        /// レベルアップ状態か審査
+        /// </summary>
+        private void LevelJudge()
+        {
+            //開始直後は飛ばす
+            if (removeLineBoard.GetRemoveLineValue() == 0)
+                return;
+
+            var remoLine = removeLineBoard.GetRemoveLineValue();
+            //10列消去ごとにレベルアップ！
+            if (remoLine - levelBoard.Level * 10 >= 0 &&
+                levelBoard.JudgeMultiple(remoLine / 10 + 1))
+            {
+                levelBoard.LevelUP();
+            }
         }
 
         /// <summary>
@@ -103,6 +122,14 @@ namespace PersonalProduct_2nd.Scene
         public bool IsEnd()
         {
             return isEndFlag;
+        }
+
+        /// <summary>
+        /// テトリスのレベルアップ
+        /// </summary>
+        public void LevelUP()
+        {
+            levelBoard.LevelUP();
         }
 
         /// <summary>
@@ -133,8 +160,8 @@ namespace PersonalProduct_2nd.Scene
             if (field.IsDeadFlag)
                 isEndFlag = true;
 
-            //tetrimino.Update(gameTime);
-            //field.Hit(tetrimino); //表示したテトリミノが接触してないか確認
+            //レベルアップ処理
+            LevelJudge();
 
             field.Update(gameTime);
             score.Update(gameTime);

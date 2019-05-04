@@ -48,6 +48,7 @@
     <Compile Include="Device\Loader.cs" />
     <Compile Include="Device\SE_Loader.cs" />
     <Compile Include="Device\Texture_Loader.cs" />
+    <Compile Include="Scene\LevelBoard.cs" />
     <Compile Include="Scene\RemoveLineBoard.cs" />
     <Compile Include="Tetris_Block\Cell.cs" />
     <Compile Include="Tetris_Block\LineField.cs" />

@@ -32,7 +32,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         private IGameMediator mediator; //ゲーム仲介者
 
         private readonly int deadLine = 3; //ゲームオーバーか確認用の列番号
-        private int removeCnt; //消去したラインの数
+        //private int removeCnt; //消去したラインの数
         #endregion フィールド
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             //最初は死亡フラグはOFFにする
             IsDeadFlag = false;
             //消去した列の数は０で初期化
-            removeCnt = 0;
+            //removeCnt = 0;
         }
 
         /// <summary>
@@ -137,13 +137,6 @@ namespace PersonalProduct_2nd.Tetris_Block
             MoveDCheck();　//下移動
             HardFallCheck(); //超高速落下移動
             RotateCheck(); //回転
-
-            //消去した列の数に応じて落下速度を再設定
-            //→メソッド化予定
-            if (removeCnt % 5 == 0 && removeCnt != 0)
-            {
-                tetrimino.ResetFallTimer(0.05f);
-            }
         }
 
         /// <summary>
@@ -371,6 +364,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                         if (fieldData[unitPos_Y + i][unitPos_X] != 0)
                         {
                             toLandVal.Add(unitPos_Y + i);
+                            break;//for文のループを脱出
                         }
                     }
                 }
@@ -484,25 +478,38 @@ namespace PersonalProduct_2nd.Tetris_Block
         private Vector2 CalcMinoShadowPos()
         {
             //ミノ構成ブロックと着地点までの距離リストを用意
+            var unitPosList_Y = new List<int>();
             var toLandVal = new List<int>();
+            var currentPosX = (int)(this.tetrimino.Position.X) / Size.WIDTH;
+            var currentPosY = (int)(this.tetrimino.Position.Y) / Size.HEIGHT;
+
             //テトリミノの構成ブロックを一つずつ取り出し
             foreach (var point in tetrimino.GetMinoUnitPos())
             {
-                //構成ブロックの座標に対応する要素番号の特定
-                int unitPos_X = (int)(tetrimino.Position.X + point.X) / Size.WIDTH;
+                //構成ブロックのY座標に対応する要素番号の特定
                 int unitPos_Y = (int)(tetrimino.Position.Y + point.Y) / Size.HEIGHT;
+
+                //それぞれをリストに格納
+                unitPosList_Y.Add(unitPos_Y);
+            }
+
+            //格納したユニットの座標を1つずつ検証
+            foreach (var pointY in unitPosList_Y)
+            {
                 //落下中のミノの下部のフィールド位置の要素を検証
-                for (int i = 1; i < fieldData.GetLength(0) - unitPos_Y; i++)
+                for (int i = 1; i < fieldData.GetLength(0) - pointY; i++)
                 {
                     //0以外の要素が出てきた時点で距離を記録
-                    if (fieldData[unitPos_Y + i][unitPos_X] != 0)
+                    if (fieldData[pointY + i][currentPosX] != 0)
                     {
-                        toLandVal.Add(unitPos_Y + i);
+                        toLandVal.Add(i);
+                        break;//記録後にforのループを脱出
                     }
                 }
             }
-            //最も近距離の値の一つ上を着地予定地Yと定める
-            var shadowPosY = (toLandVal.Min() - 1) * Size.HEIGHT;
+            //ブロックとの距離が最短の座標-1を着地予定地Yと定める
+            int landPosY = currentPosY + toLandVal.Min() - 1;
+            int shadowPosY = landPosY * Size.HEIGHT;
             //影を投射する座標を返却
             return new Vector2(tetrimino.Position.X, shadowPosY);
         }
@@ -568,7 +575,6 @@ namespace PersonalProduct_2nd.Tetris_Block
                     fieldData[lineNum][row] = 0;
                 }
                 //消去したライン数を加算
-                removeCnt++;
                 //消去ライン計測者へ受け渡し
                 mediator.AddRemoveLine();
                 //スコアを加算する
@@ -640,15 +646,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             get;
             private set;
-        }
-
-        /// <summary>
-        /// 消去したライン数の取得
-        /// </summary>
-        /// <returns>フィールドremoveCnt</returns>
-        public int GetRemoveCnt()
-        {
-            return removeCnt;
         }
     }
 }

@@ -19,10 +19,13 @@ namespace PersonalProduct_2nd.Device
         //スコアの取得
         int GetScore();
 
-        //消去したライン数の取得
-        int GetRemoveLineValue();
-
         //消去したラインを加算
         void AddRemoveLine();
+
+        //レベルアップ
+        void LevelUP();
+
+        //現在レベルの取得
+        int GetLevel();
     }
 }
