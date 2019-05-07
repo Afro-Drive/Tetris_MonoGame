@@ -51,22 +51,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
-        /// 当たり判定の横幅の取得プロパティ→Size定義クラスに委託
-        /// </summary>
-        //public int Width
-        //{
-        //    get { return WIDTH; }
-        //}
-
-        /// <summary>
-        /// 当たり判定の縦の大きさの取得プロパティ→Size定義クラスに委託
-        /// </summary>
-        //public int Height
-        //{
-        //    get { return HEIGHT; }
-        //}
-
-        /// <summary>
         /// 描画処理
         /// </summary>
         /// <param name="renderer"></param>
