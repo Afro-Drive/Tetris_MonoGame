@@ -65,8 +65,8 @@ namespace PersonalProduct_2nd.Tetris_Block
 
             //各種テトリミノ管理者を生成、ターゲットを設定
             minoMove = new MinoMove(tetrimino, this);
-            minoStateManager = new MinoStateManager(tetrimino, this);
-            minoCordinate = new MinoCordinateController(tetrimino, fieldData, this);
+            minoStateManager = new MinoStateManager(tetrimino, this, mediator);
+            minoCordinate = new MinoCordinateController(tetrimino, this, mediator);
 
             //最初は死亡フラグはOFFにする
             IsDeadFlag = false;

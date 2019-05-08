@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Xna.Framework;
 using PersonalProduct_2nd.Utility;
+using PersonalProduct_2nd.Device;
 
 namespace PersonalProduct_2nd.Tetris_Block
 {
@@ -28,27 +29,50 @@ namespace PersonalProduct_2nd.Tetris_Block
         private CountDown_Timer fallTimer; //自動落下タイマー
         private CountDown_Timer inputFallTimer; //キー入力後落下猶予タイマー
 
-        private IControllerMediator mediator;//テトリミノ制御の仲介者
+        //レベルに合わせたテトリミノの落下速度を格納したディクショナリ
+        private Dictionary<int, float> minoSpeedDict;
+        private int currentLv;
+
+        private IControllerMediator controlMediator;//テトリミノ制御の仲介者
+        private IGameMediator gameMediator;
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="target"></param>
-        /// <param name="mediator"></param>
-        public MinoStateManager(Tetrimino target, IControllerMediator mediator)
+        /// <param name="controlMediator"></param>
+        public MinoStateManager(Tetrimino target, IControllerMediator controlMediator, IGameMediator gameMediator)
         {
             //引数受け取り
             SetTarget(target);
-            this.mediator = mediator;
+            this.controlMediator = controlMediator;
+            this.gameMediator = gameMediator;
 
             //各種変数の初期化
             landON = false;
             IsLocked = false;
             inputFallON = false;
 
+            //ディクショナリを初期化
+            minoSpeedDict = new Dictionary<int, float>()
+            {
+                { 1, 1.0f },
+                { 2, 0.8f },
+                { 3, 0.7f },
+                { 4, 0.6f },
+                { 5, 0.5f },
+                { 6, 0.35f },
+                { 7, 0.25f },
+                { 8, 0.17f },
+                { 9, 0.12f },
+                { 10, 0.05f },
+            };
+            currentLv = 1;
+
             landTimer = new CountDown_Timer(1.5f);
-            fallTimer = new CountDown_Timer(0.5f);
+            fallTimer = new CountDown_Timer(minoSpeedDict[currentLv]);
             inputFallTimer = new CountDown_Timer(0.2f);
+
         }
 
         /// <summary>
@@ -76,6 +100,9 @@ namespace PersonalProduct_2nd.Tetris_Block
                 //初期化
                 landTimer.Initialize();
             }
+
+            //レベルに応じたミノの落下速度設定
+            ChangeMinoSpeed(gameMediator.GetLevel());
 
             if (landTimer.TimeUP()) //着地タイマーが時間切れ
             {
@@ -132,7 +159,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <returns>キー入力後の落下タイマーが時間切れになったかどうか</returns>
         public bool CanInputFall()
         {
-            return inputFallTimer.TimeUP(); 
+            return inputFallTimer.TimeUP();
         }
 
         /// <summary>
@@ -171,7 +198,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public void ShutLandTimeDown()
         {
-            if (!IsLocked) 
+            if (!IsLocked)
             {
                 landTimer.ForceZero();
             }
@@ -191,7 +218,21 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public bool IsLocked
         {
-            get;set;
+            get; set;
+        }
+
+        /// <summary>
+        /// Tetriminoの落下速度を変える
+        /// </summary>
+        /// <param name="level">現在レベル</param>
+        public void ChangeMinoSpeed(int level)
+        {
+            //レベルに変動がなければそのまま
+            if (currentLv == level)
+                return;
+
+            currentLv = level;
+            fallTimer.SetTime(minoSpeedDict[currentLv]);
         }
     }
 }

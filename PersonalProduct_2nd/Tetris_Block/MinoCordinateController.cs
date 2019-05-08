@@ -18,19 +18,21 @@ namespace PersonalProduct_2nd.Tetris_Block
         //フィールド
         private Tetrimino target;//動作制御オブジェクト
         private int[][] field;//テトリミノの制御を行う配列データ
-        private IControllerMediator mediator; //テトリミノ制御オブジェクト間の仲介者
+        private IControllerMediator controlMediator; //テトリミノ制御オブジェクト間の仲介者
+        private IGameMediator gameMediator; //ゲーム仲介者
 
         /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="target">制御を行うテトリミノオブジェクト</param>
         /// <param name="jagArrayData">制御対象のテトリミノが含まれるフィールドデータ</param>
-        /// <param name="mediator">テトリミノの制御の仲介者</param>
-        public MinoCordinateController(Tetrimino target, int[][] jagArrayData, IControllerMediator mediator)
+        /// <param name="controlMediator">テトリミノの制御の仲介者</param>
+        public MinoCordinateController(Tetrimino target, IControllerMediator controlMediator, IGameMediator gameMediator)
         {
             SetTarget(target);
-            this.field = jagArrayData;
-            this.mediator = mediator;
+            this.controlMediator = controlMediator;
+            this.field = controlMediator.GetFieldArray();
+            this.gameMediator = gameMediator;
             CanMove = true;
         }
 
@@ -59,7 +61,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             //まずは移動可能とする
             CanMove = true;
-            //canMove = true;
 
             //出現中のテトリミノの構成ブロックの回転中心からの相対座標を取得
             //それを一つずつ取り出し、フィールド内での位置を取得する

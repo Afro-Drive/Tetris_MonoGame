@@ -17,6 +17,8 @@ namespace PersonalProduct_2nd.Scene
     /// </summary>
     class GameScene : IScene, IGameMediator
     {
+        public const int MAX_LEVEL = 10;
+
         private bool isEndFlag;//終了フラグ
         private LineField field; //プレイエリアのフィールド
         private Score score; //スコア
