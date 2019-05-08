@@ -185,6 +185,16 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// 描画処理(座標を外部指定)
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <param name="position"></param>
+        public void Draw(Renderer renderer, Vector2 position)
+        {
+            arrayRenderer.RenderTetrimino(renderer, position, col);
+        }
+
+        /// <summary>
         /// テトリミノの影の描画
         /// </summary>
         /// <param name="renderer"></param>

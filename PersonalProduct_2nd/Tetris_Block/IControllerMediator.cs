@@ -16,5 +16,19 @@ namespace PersonalProduct_2nd.Tetris_Block
 
         //テトリスを積むフィールドデータ取得
         int[][] GetFieldArray();
+
+        //ネクストミノの情報受け渡し
+        List<Tetrimino> GetNextMinos();
+
+        //フィールド上に出ているミノの取得
+        Tetrimino GetActiveMino();
+
+        void OrderToSetNewMinoActive(Tetrimino newActiveMino);
+
+        //テトリミノの生産要求
+        void OrderToGenerate();
+
+        void OrderToPickHead();
+
     }
 }

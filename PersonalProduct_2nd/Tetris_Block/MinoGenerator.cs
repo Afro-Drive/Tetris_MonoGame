@@ -17,6 +17,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         private List<Tetrimino> nextMinos;//次に控えているテトリミノリスト
         private Random rand;
         private int kindOfMino;
+        private const int VISIBLE_NUM = 3;
 
         /// <summary>
         /// コンストラクタ
@@ -27,8 +28,8 @@ namespace PersonalProduct_2nd.Tetris_Block
             rand = DeviceManager.CreateInstance().GetRandom();
             kindOfMino = Enum.GetValues(typeof(Form_mino)).Length;
 
-            //最初にテトリミノを4個を追加する
-            for(int i = 0; i < 4; i++)
+            //最初にテトリミノを追加する
+            for(int i = 0; i < VISIBLE_NUM; i++)
             {
                 GenerateEndOfNextMino();
             }
@@ -53,6 +54,11 @@ namespace PersonalProduct_2nd.Tetris_Block
             nextMinos.RemoveAt(0);
 
             return head;
+        }
+
+        public List<Tetrimino> GetNextTetriminos()
+        {
+            return nextMinos;
         }
     }
 }

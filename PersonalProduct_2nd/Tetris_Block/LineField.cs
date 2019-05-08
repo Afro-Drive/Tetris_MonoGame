@@ -26,6 +26,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         private Tetrimino tetrimino; //フィールドに出現しているテトリミノ
         private ArrayRenderer arrayRenderer; //二次元配列描画オブジェクト
         private LineJudgement lineJudge;//フィールドの配列データ審判オブジェクト
+        private NextMinoBoard nextMinoBoard;
 
         //各種Tetrimino制御オブジェクト
         private MinoMove minoMove; //テトリミノ移動オブジェクト
@@ -62,6 +63,7 @@ namespace PersonalProduct_2nd.Tetris_Block
 
             //ライン審判を実体生成
             lineJudge = new LineJudgement(fieldData, this);
+            nextMinoBoard = new NextMinoBoard(this);
 
             //各種テトリミノ管理者を生成、ターゲットを設定
             minoMove = new MinoMove(tetrimino, this);
@@ -106,6 +108,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             minoStateManager.Update(gameTime);
 
             RefToField(); //テトリミノが凍結後にフィールドに反映
+            nextMinoBoard.UpdateHold();
 
             //テトリミノが動ける状態か判定
             CanMoveLR(); //左右移動
@@ -155,6 +158,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                 //一通り書き換えが終わったら初期化
                 tetrimino = minoGenerator.PickHeaderMino();
                 minoGenerator.GenerateEndOfNextMino();
+                nextMinoBoard.UpdateNext();
 
                 //テトリミノ制御対象を再設定
                 minoStateManager.SetTarget(tetrimino);
@@ -267,6 +271,8 @@ namespace PersonalProduct_2nd.Tetris_Block
             //テトリミノの影の描画
             tetrimino.DrawShadow(renderer, minoMove.CalcMinoShadowPos());
 
+            nextMinoBoard.Draw(renderer);
+
             arrayRenderer.RenderJugField(renderer, Color.White);
         }
 
@@ -289,12 +295,51 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
+        /// 次に控えるテトリミノの情報を取得
+        /// </summary>
+        /// <returns></returns>
+        public List<Tetrimino> GetNextMinos()
+        {
+            return minoGenerator.GetNextTetriminos();
+        }
+
+        public Tetrimino GetActiveMino()
+        {
+            return tetrimino;
+        }
+
+        /// <summary>
         /// プレイヤーが死亡したか？
         /// </summary>
         public bool IsDeadFlag
         {
             get;
             private set;
+        }
+
+        private void HoldExchange()
+        {
+            if (Input.GetKeyTrigger(Keys.Space))
+            {
+            }
+        }
+
+        public void OrderToGenerate()
+        {
+            minoGenerator.GenerateEndOfNextMino();
+        }
+
+        public void OrderToPickHead()
+        {
+            tetrimino = minoGenerator.PickHeaderMino();
+        }
+
+        public void OrderToSetNewMinoActive(Tetrimino newActiveMino)
+        {
+            tetrimino = newActiveMino;
+            minoStateManager.SetTarget(newActiveMino);
+            minoMove.SetTarget(newActiveMino);
+            minoCordinate.SetTarget(newActiveMino);
         }
     }
 }
