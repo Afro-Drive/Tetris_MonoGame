@@ -18,6 +18,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         private List<Tetrimino> nextMinos;
         private Tetrimino holdMino;
         private Tetrimino middleKeepMino;
+        private bool canHold;
         private IControllerMediator mediator;
 
         public NextMinoBoard(IControllerMediator mediator)
@@ -26,6 +27,8 @@ namespace PersonalProduct_2nd.Tetris_Block
             nextMinos = mediator.GetNextMinos();
             holdMino = null;
             middleKeepMino = null;
+
+            canHold = true;
         }
 
         public void UpdateNext()
@@ -39,15 +42,10 @@ namespace PersonalProduct_2nd.Tetris_Block
             {
                 if (holdMino == null)
                 {
-                    middleKeepMino = holdMino;
-                    holdMino = mediator.GetActiveMino();
-                    mediator.OrderToPickHead();
-                    mediator.OrderToGenerate();
+                    NullHold();
                     return;
                 }
-                middleKeepMino = holdMino;
-                holdMino = mediator.GetActiveMino();
-                mediator.OrderToSetNewMinoActive(middleKeepMino);
+                NormalHold();
             }
         }
 
@@ -60,6 +58,44 @@ namespace PersonalProduct_2nd.Tetris_Block
 
             if (holdMino != null)
                 holdMino.Draw(renderer, new Vector2(970, 700));
+        }
+
+        public void SetHoldSwitch(bool state)
+        {
+            canHold = state;
+        }
+
+        /// <summary>
+        /// 最初にホールド機能を使う場合のホールド手順
+        /// </summary>
+        private void NullHold()
+        {
+            //ホールドオブジェクトに落下中のミノを収容
+            holdMino = mediator.GetActiveMino();
+            //落下ミノを更新
+            mediator.OrderToPickHead();
+            //末尾にテトリミノを追加
+            mediator.OrderToGenerate();
+            //更新された落下ミノを取得
+            Tetrimino newTarget = mediator.GetActiveMino();
+            newTarget.Initialize();
+            //各種テトリミノ制御オブジェクトの制御対象を更新
+            mediator.OrderToSetNewMinoActive(newTarget);
+        }
+
+        /// <summary>
+        /// 標準ホールド
+        /// </summary>
+        private void NormalHold()
+        {
+            //中間保持者にホールド状態のミノを受け渡し
+            middleKeepMino = holdMino;
+            //落下中のミノをホールドに格納
+            holdMino = mediator.GetActiveMino();
+            middleKeepMino.Initialize();
+            //中間保持者にホールド状態のミノを受け渡す
+            mediator.OrderToSetNewMinoActive(middleKeepMino);
+            middleKeepMino = null;
         }
     }
 }

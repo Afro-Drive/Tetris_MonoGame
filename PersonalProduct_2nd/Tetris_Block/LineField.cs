@@ -161,9 +161,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                 nextMinoBoard.UpdateNext();
 
                 //テトリミノ制御対象を再設定
-                minoStateManager.SetTarget(tetrimino);
-                minoMove.SetTarget(tetrimino);
-                minoCordinate.SetTarget(tetrimino);
+                OrderToSetNewMinoActive(tetrimino);
             }
         }
 
