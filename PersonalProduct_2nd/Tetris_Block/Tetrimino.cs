@@ -185,13 +185,13 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
-        /// 描画処理(座標を外部指定)
+        /// 描画(座標指定・補正値加算無)
         /// </summary>
         /// <param name="renderer"></param>
         /// <param name="position"></param>
-        public void Draw(Renderer renderer, Vector2 position)
+        public void DrawNoOffset(Renderer renderer, Vector2 position)
         {
-            arrayRenderer.RenderTetrimino(renderer, position, col);
+            arrayRenderer.NotOffsetRender(renderer, position, col);
         }
 
         /// <summary>

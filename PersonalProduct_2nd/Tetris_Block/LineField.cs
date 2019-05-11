@@ -62,7 +62,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             minoGenerator.GenerateEndOfNextMino();
 
             //ライン審判を実体生成
-            lineJudge = new LineJudgement(fieldData, this);
+            lineJudge = new LineJudgement(this);
             nextMinoBoard = new NextMinoBoard(this);
 
             //各種テトリミノ管理者を生成、ターゲットを設定
@@ -162,6 +162,9 @@ namespace PersonalProduct_2nd.Tetris_Block
 
                 //テトリミノ制御対象を再設定
                 OrderToSetNewMinoActive(tetrimino);
+                //ホールド制限を解除
+                if (!nextMinoBoard.CanHold)
+                    nextMinoBoard.CanHold = true;
             }
         }
 

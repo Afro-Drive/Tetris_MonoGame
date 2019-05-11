@@ -18,7 +18,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         private List<Tetrimino> nextMinos;
         private Tetrimino holdMino;
         private Tetrimino middleKeepMino;
-        private bool canHold;
         private IControllerMediator mediator;
 
         public NextMinoBoard(IControllerMediator mediator)
@@ -28,7 +27,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             holdMino = null;
             middleKeepMino = null;
 
-            canHold = true;
+            CanHold = true;
         }
 
         public void UpdateNext()
@@ -38,7 +37,7 @@ namespace PersonalProduct_2nd.Tetris_Block
 
         public void UpdateHold()
         {
-            if (Input.GetKeyTrigger(Keys.Space))
+            if (Input.GetKeyTrigger(Keys.Space) && CanHold)
             {
                 if (holdMino == null)
                 {
@@ -53,16 +52,11 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             for (int i = 0; i < nextMinos.Count; i++)
             {
-                nextMinos[i].Draw(renderer, new Vector2(970 + 256 * i, 500));
+                nextMinos[i].DrawNoOffset(renderer, new Vector2(1200 + 256 * i, 150));
             }
 
             if (holdMino != null)
-                holdMino.Draw(renderer, new Vector2(970, 700));
-        }
-
-        public void SetHoldSwitch(bool state)
-        {
-            canHold = state;
+                holdMino.DrawNoOffset(renderer, new Vector2(1200, 500));
         }
 
         /// <summary>
@@ -71,7 +65,9 @@ namespace PersonalProduct_2nd.Tetris_Block
         private void NullHold()
         {
             //ホールドオブジェクトに落下中のミノを収容
-            holdMino = mediator.GetActiveMino();
+            Tetrimino currentTarget = mediator.GetActiveMino();
+            currentTarget.Initialize();
+            holdMino = currentTarget;
             //落下ミノを更新
             mediator.OrderToPickHead();
             //末尾にテトリミノを追加
@@ -81,6 +77,8 @@ namespace PersonalProduct_2nd.Tetris_Block
             newTarget.Initialize();
             //各種テトリミノ制御オブジェクトの制御対象を更新
             mediator.OrderToSetNewMinoActive(newTarget);
+
+            CanHold = false;
         }
 
         /// <summary>
@@ -91,11 +89,20 @@ namespace PersonalProduct_2nd.Tetris_Block
             //中間保持者にホールド状態のミノを受け渡し
             middleKeepMino = holdMino;
             //落下中のミノをホールドに格納
-            holdMino = mediator.GetActiveMino();
+            Tetrimino currentTarget = mediator.GetActiveMino();
+            currentTarget.Initialize();
+            holdMino = currentTarget;
             middleKeepMino.Initialize();
             //中間保持者にホールド状態のミノを受け渡す
             mediator.OrderToSetNewMinoActive(middleKeepMino);
+
             middleKeepMino = null;
+            CanHold = false;
+        }
+
+        public bool CanHold
+        {
+            get; set;
         }
     }
 }

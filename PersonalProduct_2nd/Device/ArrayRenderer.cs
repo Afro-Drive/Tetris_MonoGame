@@ -82,7 +82,7 @@ namespace PersonalProduct_2nd.Device
                     if (fieldMatrixData[y, x] == 1)
                         renderer.DrawTexture("black",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    else if(fieldMatrixData[y, x] == 2)
+                    else if (fieldMatrixData[y, x] == 2)
                         renderer.DrawTexture("mino_I",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
                     else if (fieldMatrixData[y, x] == 3)
@@ -125,7 +125,7 @@ namespace PersonalProduct_2nd.Device
                         renderer.DrawTexture("black",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
                             color);
-                    else if(fieldJaggedData[y][x] == 2)
+                    else if (fieldJaggedData[y][x] == 2)
                         renderer.DrawTexture("mino_I",
                             new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
                             color);
@@ -175,6 +175,29 @@ namespace PersonalProduct_2nd.Device
                         renderer.DrawTexture(color.ToString(),
                             center + new Vector2((x - 2) * Size.WIDTH, (y - 2) * Size.HEIGHT) + offset,
                             alpha);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 座標補正を用いない描画
+        /// (主にネクストミノ、ホールドミノ用)
+        /// </summary>
+        /// <param name="renderer"></param>
+        /// <param name="center"></param>
+        /// <param name="color"></param>
+        /// <param name="alpha"></param>
+        public void NotOffsetRender(Renderer renderer, Vector2 center, Blk_Col color, float alpha = 1.0f)
+        {
+            for (int y = 0; y < data[color].GetLength(0); y++)
+            {
+                for (int x = 0; x < data[color].GetLength(1); x++)
+                {
+                    if (fieldMatrixData[y, x] != 0)
+                        renderer.DrawTexture(color.ToString(),
+                            center + new Vector2((x - 2) * Size.WIDTH, (y - 2) * Size.HEIGHT),
+                            alpha);
+
                 }
             }
         }

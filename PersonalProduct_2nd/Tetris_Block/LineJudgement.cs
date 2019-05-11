@@ -23,10 +23,10 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         /// <param name="setData">審判に使う配列データ</param>
         /// <param name="mediator"></param>
-        public LineJudgement(int[][] setData, IControllerMediator mediator)
+        public LineJudgement(IControllerMediator mediator)
         {
-            this.judgeData = setData;
             this.mediator = mediator;
+            this.judgeData = mediator.GetFieldArray();
         }
 
         /// <summary>
