@@ -206,6 +206,8 @@ namespace PersonalProduct_2nd.Tetris_Block
                         //その猶予タイマーが終了したらミノを落下させる
                         if (minoStateManager.CanInputFall())
                             minoMove.LetMinoFall();
+                        //落下移動が完了するごとにスコアアップ
+                        mediator.AddScore(5);
                     }
                     //テトリミノの自動落下ならタイマーを初期化
                     if (minoStateManager.IsFall())

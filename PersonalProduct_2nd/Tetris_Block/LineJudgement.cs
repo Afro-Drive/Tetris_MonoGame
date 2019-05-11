@@ -97,7 +97,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                 //消去したライン数を加算
                 RemoLineCnt++;
                 //スコアを加算する
-                AddScoreVal += 100;
+                AddScoreVal += 500;
             }
 
             //詰める必要のある列数を格納したリストを返却

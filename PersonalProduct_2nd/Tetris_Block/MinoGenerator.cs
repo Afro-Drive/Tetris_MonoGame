@@ -40,7 +40,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// </summary>
         public void GenerateEndOfNextMino()
         {
-            var form = (Form_mino)(rand.Next(0, kindOfMino));
+            var form = (Form_mino)(rand.Next(2, kindOfMino));
             nextMinos.Add(new Tetrimino(form));
         }
 

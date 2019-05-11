@@ -15,13 +15,13 @@ namespace PersonalProduct_2nd.Tetris_Block
     /// テトリミノの種類列挙型
     /// </summary>
     enum Form_mino
-    { I, T, J, L, S, Z, O, }
+    { I = 2, T, J, L, S, Z, O, }
 
     /// <summary>
     /// テトリミノの種類ごとの描画するアセット名の列挙型
     /// </summary>
     enum Blk_Col
-    { mino_I, mino_T, mino_J, mino_L, mino_S, mino_Z, mino_O, }
+    { black = 1, mino_I, mino_T, mino_J, mino_L, mino_S, mino_Z, mino_O, }
 
     /// <summary>
     /// Blockクラスを継承した操作可能テトリスブロッククラス
@@ -84,7 +84,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         public override void Initialize()
         {
             //回転用配列を初期化
-            rotate_Array = Mino_Array.mino_Data[(int)form]; //要素番号と列挙型のメンバの値とのズレをなくして指定
+            rotate_Array = Mino_Array.mino_Data[(int)form - 2]; //要素番号と列挙型のメンバの値とのズレをなくして指定
 
             //初期位置を設定
             Position = new Vector2(Size.WIDTH * 7, Size.HEIGHT * 3); //X座標が大体フィールドの真ん中らへんに来るように設定
@@ -269,7 +269,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <returns>フィールドformをint型にキャストして＋２した値</returns>
         public int GetUnitNum()
         {
-            return (int)form + 2;
+            return (int)form;
         }
     }
 }

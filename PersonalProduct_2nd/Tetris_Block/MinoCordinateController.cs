@@ -163,6 +163,9 @@ namespace PersonalProduct_2nd.Tetris_Block
 
             //最も近距離の値の一つ上を着地予定地Yと定める
             var landPosY = (toLandVal.Min() - 1) * Size.HEIGHT;
+            //距離に応じたスコアを加算
+            var dropVal = (int)(target.Position.Y - landPosY / Size.HEIGHT);
+            gameMediator.AddScore(10 * dropVal);
 
             return new Vector2(target.Position.X, landPosY);
         }
