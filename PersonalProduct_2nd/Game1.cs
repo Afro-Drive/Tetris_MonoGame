@@ -42,6 +42,9 @@ namespace PersonalProduct_2nd
 
             Window.Title = "1年後期_第二回個人制作";
 
+            //マウスカーソル表示
+            IsMouseVisible = true;
+
             //画面サイズの決定
             graphicsDeviceManager.PreferredBackBufferHeight = Screen.HEIGHT;　//横の反映
             graphicsDeviceManager.PreferredBackBufferWidth = Screen.WIDTH; //縦の反映
@@ -64,7 +67,7 @@ namespace PersonalProduct_2nd
             //sceneManager.AddScene(EScene.LoadScene, new LoadScene(GraphicsDevice));
             //sceneManager.AddScene(EScene.LogoScene, new LogoScene());
             sceneManager.AddScene(EScene.Title, new Title());
-            //sceneManager.AddScene(EScene.Tutorial,  new Tutorial());
+            sceneManager.AddScene(EScene.Tutorial, new Tutorial());
             IScene addScene = new GameScene();
             sceneManager.AddScene(EScene.GameScene, addScene);
             sceneManager.AddScene(EScene.GameOver, new GameOver(addScene));
@@ -86,66 +89,47 @@ namespace PersonalProduct_2nd
             spriteBatch = new SpriteBatch(GraphicsDevice);
 
             // この下にロジックを記述
-            renderer.LoadContent("christmas_dance_tonakai", "./Texture/"); //シーン遷移確認用画像
-            renderer.LoadContent("black", "./Texture/");
-            renderer.LoadContent("load", "./Texture/");
-            renderer.LoadContent("number", "./Texture/");
-            renderer.LoadContent("title", "./Texture/");
-            renderer.LoadContent("score", "./Texture/");
-            renderer.LoadContent("next", "./Texture/");
-            renderer.LoadContent("level", "./Texture/");
-            renderer.LoadContent("hold", "./Texture/");
-            renderer.LoadContent("delete", "./Texture/");
-            renderer.LoadContent("clear", "./Texture/");
-            renderer.LoadContent("miss", "./Texture/");
+            //Texture
+            string path = "./Texture/";
+            renderer.LoadContent("black",          path);
+            renderer.LoadContent("load",           path);
+            renderer.LoadContent("number",         path);
+            renderer.LoadContent("title",          path);
+            renderer.LoadContent("score",          path);
+            renderer.LoadContent("next",           path);
+            renderer.LoadContent("level",          path);
+            renderer.LoadContent("hold",           path);
+            renderer.LoadContent("delete",         path);
+            renderer.LoadContent("clear",          path);
+            renderer.LoadContent("miss",           path);
+            renderer.LoadContent("playbutton",     path);
+            renderer.LoadContent("tutorialbutton", path);
+
+            //SE
+            string sePath = "./SE/";
+            soundManager.LoadSE("active",     sePath);
+            soundManager.LoadSE("click",      sePath);
+            soundManager.LoadSE("deleteline", sePath);
+            soundManager.LoadSE("hardfall", sePath);
+            soundManager.LoadSE("inputfall", sePath);
+            soundManager.LoadSE("minospin", sePath);
+            soundManager.LoadSE("pushother", sePath);
+
+            //BGM
+            string bgmPaht = "./BGM/";
+            soundManager.LoadBGM("gameplay", bgmPaht);
+            soundManager.LoadBGM("tutorial", bgmPaht);
+            soundManager.LoadBGM("title", bgmPaht);
 
             //テトリミノの色ブロック
-            renderer.LoadContent("mino_I", "./Tetrimino/");
-            renderer.LoadContent("mino_T", "./Tetrimino/");
-            renderer.LoadContent("mino_L", "./Tetrimino/");
-            renderer.LoadContent("mino_J", "./Tetrimino/");
-            renderer.LoadContent("mino_Z", "./Tetrimino/");
-            renderer.LoadContent("mino_S", "./Tetrimino/");
-            renderer.LoadContent("mino_O", "./Tetrimino/");
-
-            #region テトリミノの色データ→ブロック画像を別途作成したため削除
-            ////O(Test)
-            //Texture2D mino_O = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
-            //Color[] minoCol_O = new Color[1 * 1] { Color.Yellow };
-            //mino_O.SetData(minoCol_O);
-            //renderer.LoadContent("Omino", mino_O);
-            ////T
-            //Texture2D mino_T = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
-            //Color[] minoCol_T = new Color[1 * 1] { Color.Purple };
-            //mino_O.SetData(minoCol_T);
-            //renderer.LoadContent("TMino", mino_O);
-            ////I
-            //Texture2D mino_I = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
-            //Color[] minoCol_I = new Color[1 * 1] { Color.SkyBlue };
-            //mino_I.SetData(minoCol_I);
-            //renderer.LoadContent("IMino", mino_I);
-            ////S
-            //Texture2D mino_S = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
-            //Color[] minoCol_S = new Color[1 * 1] { Color.Green };
-            //mino_S.SetData(minoCol_S);
-            //renderer.LoadContent("SMino", mino_S);
-            ////Z
-            //Texture2D mino_Z = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
-            //Color[] minoCol_Z = new Color[1 * 1] { Color.Red };
-            //mino_Z.SetData(minoCol_Z);
-            //renderer.LoadContent("ZMino", mino_Z);
-            ////J
-            //Texture2D mino_J = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
-            //Color[] minoCol_J = new Color[1 * 1] { Color.Blue };
-            //mino_J.SetData(minoCol_J);
-            //renderer.LoadContent("JMino", mino_J);
-            ////L          
-            //Texture2D mino_L = new Texture2D(GraphicsDevice, 1, 1); //4×4のピクセルデータを生成(中身はまだ何もなし)
-            //Color[] minoCol_L = new Color[1 * 1] { Color.Blue };
-            //mino_L.SetData(minoCol_L);
-            //renderer.LoadContent("JMino", mino_L);
-
-            #endregion テトリミノの色データ
+            string minoPath = "./Tetrimino/";
+            renderer.LoadContent("mino_I", minoPath);
+            renderer.LoadContent("mino_T", minoPath);
+            renderer.LoadContent("mino_L", minoPath);
+            renderer.LoadContent("mino_J", minoPath);
+            renderer.LoadContent("mino_Z", minoPath);
+            renderer.LoadContent("mino_S", minoPath);
+            renderer.LoadContent("mino_O", minoPath);
 
             // この上にロジックを記述
         }

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using PersonalProduct_2nd.Define;
+using PersonalProduct_2nd.Device;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,6 +17,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         //フィールド
         private int[][] judgeData; //審判を行うラインデータ
         private IControllerMediator mediator;//テトリミノ制御の仲介者
+        private DeviceManager device;
         private const int DEAD_LINE = 3;
 
         /// <summary>
@@ -27,6 +29,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         {
             this.mediator = mediator;
             this.judgeData = mediator.GetFieldArray();
+            device = DeviceManager.CreateInstance();
         }
 
         /// <summary>
@@ -99,6 +102,7 @@ namespace PersonalProduct_2nd.Tetris_Block
                 //スコアを加算する
                 AddScoreVal += 500;
             }
+            device.GetSound().PlaySE("deleteline");
 
             //詰める必要のある列数を格納したリストを返却
             //詰める処理にバトンタッチ

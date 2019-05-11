@@ -155,6 +155,7 @@ namespace PersonalProduct_2nd.Scene
         {
             score.Shutdown();
             removeLineBoard.Shutdown();
+            sound.PauseBGM();
         }
 
         /// <summary>
@@ -166,6 +167,9 @@ namespace PersonalProduct_2nd.Scene
             //クリアレベルに到達したら終了
             if (field.IsDeadFlag || levelBoard.Level == CLEAR_LEVEL)
                 isEndFlag = true;
+
+            //BGM
+            sound.PlayBGM("gameplay", 0.4f);
 
             //レベルアップ処理
             LevelJudge();

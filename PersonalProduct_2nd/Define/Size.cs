@@ -19,6 +19,6 @@ namespace PersonalProduct_2nd.Define
         public static readonly int WIDTH = 64;
 
         //描画位置
-        public static readonly Vector2 offset = new Vector2(Size.WIDTH * 2, Size.HEIGHT * -5);
+        public static readonly Vector2 OFFSET = new Vector2(Size.WIDTH * 2, Size.HEIGHT * -5);
     }
 }

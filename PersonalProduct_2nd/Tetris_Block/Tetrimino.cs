@@ -35,7 +35,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         Blk_Col col;//テトリミノの色
 
         private int[,] rotate_Array; //回転処理用配列
-        private int[,] imageRotate_Array; //回転可能か検証する用の配列
 
         private ArrayRenderer arrayRenderer; //二次元配列描画用オブジェクト
 
@@ -91,7 +90,7 @@ namespace PersonalProduct_2nd.Tetris_Block
 
             //配列描画オブジェクトを生成・使用配列を指定
             //コンストラクタの引数がLineFieldで生成したArrayRendererのものと紐づける方法を考える
-            arrayRenderer = new ArrayRenderer(Size.offset);
+            arrayRenderer = new ArrayRenderer(Size.OFFSET);
             arrayRenderer.SetData(rotate_Array);
         }
 
@@ -101,72 +100,6 @@ namespace PersonalProduct_2nd.Tetris_Block
         /// <param name="gameTime"></param>
         public override void Update(GameTime gameTime)
         {
-        }
-
-        /// <summary>
-        /// 二次元配列を時計回りに回転
-        /// </summary>
-        public void Rotate_Clockwise()
-        {
-            //検証用回転配列を実際の回転配列に代入
-            rotate_Array = imageRotate_Array;
-            //二次元描画対象を設定しなおす
-            arrayRenderer.SetData(rotate_Array);
-        }
-
-        /// <summary>
-        /// 時計回りに90度回転後のテトリミノ配列を取得する
-        /// </summary>
-        /// <returns>時計回りに90度回転後の二次元配列</returns>
-        public int[,] GetClockwise_RotatedArray()
-        {
-            int rows = rotate_Array.GetLength(0); //列(横)
-            int cols = rotate_Array.GetLength(1); //行(縦)
-            imageRotate_Array = new int[cols, rows]; //回転前とは行と列を逆にした配列を生成
-
-            for (int y = 0; y < rows; y++) //回転後の配列の列に回転前の配列の行分要素を用意
-            {
-                for (int x = 0; x < cols; x++) //回転後の配列の行に回転前の配列の列分要素を用意
-                {
-                    //回転後の配列の列は、回転前の配列の行からy(新規配列の列の生成回数)と1を引いたものに一致する
-                    //知るかこの野郎
-                    imageRotate_Array[x, rows - y - 1] = rotate_Array[y, x];
-                }
-            }
-            return imageRotate_Array;
-        }
-
-        /// <summary>
-        /// テトリミノを反時計回りに90度回転させる
-        /// </summary>
-        public void Rotate_AntiClockwise()
-        {
-            //回転用配列に回転後の配列を格納
-            rotate_Array = imageRotate_Array;
-            //描画する配列を設定しなおす(refとかで書き直せる？)
-            arrayRenderer.SetData(rotate_Array);
-        }
-
-        /// <summary>
-        /// 反時計回りに回転させたテトリミノ配列の取得
-        /// </summary>
-        /// <returns>反時計回りに90°回転させた二次元配列</returns>
-        public int[,] GetAntiClockwise_RotatedArray()
-        {
-            int rows = rotate_Array.GetLength(0); //行(横)
-            int cols = rotate_Array.GetLength(1); //列(縦)
-            imageRotate_Array = new int[cols, rows];
-
-            for (int y = 0; y < rows; y++) //回転後の配列の列に回転前の配列の行分だけ要素を用意
-            {
-                for (int x = 0; x < cols; x++) //回転後の配列の行に回転前の配列の列分だけ要素を用意
-                {
-                    //回転後の配列の列は回転前の配列の行からx(回転後の列を用意した回数)と1を引いたものに一致する
-                    //時計回りとはややこしくなる方が逆になるんだね。知らんけど。
-                    imageRotate_Array[rows - x - 1, y] = rotate_Array[y, x];
-                }
-            }
-            return imageRotate_Array;
         }
 
         public override object Clone()
@@ -234,42 +167,23 @@ namespace PersonalProduct_2nd.Tetris_Block
         }
 
         /// <summary>
-        /// 回転後のテトリミノ構成ブロックの中心からの相対座標の取得
-        /// </summary>
-        /// <param name="checkArray">回転後のテトリミノの回転配列</param>
-        /// <returns>配列内のブロックの座標を格納したリスト</returns>
-        public List<Vector2> GetRotatedUnitPos(int[,] checkArray)
-        {
-            //返却用のリストを生成
-            List<Vector2> list_Pos = new List<Vector2>();
-
-            //引数の配列内の要素を一つずつ確かめる
-            for (int y = 0; y < checkArray.GetLength(0); y++)
-            {
-                for (int x = 0; x < checkArray.GetLength(1); x++)
-                {
-                    //確認した要素が0以外なら
-                    if (checkArray[y, x] != 0)
-                    {
-                        //リストに追加する
-                        //中心[2,2]を基準とした座標を算出
-                        list_Pos.Add(
-                            new Vector2(Size.WIDTH * (x - 2), Size.HEIGHT * (y - 2))
-                            );
-                    }
-                }
-            }
-            //リストを返却する
-            return list_Pos;
-        }
-
-        /// <summary>
         /// 型に応じた数値を取得
         /// </summary>
         /// <returns>フィールドformをint型にキャストして＋２した値</returns>
         public int GetUnitNum()
         {
             return (int)form;
+        }
+
+        public void SetArray(int[,] data)
+        {
+            rotate_Array = data;
+            arrayRenderer.SetData(rotate_Array);
+        }
+
+        public int[,] GetRotate_Array()
+        {
+            return rotate_Array;
         }
     }
 }

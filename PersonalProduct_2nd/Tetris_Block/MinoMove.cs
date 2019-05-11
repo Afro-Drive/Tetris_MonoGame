@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using PersonalProduct_2nd.Define;
+using PersonalProduct_2nd.Device;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,6 +20,8 @@ namespace PersonalProduct_2nd.Tetris_Block
         private Tetrimino target; //移動を施すテトリミノオブジェクト
         private IControllerMediator mediator; //テトリミノ制御の仲介者
 
+        private SoundManager sound;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -29,6 +32,8 @@ namespace PersonalProduct_2nd.Tetris_Block
             //引数受け取り
             SetTarget(target);
             this.mediator = mediator;
+
+            sound = DeviceManager.CreateInstance().GetSound();
 
             //移動量をゼロで初期化
             moveValue = Vector2.Zero;
@@ -78,7 +83,11 @@ namespace PersonalProduct_2nd.Tetris_Block
         public void LetMinoRotate_Clockwise()
         {
             if (!mediator.IsMinoLocked())
-                target.Rotate_Clockwise();
+            {
+                int[,] rotated = mediator.GetClockwise_RotatedArray();
+                sound.PlaySE("minospin");
+                target.SetArray(rotated);
+            }
         }
 
         /// <summary>
@@ -87,18 +96,12 @@ namespace PersonalProduct_2nd.Tetris_Block
         public void LetMinoRotate_AntiClockwise()
         {
             if (!mediator.IsMinoLocked())
-                target.Rotate_AntiClockwise();
+            {
+                int[,] antiRotated = mediator.GetAntiClockwise_RotatedArray();
+                sound.PlaySE("minospin");
+                target.SetArray(antiRotated);
+            }
         }
-
-        /// <summary>
-        /// 移動対象のテトリミノの着地状態を設定
-        /// →越権行為によりMinoStateManagerクラスに委託
-        /// </summary>
-        /// <param name="state">true→着地　false→離陸</param>
-        //public void SetLandState(bool state)
-        //{
-        //    target.LandSwich(state);
-        //}
 
         /// <summary>
         /// 移動処理を施す対象を設定する
@@ -119,6 +122,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             {
                 //ミノの座標を着地位置まで一気に移動
                 target.Position = landPos;
+                sound.PlaySE("hardfall");
             }
         }
 

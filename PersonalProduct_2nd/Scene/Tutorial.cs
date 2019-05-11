@@ -37,7 +37,7 @@ namespace PersonalProduct_2nd.Scene
         /// <param name="renderer"></param>
         public void Draw(Renderer renderer)
         {
-            renderer.DrawTexture("christmas_dance_tonakai", new Vector2(100, 100));
+            renderer.DrawTexture("tutorialbutton", Vector2.Zero);
         }
 
         /// <summary>
@@ -63,7 +63,7 @@ namespace PersonalProduct_2nd.Scene
         /// <returns>ゲームシーンの列挙型</returns>
         public EScene Next()
         {
-            return EScene.GameScene;
+            return EScene.Title;
         }
 
         /// <summary>
@@ -71,6 +71,7 @@ namespace PersonalProduct_2nd.Scene
         /// </summary>
         public void Shutdown()
         {
+            sound.PauseBGM();
         }
 
         /// <summary>
@@ -81,6 +82,8 @@ namespace PersonalProduct_2nd.Scene
         {
             if (Input.IskeyDown(Keys.Enter))
                 isEndFlag = true;
+
+            sound.PlayBGM("tutorial");
         }
     }
 }

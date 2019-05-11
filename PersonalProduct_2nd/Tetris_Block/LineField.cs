@@ -22,6 +22,7 @@ namespace PersonalProduct_2nd.Tetris_Block
         #region フィールド
         private int[][] fieldData; //プレイ画面内のフィールドデータ
         private DeviceManager deviceManager; //ゲームデバイス
+        private SoundManager soundManager;
 
         private Tetrimino tetrimino; //フィールドに出現しているテトリミノ
         private ArrayRenderer arrayRenderer; //二次元配列描画オブジェクト
@@ -45,10 +46,11 @@ namespace PersonalProduct_2nd.Tetris_Block
         public LineField(DeviceManager device, IGameMediator mediator)
         {
             deviceManager = device;
+            soundManager = device.GetSound();
             this.mediator = mediator;
 
             //二次元配列描画オブジェクトを実体生成
-            arrayRenderer = new ArrayRenderer(Size.offset);
+            arrayRenderer = new ArrayRenderer(Size.OFFSET);
         }
 
         /// <summary>
@@ -129,7 +131,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             if (minoStateManager.IsLocked)
             {
                 var unitPosList = new List<Vector2>();
-                //テトリミノの構成ブロックの座標を取得(配列？)
+                //テトリミノの構成ブロックの座標を取得
                 foreach (var point in tetrimino.GetMinoUnitPos())
                 {
                     //構成ブロックに対応するフィールドの配列位置を取得
@@ -182,6 +184,10 @@ namespace PersonalProduct_2nd.Tetris_Block
                 if (Input.GetKeyTrigger(Keys.Right))
                     minoMove.LetMinoMoveR(); //テトリミノを右移動させる
             }
+            else
+            {
+                soundManager.PlaySE("pushother");
+            }
         }
 
         /// <summary>
@@ -203,6 +209,8 @@ namespace PersonalProduct_2nd.Tetris_Block
                     {
                         //キー入力による猶予タイマーを起動
                         minoStateManager.SetInputFallState(true);
+                        if (Input.GetKeyTrigger(Keys.Down))
+                            soundManager.PlaySE("inputfall");
                         //その猶予タイマーが終了したらミノを落下させる
                         if (minoStateManager.CanInputFall())
                             minoMove.LetMinoFall();
@@ -251,15 +259,22 @@ namespace PersonalProduct_2nd.Tetris_Block
         public void CanRotate()
         {
             //AかDキーが入力された
-            if ((Input.GetKeyTrigger(Keys.A) || Input.GetKeyTrigger(Keys.D)) &&
-                minoCordinate.CanRotate())//かつ、条件に抵触しなければ入力キーに応じて回転処理
+            if (Input.GetKeyTrigger(Keys.A))
             {
-                if (Input.GetKeyTrigger(Keys.A))
+                //かつ、条件に抵触しなければ入力キーに応じて回転処理
+                if (minoCordinate.CanRotate())
                     //テトリミノを回転する(後でMinoMoveに行わせる)
                     minoMove.LetMinoRotate_Clockwise();
-                else if (Input.GetKeyTrigger(Keys.D))
+                else
+                    soundManager.PlaySE("pushother");
+            }
+            if (Input.GetKeyTrigger(Keys.D))
+            {
+                if(minoCordinate.CanRotate())
                     //テトリミノを反時計回りに回転
                     minoMove.LetMinoRotate_AntiClockwise();
+                else
+                    soundManager.PlaySE("pushother");
             }
         }
 
@@ -320,13 +335,6 @@ namespace PersonalProduct_2nd.Tetris_Block
             private set;
         }
 
-        private void HoldExchange()
-        {
-            if (Input.GetKeyTrigger(Keys.Space))
-            {
-            }
-        }
-
         public void OrderToGenerate()
         {
             minoGenerator.GenerateEndOfNextMino();
@@ -343,6 +351,16 @@ namespace PersonalProduct_2nd.Tetris_Block
             minoStateManager.SetTarget(newActiveMino);
             minoMove.SetTarget(newActiveMino);
             minoCordinate.SetTarget(newActiveMino);
+        }
+
+        public int[,] GetClockwise_RotatedArray()
+        {
+            return minoCordinate.GetClockwise_RotatedArray();
+        }
+
+        public int[,] GetAntiClockwise_RotatedArray()
+        {
+            return minoCordinate.GetAntiClockwise_RotatedArray();
         }
     }
 }

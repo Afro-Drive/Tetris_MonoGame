@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using static PersonalProduct_2nd.Tetris_Block.Tetrimino;
 using static PersonalProduct_2nd.Tetris_Block.Mino_Array;
 using PersonalProduct_2nd.Define;
 
@@ -89,32 +88,6 @@ namespace PersonalProduct_2nd.Device
                     renderer.DrawTexture(
                         mino,
                         new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    #region 記述を簡略化
-                    //if (fieldMatrixData[y, x] == 1)
-                    //    renderer.DrawTexture("black",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    //else if (fieldMatrixData[y, x] == 2)
-                    //    renderer.DrawTexture("mino_I",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    //else if (fieldMatrixData[y, x] == 3)
-                    //    renderer.DrawTexture("mino_T",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    //else if (fieldMatrixData[y, x] == 4)
-                    //    renderer.DrawTexture("mino_J",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    //else if (fieldMatrixData[y, x] == 5)
-                    //    renderer.DrawTexture("mino_L",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    //else if (fieldMatrixData[y, x] == 6)
-                    //    renderer.DrawTexture("mino_S",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    //else if (fieldMatrixData[y, x] == 7)
-                    //    renderer.DrawTexture("mino_Z",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    //else if (fieldMatrixData[y, x] == 8)
-                    //    renderer.DrawTexture("mino_O",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset);
-                    #endregion 記述を簡略化
                 }
             }
         }
@@ -144,40 +117,6 @@ namespace PersonalProduct_2nd.Device
                         mino,
                         new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
                         color);
-                    #region 記述を共通化
-                    //if (fieldJaggedData[y][x] == 1)
-                    //    renderer.DrawTexture("black",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
-                    //        color);
-                    //else if (fieldJaggedData[y][x] == 2)
-                    //    renderer.DrawTexture("mino_I",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
-                    //        color);
-                    //else if (fieldJaggedData[y][x] == 3)
-                    //    renderer.DrawTexture("mino_T",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
-                    //        color);
-                    //else if (fieldJaggedData[y][x] == 4)
-                    //    renderer.DrawTexture("mino_J",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
-                    //        color);
-                    //else if (fieldJaggedData[y][x] == 5)
-                    //    renderer.DrawTexture("mino_L",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
-                    //        color);
-                    //else if (fieldJaggedData[y][x] == 6)
-                    //    renderer.DrawTexture("mino_S",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
-                    //        color);
-                    //else if (fieldJaggedData[y][x] == 7)
-                    //    renderer.DrawTexture("mino_Z",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
-                    //        color);
-                    //else if (fieldJaggedData[y][x] == 8)
-                    //    renderer.DrawTexture("mino_O",
-                    //        new Vector2(x * Size.WIDTH, y * Size.HEIGHT) + offset,
-                    //        color);
-                    #endregion 記述を共通化
                 }
             }
         }
@@ -197,7 +136,8 @@ namespace PersonalProduct_2nd.Device
                 {
                     //0(Space)でなければ描画する
                     if (fieldMatrixData[y, x] != 0)
-                        renderer.DrawTexture(color.ToString(),
+                        renderer.DrawTexture(
+                            color.ToString(),
                             center + new Vector2((x - 2) * Size.WIDTH, (y - 2) * Size.HEIGHT) + offset,
                             alpha);
                 }
@@ -219,10 +159,10 @@ namespace PersonalProduct_2nd.Device
                 for (int x = 0; x < data[color].GetLength(1); x++)
                 {
                     if (fieldMatrixData[y, x] != 0)
-                        renderer.DrawTexture(color.ToString(),
+                        renderer.DrawTexture(
+                            color.ToString(),
                             center + new Vector2((x - 2) * Size.WIDTH, (y - 2) * Size.HEIGHT),
                             alpha);
-
                 }
             }
         }

@@ -164,7 +164,7 @@ namespace PersonalProduct_2nd.Tetris_Block
             //最も近距離の値の一つ上を着地予定地Yと定める
             var landPosY = (toLandVal.Min() - 1) * Size.HEIGHT;
             //距離に応じたスコアを加算
-            var dropVal = (int)(target.Position.Y - landPosY / Size.HEIGHT);
+            var dropVal = (int)((landPosY - target.Position.Y) / Size.HEIGHT);
             gameMediator.AddScore(10 * dropVal);
 
             return new Vector2(target.Position.X, landPosY);
@@ -183,13 +183,13 @@ namespace PersonalProduct_2nd.Tetris_Block
 
             //Aキー入力→テトリミノが時計回りに90度回転した際の配列を取得
             if (Input.GetKeyTrigger(Keys.A))
-                willRotateArray = target.GetClockwise_RotatedArray();
+                willRotateArray = GetClockwise_RotatedArray();
             //Dキー入力→テトリミノが反時計回りに90回転した際の配列
             if (Input.GetKeyTrigger(Keys.D))
-                willRotateArray = target.GetAntiClockwise_RotatedArray();
+                willRotateArray = GetAntiClockwise_RotatedArray();
 
             //テトリミノの構成ブロックの座標を取得、一つずつ調べる
-            foreach (var point in target.GetRotatedUnitPos(willRotateArray))
+            foreach (var point in GetArrayUnitPos(willRotateArray))
             {
                 //構成ブロックに対応した配列位置を取得
                 int unitPos_X = (int)(target.Position.X + point.X) / Size.WIDTH;
@@ -211,5 +211,72 @@ namespace PersonalProduct_2nd.Tetris_Block
             return CanMove;
         }
 
+        public int[,] GetClockwise_RotatedArray()
+        {
+            int[,] target_Array = controlMediator.GetActiveMino().GetRotate_Array();
+            int cols = target_Array.GetLength(0); //列(横)
+            int rows = target_Array.GetLength(1); //行(縦)
+            int[,] image_Array = new int[cols, rows]; //回転前とは行と列を逆にした配列を生成
+
+            for (int y = 0; y < cols; y++) //回転後の配列の列に回転前の配列の行分要素を用意
+            {
+                for (int x = 0; x < rows; x++) //回転後の配列の行に回転前の配列の列分要素を用意
+                {
+                    //回転後の配列の列は、回転前の配列の行からy(新規配列の列の生成回数)と1を引いたものに一致する
+                    //知るかこの野郎
+                    image_Array[x, cols - y - 1] = target_Array[y, x];
+                }
+            }
+            return image_Array;
+        }
+
+        public int[,] GetAntiClockwise_RotatedArray()
+        {
+            int[,] target_Array = controlMediator.GetActiveMino().GetRotate_Array();
+            int cols = target_Array.GetLength(0); //列(横)
+            int rows = target_Array.GetLength(1); //行(縦)
+            int[,] image_Array = new int[rows, cols]; //回転前とは行と列を逆にした配列を生成
+
+            for (int y = 0; y < cols; y++) //回転後の配列の列に回転前の配列の行分だけ要素を用意
+            {
+                for (int x = 0; x < rows; x++) //回転後の配列の行に回転前の配列の列分だけ要素を用意
+                {
+                    //回転後の配列の列は回転前の配列の行からx(回転後の列を用意した回数)と1を引いたものに一致する
+                    //時計回りとはややこしくなる方が逆になるんだね。知らんけど。
+                    image_Array[rows - x - 1, y] = target_Array[y, x];
+                }
+            }
+            return image_Array;
+        }
+
+        /// <summary>
+        /// テトリミノ構成配列から相対座標を取得
+        /// </summary>
+        /// <param name="checkArray">調べたい配列</param>
+        /// <returns>配列内のブロックの座標を格納したリスト</returns>
+        public List<Vector2> GetArrayUnitPos(int[,] checkArray)
+        {
+            //返却用のリストを生成
+            List<Vector2> list_Pos = new List<Vector2>();
+
+            //引数の配列内の要素を一つずつ確かめる
+            for (int y = 0; y < checkArray.GetLength(0); y++)
+            {
+                for (int x = 0; x < checkArray.GetLength(1); x++)
+                {
+                    //確認した要素が0以外なら
+                    if (checkArray[y, x] != 0)
+                    {
+                        //リストに追加する
+                        //中心[2,2]を基準とした座標を算出
+                        list_Pos.Add(
+                            new Vector2(Size.WIDTH * (x - 2), Size.HEIGHT * (y - 2))
+                            );
+                    }
+                }
+            }
+            //リストを返却する
+            return list_Pos;
+        }
     }
 }

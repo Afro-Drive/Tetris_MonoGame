@@ -8,6 +8,12 @@ using System.Threading.Tasks;
 
 namespace PersonalProduct_2nd.Device
 {
+    enum MouseButton
+    {
+        Left,
+        Right,
+    }
+
     /// <summary>
     /// キャラクター操作の静的クラス
     /// 作成者:谷永吾
@@ -24,6 +30,9 @@ namespace PersonalProduct_2nd.Device
         //コントローラー
         private static GamePadState currentButton;
         private static GamePadState previousButton;
+        //マウス
+        private static MouseState currentMouse;
+        private static MouseState previousMouse;
 
         public static void Update()
         {
@@ -34,6 +43,10 @@ namespace PersonalProduct_2nd.Device
             //コントローラー
             previousButton = currentButton;
             currentButton = GamePad.GetState(PlayerIndex.One);//1Pのコントローラーの状態
+
+            //マウス
+            previousMouse = currentMouse;
+            currentMouse = Mouse.GetState();
         }
 
         /// <summary>
@@ -89,5 +102,30 @@ namespace PersonalProduct_2nd.Device
             return currentKey.IsKeyDown(key);
         }
 
+        public static bool GetMouseButtonDown(MouseButton button)
+        {
+            //左ボタン
+            if (button == MouseButton.Left)
+            {
+                if(currentMouse.LeftButton == ButtonState.Pressed &&
+                    previousMouse.LeftButton == ButtonState.Released)
+                {
+                    return true;
+                }
+            }
+            //右ボタン
+            if (currentMouse.RightButton == ButtonState.Pressed &&
+                previousMouse.RightButton == ButtonState.Released)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public static Point MousePos()
+        {
+            return new Point(currentMouse.X, currentMouse.Y);
+        }
     }
 }

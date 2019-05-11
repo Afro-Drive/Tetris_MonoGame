@@ -30,5 +30,8 @@ namespace PersonalProduct_2nd.Tetris_Block
 
         void OrderToPickHead();
 
+        int[,] GetClockwise_RotatedArray();
+
+        int[,] GetAntiClockwise_RotatedArray();
     }
 }
