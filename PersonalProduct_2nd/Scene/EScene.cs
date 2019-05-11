@@ -18,6 +18,7 @@ namespace PersonalProduct_2nd.Scene
         Title,　　 //タイトルシーン
         Tutorial,　//チュートリアル
         GameScene, //ゲームプレイシーン
-        Result     //リザルト、エンディングシーン
+        GameOver,  //ゲームオーバー
+        Clear,     //ゲームクリア
     }
 }

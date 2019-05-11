@@ -41,6 +41,7 @@
     <ApplicationManifest>app.manifest</ApplicationManifest>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Scene\Clear.cs" />
     <Compile Include="Define\Size.cs" />
     <Compile Include="Device\ArrayRenderer.cs" />
     <Compile Include="Device\BGM_Loader.cs" />
@@ -76,7 +77,7 @@
     <Compile Include="Scene\GameScene.cs" />
     <Compile Include="Scene\IScene.cs" />
     <Compile Include="Scene\LoadScene.cs" />
-    <Compile Include="Scene\Result.cs" />
+    <Compile Include="Scene\GameOver.cs" />
     <Compile Include="Scene\LogoScene.cs" />
     <Compile Include="Scene\SceneManager.cs" />
     <Compile Include="Scene\Title.cs" />

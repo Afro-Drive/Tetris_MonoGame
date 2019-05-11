@@ -17,7 +17,7 @@ namespace PersonalProduct_2nd.Scene
     /// </summary>
     class GameScene : IScene, IGameMediator
     {
-        public const int MAX_LEVEL = 10;
+        public const int CLEAR_LEVEL = 11;
 
         private bool isEndFlag;//終了フラグ
         private LineField field; //プレイエリアのフィールド
@@ -143,8 +143,9 @@ namespace PersonalProduct_2nd.Scene
         /// <returns>シーンオブジェクトに対応する列挙型</returns>
         public EScene Next()
         {
-            //return EScene.Result;
-            return EScene.Title;
+            if (levelBoard.Level == CLEAR_LEVEL)
+                return EScene.Clear;
+            return EScene.GameOver;
         }
 
         /// <summary>
@@ -161,8 +162,9 @@ namespace PersonalProduct_2nd.Scene
         /// </summary>
         public void Update(GameTime gameTime)
         {
-            //デッドラインにブロックが達したら終了
-            if (field.IsDeadFlag)
+            //デッドラインにブロックが達するか
+            //クリアレベルに到達したら終了
+            if (field.IsDeadFlag || levelBoard.Level == CLEAR_LEVEL)
                 isEndFlag = true;
 
             //レベルアップ処理

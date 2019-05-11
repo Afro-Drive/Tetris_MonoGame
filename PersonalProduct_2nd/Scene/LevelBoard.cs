@@ -27,7 +27,7 @@ namespace PersonalProduct_2nd.Scene
 
             //今回はレベル10までを想定する
             unMultiple = new Dictionary<int, bool>();
-            for (int i = 1; i <= GameScene.MAX_LEVEL; i++)
+            for (int i = 1; i <= GameScene.CLEAR_LEVEL; i++)
                 unMultiple.Add(i, true);
             unMultiple[1] = false;
         }

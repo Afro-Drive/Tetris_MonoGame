@@ -13,7 +13,7 @@ namespace PersonalProduct_2nd.Scene
     /// プレイ後のリザルトシーン
     /// 作成者:谷永吾
     /// </summary>
-    class Result : IScene
+    class GameOver : IScene
     {
         private bool isEndFlag;//終了フラグ
         private IScene backGround; //背景に移すシーン
@@ -25,7 +25,7 @@ namespace PersonalProduct_2nd.Scene
         /// コンストラクタ
         /// </summary>
         /// <param name="pastScene">1つ前のシーン</param>
-        public Result(IScene pastScene)
+        public GameOver(IScene pastScene)
         {
             isEndFlag = false;
             this.backGround = pastScene;
@@ -42,7 +42,7 @@ namespace PersonalProduct_2nd.Scene
         {
             //背景シーンを描画
             backGround.Draw(renderer);
-            renderer.DrawTexture("christmas_dance_tonakai", new Vector2(700, 190));
+            renderer.DrawTexture("miss", new Vector2(700, 190));
         }
 
         /// <summary>
@@ -68,7 +68,7 @@ namespace PersonalProduct_2nd.Scene
         /// <returns>Titleシーンに対応する列挙型</returns>
         public EScene Next()
         {
-            return EScene.GameScene;
+            return EScene.Title;
         }
 
         /// <summary>

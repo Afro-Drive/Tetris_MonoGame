@@ -67,7 +67,8 @@ namespace PersonalProduct_2nd
             //sceneManager.AddScene(EScene.Tutorial,  new Tutorial());
             IScene addScene = new GameScene();
             sceneManager.AddScene(EScene.GameScene, addScene);
-            sceneManager.AddScene(EScene.Result, new Result(addScene));
+            sceneManager.AddScene(EScene.GameOver, new GameOver(addScene));
+            sceneManager.AddScene(EScene.Clear, new Clear(addScene));
             sceneManager.SetScene(EScene.Title);
             #endregion シーンの追加、設定
 
@@ -95,6 +96,8 @@ namespace PersonalProduct_2nd
             renderer.LoadContent("level", "./Texture/");
             renderer.LoadContent("hold", "./Texture/");
             renderer.LoadContent("delete", "./Texture/");
+            renderer.LoadContent("clear", "./Texture/");
+            renderer.LoadContent("miss", "./Texture/");
 
             //テトリミノの色ブロック
             renderer.LoadContent("mino_I", "./Tetrimino/");
