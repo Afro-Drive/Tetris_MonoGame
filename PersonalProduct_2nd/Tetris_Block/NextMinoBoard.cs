@@ -50,13 +50,15 @@ namespace PersonalProduct_2nd.Tetris_Block
 
         public void Draw(Renderer renderer)
         {
+            renderer.DrawTexture("next", new Vector2(1100, 45));
+            renderer.DrawTexture("hold", new Vector2(1100, 400));
             for (int i = 0; i < nextMinos.Count; i++)
             {
-                nextMinos[i].DrawNoOffset(renderer, new Vector2(1200 + 256 * i, 150));
+                nextMinos[i].DrawNoOffset(renderer, new Vector2(1200 + 256 * i, 230));
             }
 
             if (holdMino != null)
-                holdMino.DrawNoOffset(renderer, new Vector2(1200, 500));
+                holdMino.DrawNoOffset(renderer, new Vector2(1200, 600));
         }
 
         /// <summary>

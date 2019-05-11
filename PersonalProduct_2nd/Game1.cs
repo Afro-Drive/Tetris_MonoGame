@@ -91,6 +91,10 @@ namespace PersonalProduct_2nd
             renderer.LoadContent("number", "./Texture/");
             renderer.LoadContent("title", "./Texture/");
             renderer.LoadContent("score", "./Texture/");
+            renderer.LoadContent("next", "./Texture/");
+            renderer.LoadContent("level", "./Texture/");
+            renderer.LoadContent("hold", "./Texture/");
+            renderer.LoadContent("delete", "./Texture/");
 
             //テトリミノの色ブロック
             renderer.LoadContent("mino_I", "./Tetrimino/");

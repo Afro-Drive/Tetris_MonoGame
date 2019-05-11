@@ -78,8 +78,8 @@ namespace PersonalProduct_2nd.Scene
         /// <param name="renderer"></param>
         public void Draw(Renderer renderer)
         {
-            renderer.DrawTexture("score", new Vector2(50, 10));
-            renderer.DrawNumber("number", new Vector2(250, 13), score);
+            renderer.DrawTexture("score", new Vector2(1400, 400));
+            renderer.DrawNumber("number", new Vector2(1400, 470), score);
         }
 
         /// <summary>

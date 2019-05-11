@@ -41,7 +41,8 @@ namespace PersonalProduct_2nd.Scene
         public void Draw(Renderer renderer)
         {
             //消去したライン数を描画する
-            renderer.DrawNumber("number", new Vector2(1700, 900), removeCnt);
+            renderer.DrawTexture("delete", new Vector2(1400, 750));
+            renderer.DrawNumber("number", new Vector2(1400, 824), removeCnt);
         }
 
         /// <summary>

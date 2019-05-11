@@ -27,7 +27,7 @@ namespace PersonalProduct_2nd.Scene
 
             //今回はレベル10までを想定する
             unMultiple = new Dictionary<int, bool>();
-            for (int i = 1; i < GameScene.MAX_LEVEL; i++)
+            for (int i = 1; i <= GameScene.MAX_LEVEL; i++)
                 unMultiple.Add(i, true);
             unMultiple[1] = false;
         }
@@ -38,7 +38,8 @@ namespace PersonalProduct_2nd.Scene
         /// <param name="renderer"></param>
         public void Draw(Renderer renderer)
         {
-            renderer.DrawNumber("number", new Vector2(1500, 500), Level);
+            renderer.DrawTexture("level", new Vector2(1400, 570));
+            renderer.DrawNumber("number", new Vector2(1400, 664), Level);
         }
 
         /// <summary>
