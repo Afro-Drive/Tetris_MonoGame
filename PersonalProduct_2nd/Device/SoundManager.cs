@@ -29,6 +29,8 @@ namespace PersonalProduct_2nd.Device
         //再生中SE管理ディクショナリ
         private Dictionary<string, SoundEffectInstance> dict_PlayingSE;
         private string onBGM;//現在のBGM
+        private float seVolume;
+        private float bgmVolume;
         #endregion フィールド
 
         /// <summary>
@@ -47,6 +49,11 @@ namespace PersonalProduct_2nd.Device
             dict_SEInstance = new Dictionary<string, SoundEffectInstance>();
             dict_PlayingSE = new Dictionary<string, SoundEffectInstance>();
             onBGM = null;//現在再生中の音楽をカラっぽに
+
+            SESwitch = MediaState.Paused;
+            BGMSwitch = MediaState.Paused;
+            seVolume = 1.0f;
+            bgmVolume = 1.0f;
         }
 
         /// <summary>
@@ -75,6 +82,16 @@ namespace PersonalProduct_2nd.Device
             }
             //音楽名をKeyとしてBGMファイルをValueで紐づけし、管理ディクショナリに登録
             dict_BGM.Add(assetName, contentManager.Load<Song>(filepath + assetName));
+        }
+
+        public MediaState BGMSwitch
+        {
+            set;get;
+        }
+
+        public void SetBGMVolume(float volume)
+        {
+            this.bgmVolume = volume;
         }
 
         /// <summary>
@@ -122,14 +139,16 @@ namespace PersonalProduct_2nd.Device
         /// <param name="BGM_name">再生したい管理ディクショナリのKey</param>
         public void PlayBGM(string BGM_name)
         {
-            Debug.Assert(dict_BGM.ContainsKey(BGM_name), "後ほどメソッドでまとめる予定");
+            Debug.Assert(dict_BGM.ContainsKey(BGM_name), "指定されたBGMが読み込まれていません。");
 
+            if (BGMSwitch == MediaState.Stopped)
+                StopBGM();
             if (onBGM == BGM_name) //すでに現在BGMに指定済みなら何もしない
                 return;
             if (IsPlayingBGM()) //すでに再生中なら止める
                 StopBGM();
 
-            MediaPlayer.Volume = 1.0f;//0.5の音量で指定
+            MediaPlayer.Volume = bgmVolume;
             onBGM = BGM_name;　//現在BGMに引数を代入
             MediaPlayer.Play(dict_BGM[onBGM]);　//指定BGMを再生
         }
@@ -141,8 +160,10 @@ namespace PersonalProduct_2nd.Device
         /// <param name="volume">再生音量</param>
         public void PlayBGM(string BGM_name, float volume)
         {
-            Debug.Assert(dict_BGM.ContainsKey(BGM_name), "後ほどメソッドでまとめる予定");
+            Debug.Assert(dict_BGM.ContainsKey(BGM_name), "指定されたBGMが読み込まれていません。");
 
+            if (BGMSwitch == MediaState.Stopped)
+                StopBGM();
             if (onBGM == BGM_name) //すでに現在BGMに指定済みなら何もしない
                 return;
             if (IsPlayingBGM()) //すでに再生中なら止める
@@ -194,15 +215,27 @@ namespace PersonalProduct_2nd.Device
             dict_SE.Add(assetName, contentManager.Load<SoundEffect>(filepath + assetName));
         }
 
+        public MediaState SESwitch
+        {
+            get; set;
+        }
+
+        public void SetSEVolume(float volume)
+        {
+            this.seVolume = volume;
+        }
+
         /// <summary>
         /// SE（WAV形式）の再生
         /// </summary>
         /// <param name="SE_name">再生したいSEファイルに対応するKey</param>
         public void PlaySE(string SE_name)
         {
-            Debug.Assert(dict_SE.ContainsKey(SE_name), "後ほど実装予定");
+            Debug.Assert(dict_SE.ContainsKey(SE_name), "指定されたSEが読み込まれていません。");
+            if (SESwitch == MediaState.Stopped)
+                StoppedSE();
 
-            dict_SE[SE_name].Play();
+            dict_SE[SE_name].Play(seVolume, 0f, 0f);
         }
 
         /// <summary>
@@ -212,7 +245,9 @@ namespace PersonalProduct_2nd.Device
         /// <param name="volume">再生音量（0.0～1.0）</param>
         public void PlaySE(string SE_name, float volume)
         {
-            Debug.Assert(dict_SE.ContainsKey(SE_name), "後ほど実装予定");
+            Debug.Assert(dict_SE.ContainsKey(SE_name), "指定されたSEが読み込まれていません。");
+            if (SESwitch == MediaState.Stopped)
+                StoppedSE();
 
             //指定ボリュームで再生
             dict_SE[SE_name].Play(volume, 0.0f, 0.0f);
@@ -244,7 +279,7 @@ namespace PersonalProduct_2nd.Device
         /// <param name="loopFlag">ループ状態の指定</param>
         public void PlaySEInstance(string name, int no, bool loopFlag = false)
         {
-            Debug.Assert(dict_SEInstance.ContainsKey(name), "後ほど実装予定");
+            Debug.Assert(dict_SEInstance.ContainsKey(name), "先に" + name + "の読み込み処理を行ってください。");
 
             if (dict_PlayingSE.ContainsKey(name + no))
                 return;　//すでに再生中SEディクショナリに登録済みなら何もしない

@@ -68,6 +68,7 @@ namespace PersonalProduct_2nd
             //sceneManager.AddScene(EScene.LogoScene, new LogoScene());
             sceneManager.AddScene(EScene.Title, new Title());
             sceneManager.AddScene(EScene.Tutorial, new Tutorial());
+            sceneManager.AddScene(EScene.Configuration, new Configuration());
             IScene addScene = new GameScene();
             sceneManager.AddScene(EScene.GameScene, addScene);
             sceneManager.AddScene(EScene.GameOver, new GameOver(addScene));

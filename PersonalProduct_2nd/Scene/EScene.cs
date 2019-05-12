@@ -16,6 +16,7 @@ namespace PersonalProduct_2nd.Scene
         LoadScene, //ロードシーン
         LogoScene, //ロゴシーン
         Title,　　 //タイトルシーン
+        Configuration,//コンフィグシーン
         Tutorial,　//チュートリアル
         GameScene, //ゲームプレイシーン
         GameOver,  //ゲームオーバー

@@ -49,6 +49,7 @@
     <Compile Include="Device\Loader.cs" />
     <Compile Include="Device\SE_Loader.cs" />
     <Compile Include="Device\Texture_Loader.cs" />
+    <Compile Include="Scene\Configuration.cs" />
     <Compile Include="Scene\LevelBoard.cs" />
     <Compile Include="Scene\RemoveLineBoard.cs" />
     <Compile Include="Tetris_Block\Cell.cs" />
@@ -93,6 +94,8 @@
       <HintPath>$(MonoGameInstallDirectory)\MonoGame\v3.0\Assemblies\Windows\MonoGame.Framework.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>

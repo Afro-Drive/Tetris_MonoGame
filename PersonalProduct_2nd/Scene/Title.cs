@@ -111,10 +111,12 @@ namespace PersonalProduct_2nd.Scene
         /// <returns>Tutorialに対応する列挙型</returns>
         public EScene Next()
         {
-            if (imageState[SelectMenu.Play])
-                return EScene.GameScene;
+            if (imageState[SelectMenu.Tutorial])
+                return EScene.Tutorial;
+            if (Input.GetKeyTrigger(Keys.Enter))
+                return EScene.Configuration;
 
-            return EScene.Tutorial;
+            return EScene.GameScene;            
         }
 
         /// <summary>
